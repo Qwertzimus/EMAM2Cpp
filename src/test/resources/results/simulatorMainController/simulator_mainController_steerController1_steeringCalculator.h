@@ -4,7 +4,6 @@
 #define M_PI 3.14159265358979323846
 #endif
 #include "octave/oct.h"
-#include "simulator_mainController_steerController1_steeringCalculator_distanceCalculator.h"
 #include "Helper.h"
 #include "octave/builtin-defun-decls.h"
 class simulator_mainController_steerController1_steeringCalculator{
@@ -15,26 +14,28 @@ double gpsX;
 double gpsY;
 double orientation;
 double currentSteeringAngle;
+double minSteeringAngle;
+double maxSteeringAngle;
 double newSteeringAngle;
-simulator_mainController_steerController1_steeringCalculator_distanceCalculator distanceCalculator;
 void init()
 {
-distanceCalculator.init();
 }
 void execute()
 {
-distanceCalculator.x[0] = x[0];
-distanceCalculator.x[1] = x[1];
-distanceCalculator.y[0] = y[0];
-distanceCalculator.y[1] = y[1];
-distanceCalculator.gpsX = gpsX;
-distanceCalculator.gpsY = gpsY;
-distanceCalculator.execute();
+double distance;
+double res = (y[2/1 -1]-y[1/1 -1])*gpsX;
+res -= (x[2/1 -1]-x[1/1 -1])*gpsY;
+res += x[2/1 -1]*y[1/1 -1];
+res -= y[2/1 -1]*x[1/1 -1];
+double xDiff = x[1/1 -1]-x[2/1 -1];
+double yDiff = y[1/1 -1]-y[2/1 -1];
+res /= (Helper::getDoubleFromOctaveListFirstResult(Fsqrt(Helper::convertToOctaveValueList(xDiff*xDiff+yDiff*yDiff),1)));
+distance = res;
 double globalOrientation = orientation*(M_PI/180/1 );
 if(((globalOrientation > M_PI))){
 globalOrientation -= 2/1 *M_PI;
 }
-double orientedDistance = distanceCalculator.distance;
+double orientedDistance = distance;
 double angleTowardsTrajectory = (Helper::getDoubleFromOctaveListFirstResult(Fatan(Helper::convertToOctaveValueList(orientedDistance/2/1 ),1)));
 double orientationOfTrajectory;
 double v1 = x[2/1 -1]-x[1/1 -1];
@@ -56,6 +57,14 @@ else if(((finalAngle < -M_PI))){
 finalAngle += 2/1 *M_PI;
 }
 newSteeringAngle = finalAngle*(180/1 /M_PI);
+angle = newSteeringAngle;
+if((angle < minSteeringAngle)){
+angle = minSteeringAngle;
+}
+else if((angle > maxSteeringAngle)){
+angle = maxSteeringAngle;
+}
+newSteeringAngle = -angle;
 }
 
 };

@@ -18,18 +18,8 @@ component SteerController{
         connect gpsX -> steeringCalculator.gpsX;
         connect gpsY -> steeringCalculator.gpsY;
         connect orientation -> steeringCalculator.orientation;
+		connect minSteeringAngle -> steeringCalculator.minSteeringAngle;
+        connect maxSteeringAngle -> steeringCalculator.maxSteeringAngle;
 		connect currentSteeringAngle -> steeringCalculator.currentSteeringAngle;
-
-		implementation Math{
-		    Q angle = steeringCalculator.newSteeringAngle;
-
-		    if angle < minSteeringAngle{
-		        angle = minSteeringAngle;
-		    }
-		    elseif angle > maxSteeringAngle{
-		        angle = maxSteeringAngle;
-            }
-
-		    steeringAngle = -angle;
-		}
+        connect steeringCalculator.newSteeringAngle -> steeringAngle;
 }

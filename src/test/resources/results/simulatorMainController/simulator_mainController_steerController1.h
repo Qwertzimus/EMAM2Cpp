@@ -30,16 +30,11 @@ steeringCalculator.y[1] = y[1];
 steeringCalculator.gpsX = gpsX;
 steeringCalculator.gpsY = gpsY;
 steeringCalculator.orientation = orientation;
+steeringCalculator.minSteeringAngle = minSteeringAngle;
+steeringCalculator.maxSteeringAngle = maxSteeringAngle;
 steeringCalculator.currentSteeringAngle = currentSteeringAngle;
 steeringCalculator.execute();
-double angle = steeringCalculator.newSteeringAngle;
-if((angle < minSteeringAngle)){
-angle = minSteeringAngle;
-}
-else if((angle > maxSteeringAngle)){
-angle = maxSteeringAngle;
-}
-steeringAngle = -angle;
+steeringAngle = steeringCalculator.newSteeringAngle;
 }
 
 };
