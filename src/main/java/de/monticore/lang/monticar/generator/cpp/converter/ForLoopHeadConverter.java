@@ -21,15 +21,15 @@ public class ForLoopHeadConverter {
             if (mathMatrixExpressionSymbol.isMatrixVectorExpression()) {
                 MathMatrixVectorExpressionSymbol mathMatrixVectorExpressionSymbol = (MathMatrixVectorExpressionSymbol) mathMatrixExpressionSymbol;
 
-                result += ComponentConverter.generateExecuteCode(mathMatrixVectorExpressionSymbol.getStart(), includeStrings) + ";";
+                result += ExecuteMethodGenerator.generateExecuteCode(mathMatrixVectorExpressionSymbol.getStart(), includeStrings) + ";";
 
                 //for loop condition
-                result += mathForLoopHeadSymbol.getNameLoopVariable() + "<=" + ComponentConverter.generateExecuteCode(mathMatrixVectorExpressionSymbol.getEnd(), includeStrings) + ";";
+                result += mathForLoopHeadSymbol.getNameLoopVariable() + "<=" + ExecuteMethodGenerator.generateExecuteCode(mathMatrixVectorExpressionSymbol.getEnd(), includeStrings) + ";";
 
 
                 //for loop step
                 if (mathMatrixVectorExpressionSymbol.getStep().isPresent())
-                    result += mathForLoopHeadSymbol.getNameLoopVariable() + "+=" + ComponentConverter.generateExecuteCode(mathMatrixVectorExpressionSymbol.getStep().get(), includeStrings) + ")";
+                    result += mathForLoopHeadSymbol.getNameLoopVariable() + "+=" + ExecuteMethodGenerator.generateExecuteCode(mathMatrixVectorExpressionSymbol.getStep().get(), includeStrings) + ")";
                     //increase by one if no step is present
                 else
                     result += "++" + mathForLoopHeadSymbol.getNameLoopVariable() + ")";

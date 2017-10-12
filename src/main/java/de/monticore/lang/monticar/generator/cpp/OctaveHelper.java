@@ -7,6 +7,7 @@ import de.monticore.lang.math.math._symboltable.matrix.MathMatrixNameExpressionS
 import de.monticore.lang.monticar.generator.FileContent;
 import de.monticore.lang.monticar.generator.Variable;
 import de.monticore.lang.monticar.generator.cpp.converter.ComponentConverter;
+import de.monticore.lang.monticar.generator.cpp.converter.ExecuteMethodGenerator;
 import de.monticore.lang.monticar.generator.cpp.converter.MathConverter;
 import de.se_rwth.commons.logging.Log;
 
@@ -245,7 +246,7 @@ public class OctaveHelper {
         int counter = 0;
         for (MathExpressionSymbol symbol : expressionSymbolList) {
             MathConverter.fixMathFunctions(symbol, ComponentConverter.currentBluePrint);
-            valueListString += ComponentConverter.generateExecuteCode(symbol, new ArrayList<String>());
+            valueListString += ExecuteMethodGenerator.generateExecuteCode(symbol, new ArrayList<String>());
             ++counter;
             if (counter < expressionSymbolList.size())
                 valueListString += ",";

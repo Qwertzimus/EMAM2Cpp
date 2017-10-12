@@ -8,6 +8,7 @@ import de.monticore.lang.monticar.generator.MathCommand;
 import de.monticore.lang.monticar.generator.cpp.BluePrintCPP;
 import de.monticore.lang.monticar.generator.cpp.OctaveHelper;
 import de.monticore.lang.monticar.generator.cpp.converter.ComponentConverter;
+import de.monticore.lang.monticar.generator.cpp.converter.ExecuteMethodGenerator;
 import de.monticore.lang.monticar.generator.cpp.converter.MathConverter;
 import de.monticore.lang.monticar.generator.cpp.symbols.MathStringExpression;
 
@@ -35,7 +36,7 @@ public class MathKMeansIDXCommand extends MathCommand {
         String valueListString = "";
         for (MathMatrixAccessSymbol accessSymbol : mathMatrixNameExpressionSymbol.getMathMatrixAccessOperatorSymbol().getMathMatrixAccessSymbols())
             MathConverter.fixMathFunctions(accessSymbol, (BluePrintCPP) bluePrint);
-        valueListString += ComponentConverter.generateExecuteCode(mathExpressionSymbol, new ArrayList<String>());
+        valueListString += ExecuteMethodGenerator.generateExecuteCode(mathExpressionSymbol, new ArrayList<String>());
         //OctaveHelper.getCallOctaveFunction(mathExpressionSymbol, "sum","Double", valueListString));
         List<MathMatrixAccessSymbol> newMatrixAccessSymbols = new ArrayList<>();
         MathStringExpression stringExpression = new MathStringExpression(OctaveHelper.getCallOctaveFunction(mathExpressionSymbol, "kmeans", "ColumnVector", valueListString, "FirstResult", false));
