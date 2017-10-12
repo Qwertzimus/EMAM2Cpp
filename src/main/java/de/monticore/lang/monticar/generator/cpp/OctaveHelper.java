@@ -33,7 +33,7 @@ public class OctaveHelper {
         String valueListString = "";
         int counter = 0;
         for (MathExpressionSymbol symbol : expressionSymbolList) {
-            MathConverter.fixMathFunctions(symbol, ComponentConverter.currentBluePrint);
+            MathFunctionFixer.fixMathFunctions(symbol, ComponentConverter.currentBluePrint);
             valueListString += ExecuteMethodGenerator.generateExecuteCode(symbol, new ArrayList<String>());
             ++counter;
             if (counter < expressionSymbolList.size())

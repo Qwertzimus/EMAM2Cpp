@@ -6,10 +6,7 @@ import de.monticore.lang.math.math._symboltable.*;
 import de.monticore.lang.math.math._symboltable.expression.*;
 import de.monticore.lang.math.math._symboltable.matrix.*;
 import de.monticore.lang.monticar.generator.*;
-import de.monticore.lang.monticar.generator.cpp.BluePrintCPP;
-import de.monticore.lang.monticar.generator.cpp.GeneratorCPP;
-import de.monticore.lang.monticar.generator.cpp.OctaveHelper;
-import de.monticore.lang.monticar.generator.cpp.VariableStatic;
+import de.monticore.lang.monticar.generator.cpp.*;
 import de.monticore.lang.monticar.generator.cpp.instruction.ConnectInstructionCPP;
 import de.monticore.lang.monticar.generator.cpp.instruction.ConstantConnectInstructionCPP;
 import de.monticore.lang.monticar.generator.cpp.symbols.MathChainedExpression;
@@ -36,19 +33,8 @@ public class ComponentConverter {
         bluePrint.setGenerator(generatorCPP);
         bluePrint.setOriginalSymbol(componentSymbol);
         bluePrint.addDefineGenerics(componentSymbol);
-        //add parameters as variables
-        for (EMAVariable variable : componentSymbol.getParameters()) {
-            Variable var = new Variable();
-            var.setName(variable.getName());
-            var.setTypeNameMontiCar(variable.getType());
-            bluePrint.addVariable(var);
-            bluePrint.getMathInformationRegister().addVariable(var);
-            var.setIsParameterVariable(true);
-        }
-        //add ports as variables to blueprint
-        for (PortSymbol port : componentSymbol.getPorts()) {
-            bluePrint.addVariable(PortConverter.convertPortSymbolToVariable(port, port.getName(), bluePrint));
-        }
+
+        addVariables(componentSymbol,bluePrint);
 
         String lastNameWithoutArrayPart = "";
         for (ExpandedComponentInstanceSymbol instanceSymbol : componentSymbol.getSubComponents()) {
@@ -67,68 +53,29 @@ public class ComponentConverter {
 
         //create arrays from variables that only differ at the end by _number_
         ComponentConverter.fixBluePrintVariableArrays(bluePrint);
-        filterStaticInformation(componentSymbol, bluePrint, mathStatementsSymbol, generatorCPP, includeStrings);
+        MathInformationFilter.filterStaticInformation(componentSymbol, bluePrint, mathStatementsSymbol, generatorCPP, includeStrings);
         generateInitMethod(componentSymbol, bluePrint, generatorCPP, includeStrings);
 
-
-        //generate setInput Method from input variables
-        /*{
-            Method method = new Method("setInputs", "void");
-            for (Variable v : bluePrint.getVariables()) {
-                Log.info("Variable: " + v.getName(), "setInputBluePrintCreate:");
-
-                if (v.isInputVariable() && !v.isConstantVariable()) {
-                    method.addParameter(v);
-                    Instruction instruction = new ConnectInstructionCPP(v, true, v, false);
-                    method.addInstruction(instruction);
-                } else if (v.isConstantVariable()) {
-                    Instruction instruction = new ConstantConnectInstructionCPP(v, v);
-                    method.addInstruction(instruction);
-                }
-
-
-            }
-            bluePrint.addMethod(method);
-        }*/
-
         //generate execute method
-        generateExecuteMethod(componentSymbol, bluePrint, mathStatementsSymbol, generatorCPP, includeStrings);
+        ComponentConverterMethodGeneration.generateExecuteMethod(componentSymbol, bluePrint, mathStatementsSymbol, generatorCPP, includeStrings);
 
 
         return bluePrint;
     }
 
-    public static void filterStaticInformation(ExpandedComponentInstanceSymbol componentSymbol, BluePrintCPP bluePrint, MathStatementsSymbol mathStatementsSymbol, GeneratorCPP generatorCPP, List<String> includeStrings) {
-        if (mathStatementsSymbol != null) {
-            for (MathExpressionSymbol expressionSymbol : mathStatementsSymbol.getMathExpressionSymbols()) {
-                if (expressionSymbol.isAssignmentDeclarationExpression()) {
-                    MathValueSymbol mathValueSymbol = (MathValueSymbol) expressionSymbol;
-                    if (mathValueSymbol.getType().getProperties().contains("static")) {
-                        VariableStatic var = new VariableStatic(mathValueSymbol.getName(), Variable.STATIC);
-                        var.setTypeNameTargetLanguage(TypeConverter.getVariableTypeNameForMathLanguageTypeName(mathValueSymbol.getType()));
-                        if (mathValueSymbol.getValue() != null)
-                            var.setAssignmentSymbol(mathValueSymbol.getValue());
-                        for (MathExpressionSymbol dimension : mathValueSymbol.getType().getDimensions())
-                            var.addDimensionalInformation(dimension.getTextualRepresentation());
-                        bluePrint.getMathInformationRegister().addVariable(var);
-                    }
-                } else if (expressionSymbol.isValueExpression()) {
-                    MathValueExpressionSymbol valueExpressionSymbol = (MathValueExpressionSymbol) expressionSymbol;
-                    if (valueExpressionSymbol.isValueExpression()) {
-                        MathValueSymbol mathValueSymbol = (MathValueSymbol) valueExpressionSymbol;
-                        if (mathValueSymbol.getType().getProperties().contains("static")) {
-                            VariableStatic var = new VariableStatic(mathValueSymbol.getName(), Variable.STATIC);
-                            var.setTypeNameTargetLanguage(TypeConverter.getVariableTypeNameForMathLanguageTypeName(mathValueSymbol.getType()));
-                            if (mathValueSymbol.getValue() != null)
-                                var.setAssignmentSymbol(mathValueSymbol.getValue());
-                            for (MathExpressionSymbol dimension : mathValueSymbol.getType().getDimensions())
-                                var.addDimensionalInformation(dimension.getTextualRepresentation());
-
-                            bluePrint.getMathInformationRegister().addVariable(var);
-                        }
-                    }
-                }
-            }
+    public static void addVariables(ExpandedComponentInstanceSymbol componentSymbol,BluePrintCPP bluePrint){
+        //add parameters as variables
+        for (EMAVariable variable : componentSymbol.getParameters()) {
+            Variable var = new Variable();
+            var.setName(variable.getName());
+            var.setTypeNameMontiCar(variable.getType());
+            bluePrint.addVariable(var);
+            bluePrint.getMathInformationRegister().addVariable(var);
+            var.setIsParameterVariable(true);
+        }
+        //add ports as variables to blueprint
+        for (PortSymbol port : componentSymbol.getPorts()) {
+            bluePrint.addVariable(PortConverter.convertPortSymbolToVariable(port, port.getName(), bluePrint));
         }
     }
 
@@ -200,68 +147,6 @@ public class ComponentConverter {
 
             TargetCodeInstruction instruction = new TargetCodeInstruction(result);
             method.addInstruction(instruction);
-        }
-        bluePrint.addMethod(method);
-    }
-
-
-    public static void generateExecuteMethod(ExpandedComponentInstanceSymbol componentSymbol, BluePrintCPP bluePrint, MathStatementsSymbol mathStatementsSymbol, GeneratorCPP generatorCPP, List<String> includeStrings) {
-        Method method = new Method("execute", "void");
-
-        for (ConnectorSymbol connector : componentSymbol.getConnectors()) {
-            if (!connector.isConstant()) {
-                Log.info("source:" + connector.getSource() + " target:" + connector.getTarget(), "Port info:");
-                Variable v1 = PortConverter.getVariableForPortSymbol(connector, connector.getSource(), bluePrint);
-                Variable v2 = PortConverter.getVariableForPortSymbol(connector, connector.getTarget(), bluePrint);
-
-
-                Instruction instruction = new ConnectInstructionCPP(v2, v1);
-                method.addInstruction(instruction);
-            } else {
-                if (connector.getSourcePort().isConstant()) {
-                    ConstantPortSymbol constPort = (ConstantPortSymbol) connector.getSourcePort();
-                    Variable v1 = new Variable();
-                    v1.setName(constPort.getConstantValue().getValueAsString());
-                    Variable v2 = PortConverter.getVariableForPortSymbol(connector, connector.getTarget(), bluePrint);
-
-
-                    Instruction instruction = new ConnectInstructionCPP(v2, v1);
-                    method.addInstruction(instruction);
-                } else if (connector.getTargetPort().isConstant()) {
-                    ConstantPortSymbol constPort = (ConstantPortSymbol) connector.getTargetPort();
-                    Variable v2 = new Variable();
-                    v2.setName(constPort.getConstantValue().getValueAsString());
-                    Variable v1 = PortConverter.getVariableForPortSymbol(connector, connector.getSource(), bluePrint);
-
-
-                    Instruction instruction = new ConnectInstructionCPP(v2, v1);
-                    method.addInstruction(instruction);
-                } else {
-                    Log.error("0xWRONGCONNECTOR the connector is constant but target nor source are constant");
-                }
-            }
-        }
-        if (mathStatementsSymbol != null) {
-            // add math implementation instructions to method
-            List<MathExpressionSymbol> newMathExpressionSymbols = new ArrayList<>();
-            MathOptimizer.currentBluePrint = bluePrint;
-            int counter = 0;
-            if (generatorCPP.useThreadingOptimizations()) {
-                bluePrint.addAdditionalIncludeString("mingw.thread");
-            }
-            for (MathExpressionSymbol mathExpressionSymbol : mathStatementsSymbol.getMathExpressionSymbols()) {
-                if (generatorCPP.useAlgebraicOptimizations()) {
-                    List<MathExpressionSymbol> precedingExpressions = new ArrayList<>();
-                    for (int i = 0; i < counter; ++i)
-                        precedingExpressions.add(mathStatementsSymbol.getMathExpressionSymbols().get(i));
-                    newMathExpressionSymbols.add(MathOptimizer.applyOptimizations(mathExpressionSymbol, precedingExpressions));
-                    ++counter;
-                }
-                fixMathFunctions(mathExpressionSymbol, bluePrint);
-                String result = ExecuteMethodGenerator.generateExecuteCode(mathExpressionSymbol, includeStrings);
-                TargetCodeMathInstruction instruction = new TargetCodeMathInstruction(result, mathExpressionSymbol);
-                method.addInstruction(instruction);
-            }
         }
         bluePrint.addMethod(method);
     }
@@ -352,7 +237,7 @@ public class ComponentConverter {
     }
 
     public static void fixMathFunctions(MathExpressionSymbol mathExpressionSymbol, BluePrintCPP bluePrintCPP) {
-        MathConverter.fixMathFunctions(mathExpressionSymbol, bluePrintCPP);
+        MathFunctionFixer.fixMathFunctions(mathExpressionSymbol, bluePrintCPP);
     }
 
 

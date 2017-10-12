@@ -4,6 +4,7 @@ import de.monticore.lang.math.math._symboltable.MathForLoopHeadSymbol;
 import de.monticore.lang.math.math._symboltable.expression.*;
 import de.monticore.lang.math.math._symboltable.matrix.*;
 import de.monticore.lang.monticar.generator.Variable;
+import de.monticore.lang.monticar.generator.cpp.MathFunctionFixer;
 import de.monticore.lang.monticar.generator.cpp.OctaveHelper;
 import de.monticore.lang.monticar.generator.cpp.symbols.MathChainedExpression;
 import de.monticore.lang.monticar.generator.cpp.symbols.MathStringExpression;
@@ -179,7 +180,7 @@ public class ExecuteMethodGenerator {
         Log.info(mathAssignmentExpressionSymbol.getTextualRepresentation(), "mathAssignmentExpressionSymbol:");
 
         if (mathAssignmentExpressionSymbol.getMathMatrixAccessOperatorSymbol() != null) {
-            if (MathConverter.fixForLoopAccess(mathAssignmentExpressionSymbol.getNameOfMathValue(), ComponentConverter.currentBluePrint)) {
+            if (MathFunctionFixer.fixForLoopAccess(mathAssignmentExpressionSymbol.getNameOfMathValue(), ComponentConverter.currentBluePrint)) {
 
                 String result = mathAssignmentExpressionSymbol.getNameOfMathValue();
                 result += generateExecuteCode(mathAssignmentExpressionSymbol.getMathMatrixAccessOperatorSymbol(), includeStrings, true) + " ";
@@ -189,12 +190,11 @@ public class ExecuteMethodGenerator {
                 return result;
 
             }
-            if (mathAssignmentExpressionSymbol.getNameOfMathValue().equals("eigenVectors")) {
+            /*if (mathAssignmentExpressionSymbol.getNameOfMathValue().equals("eigenVectors")) {
                 for (Variable var : ComponentConverter.currentBluePrint.getMathInformationRegister().getVariables()) {
                     Log.info(var.getName(), "Var:");
                 }
-                Log.error("awda");
-            }
+            }*/
             String result = mathAssignmentExpressionSymbol.getNameOfMathValue();
             result += generateExecuteCode(mathAssignmentExpressionSymbol.getMathMatrixAccessOperatorSymbol(), includeStrings) + " ";
             result += mathAssignmentExpressionSymbol.getAssignmentOperator().getOperator() + " ";
@@ -401,7 +401,7 @@ public class ExecuteMethodGenerator {
         }
         result += mathMatrixAccessOperatorSymbol.getAccessStartSymbol();
 
-        if (MathConverter.fixForLoopAccess(mathMatrixAccessOperatorSymbol.getMathMatrixNameExpressionSymbol(), ComponentConverter.currentBluePrint)) {
+        if (MathFunctionFixer.fixForLoopAccess(mathMatrixAccessOperatorSymbol.getMathMatrixNameExpressionSymbol(), ComponentConverter.currentBluePrint)) {
             for (MathMatrixAccessSymbol mathMatrixAccessSymbol : mathMatrixAccessOperatorSymbol.getMathMatrixAccessSymbols()) {
                 if (counter == ignoreCounterAt) {
                     ++counter;
@@ -455,7 +455,7 @@ public class ExecuteMethodGenerator {
         if (mathMatrixAccessSymbol.isDoubleDot())
             result += ":";
         else {
-            MathConverter.fixMathFunctions(mathMatrixAccessSymbol.getMathExpressionSymbol().get(), currentBluePrint);
+            MathFunctionFixer.fixMathFunctions(mathMatrixAccessSymbol.getMathExpressionSymbol().get(), currentBluePrint);
             result += generateExecuteCode(mathMatrixAccessSymbol.getMathExpressionSymbol().get(), includeStrings);
             //result += "-1";
         }

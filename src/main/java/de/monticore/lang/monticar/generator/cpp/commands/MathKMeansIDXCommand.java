@@ -6,10 +6,11 @@ import de.monticore.lang.math.math._symboltable.matrix.MathMatrixNameExpressionS
 import de.monticore.lang.monticar.generator.BluePrint;
 import de.monticore.lang.monticar.generator.MathCommand;
 import de.monticore.lang.monticar.generator.cpp.BluePrintCPP;
+import de.monticore.lang.monticar.generator.cpp.MathFunctionFixer;
 import de.monticore.lang.monticar.generator.cpp.OctaveHelper;
 import de.monticore.lang.monticar.generator.cpp.converter.ComponentConverter;
 import de.monticore.lang.monticar.generator.cpp.converter.ExecuteMethodGenerator;
-import de.monticore.lang.monticar.generator.cpp.converter.MathConverter;
+import de.monticore.lang.monticar.generator.cpp.MathFunctionFixer;
 import de.monticore.lang.monticar.generator.cpp.symbols.MathStringExpression;
 
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ public class MathKMeansIDXCommand extends MathCommand {
 
         String valueListString = "";
         for (MathMatrixAccessSymbol accessSymbol : mathMatrixNameExpressionSymbol.getMathMatrixAccessOperatorSymbol().getMathMatrixAccessSymbols())
-            MathConverter.fixMathFunctions(accessSymbol, (BluePrintCPP) bluePrint);
+            MathFunctionFixer.fixMathFunctions(accessSymbol, (BluePrintCPP) bluePrint);
         valueListString += ExecuteMethodGenerator.generateExecuteCode(mathExpressionSymbol, new ArrayList<String>());
         //OctaveHelper.getCallOctaveFunction(mathExpressionSymbol, "sum","Double", valueListString));
         List<MathMatrixAccessSymbol> newMatrixAccessSymbols = new ArrayList<>();
