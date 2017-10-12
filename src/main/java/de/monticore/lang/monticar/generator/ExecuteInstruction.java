@@ -1,5 +1,6 @@
 package de.monticore.lang.monticar.generator;
 
+import de.monticore.lang.monticar.generator.cpp.GeneralHelperMethods;
 import de.monticore.lang.monticar.generator.cpp.converter.ComponentConverter;
 
 /**
@@ -19,7 +20,7 @@ public class ExecuteInstruction implements Instruction {
             componentName = componentName.replaceFirst("\\_", "[");
             componentName = componentName.replaceFirst("\\_", "]");
         }
-        this.componentName = ComponentConverter.getTargetLanguageVariableInstanceName(componentName);
+        this.componentName = GeneralHelperMethods.getTargetLanguageVariableInstanceName(componentName);
         if (canBeThreaded)
             this.threadName = "thread" + ++threadCounter;
     }

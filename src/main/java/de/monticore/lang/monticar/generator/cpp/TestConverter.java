@@ -16,7 +16,7 @@ public class TestConverter {
 
     public static FileContent generateMainTestFile(ComponentStreamUnitsSymbol symbol, ExpandedComponentInstanceSymbol instanceSymbol) {
         FileContent fileContent = new FileContent();
-        fileContent.setFileName("main_" + ComponentConverter.getTargetLanguageComponentName(symbol.getFullName()) + ".cpp");
+        fileContent.setFileName("main_" + GeneralHelperMethods.getTargetLanguageComponentName(symbol.getFullName()) + ".cpp");
         String fileContentString = "";
         fileContentString += "#ifndef M_PI\n" +
                 "#define M_PI 3.14159265358979323846\n" +
@@ -24,12 +24,12 @@ public class TestConverter {
                 "#include \"Helper.h\"\n";
 
         ASTComponentStreamUnits ast = (ASTComponentStreamUnits) symbol.getAstNode().get();
-        fileContentString += "#include \"" + ComponentConverter.getTargetLanguageComponentName(symbol.getPackageName() + "." + Character.toLowerCase(ast.getComponentName().charAt(0)) + ast.getComponentName().substring(1)) + ".h\"\n";
+        fileContentString += "#include \"" + GeneralHelperMethods.getTargetLanguageComponentName(symbol.getPackageName() + "." + Character.toLowerCase(ast.getComponentName().charAt(0)) + ast.getComponentName().substring(1)) + ".h\"\n";
         fileContentString += "int main(int argc, char** argv)\n" +
                 "{\n";
         fileContentString += "Helper::init();\n";
         fileContentString += "";
-        fileContentString += ComponentConverter.getTargetLanguageComponentName(symbol.getPackageName() + "." + Character.toLowerCase(ast.getComponentName().charAt(0)) + ast.getComponentName().substring(1));
+        fileContentString += GeneralHelperMethods.getTargetLanguageComponentName(symbol.getPackageName() + "." + Character.toLowerCase(ast.getComponentName().charAt(0)) + ast.getComponentName().substring(1));
         fileContentString += " testInstance;\n";
         fileContentString += "testInstance.init();\n";
 

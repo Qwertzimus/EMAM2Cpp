@@ -1,6 +1,7 @@
 package de.monticore.lang.monticar.generator;
 
 import de.monticore.lang.embeddedmontiarc.embeddedmontiarc._symboltable.ExpandedComponentInstanceSymbol;
+import de.monticore.lang.monticar.generator.cpp.GeneralHelperMethods;
 import de.monticore.lang.monticar.generator.cpp.converter.ComponentConverter;
 
 /**
@@ -16,7 +17,7 @@ public class FileContent {
 
     public FileContent(String fileContent, ExpandedComponentInstanceSymbol instanceSymbol) {
         this.fileContent = fileContent;
-        fileName = ComponentConverter.getTargetLanguageComponentName(instanceSymbol.getFullName())+".h";
+        fileName = GeneralHelperMethods.getTargetLanguageComponentName(instanceSymbol.getFullName())+".h";
     }
 
     public FileContent(String fileContent, String fileName) {

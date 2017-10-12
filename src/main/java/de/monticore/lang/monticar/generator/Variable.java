@@ -1,5 +1,6 @@
 package de.monticore.lang.monticar.generator;
 
+import de.monticore.lang.monticar.generator.cpp.GeneralHelperMethods;
 import de.monticore.lang.monticar.generator.cpp.converter.ComponentConverter;
 import de.monticore.lang.monticar.generator.cpp.converter.TypeConverter;
 import de.monticore.lang.monticar.types2._ast.ASTPrintType;
@@ -93,7 +94,7 @@ public class Variable {
 
     public String getNameTargetLanguageFormat() {
         //TODO refactor this
-        return ComponentConverter.getTargetLanguageVariableInstanceName(name);
+        return GeneralHelperMethods.getTargetLanguageVariableInstanceName(name);
         //return name.replaceAll("\\[", "_").replaceAll("\\]", "_");
     }
 

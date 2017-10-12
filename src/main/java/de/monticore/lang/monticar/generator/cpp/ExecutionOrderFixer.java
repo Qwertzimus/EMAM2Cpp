@@ -69,7 +69,7 @@ public class ExecutionOrderFixer {
         for (Instruction instruction : list) {
             if (instruction.isExecuteInstruction()) {
                 ExecuteInstruction executeInstruction = (ExecuteInstruction) instruction;
-                if (executeInstruction.getComponentName().equals(ComponentConverter.getTargetLanguageVariableInstanceName(name)))
+                if (executeInstruction.getComponentName().equals(GeneralHelperMethods.getTargetLanguageVariableInstanceName(name)))
                     return true;
             }
         }
@@ -84,7 +84,7 @@ public class ExecutionOrderFixer {
                 if (nameToAdd.equals(instanceSymbol.getName()))
                     canBeThreaded = true;
             }
-        String name = ComponentConverter.getTargetLanguageComponentName(nameToAdd);
+        String name = GeneralHelperMethods.getTargetLanguageComponentName(nameToAdd);
         Log.info(name, "Adding ExecuteInstruction:");
         return new ExecuteInstruction(name, bluePrintCPP, canBeThreaded);
     }

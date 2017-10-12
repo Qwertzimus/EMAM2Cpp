@@ -28,13 +28,13 @@ public class ComponentConverter {
     public static BluePrintCPP currentBluePrint = null;
 
     public static BluePrint convertComponentSymbolToBluePrint(ExpandedComponentInstanceSymbol componentSymbol, MathStatementsSymbol mathStatementsSymbol, List<String> includeStrings, GeneratorCPP generatorCPP) {
-        BluePrintCPP bluePrint = new BluePrintCPP(ComponentConverter.getTargetLanguageComponentName(componentSymbol.getFullName()));
+        BluePrintCPP bluePrint = new BluePrintCPP(GeneralHelperMethods.getTargetLanguageComponentName(componentSymbol.getFullName()));
         ComponentConverter.currentBluePrint = bluePrint;
         bluePrint.setGenerator(generatorCPP);
         bluePrint.setOriginalSymbol(componentSymbol);
         bluePrint.addDefineGenerics(componentSymbol);
 
-        addVariables(componentSymbol,bluePrint);
+        addVariables(componentSymbol, bluePrint);
 
         String lastNameWithoutArrayPart = "";
         for (ExpandedComponentInstanceSymbol instanceSymbol : componentSymbol.getSubComponents()) {
@@ -52,7 +52,7 @@ public class ComponentConverter {
         }
 
         //create arrays from variables that only differ at the end by _number_
-        ComponentConverter.fixBluePrintVariableArrays(bluePrint);
+        BluePrintFixer.fixBluePrintVariableArrays(bluePrint);
         MathInformationFilter.filterStaticInformation(componentSymbol, bluePrint, mathStatementsSymbol, generatorCPP, includeStrings);
         generateInitMethod(componentSymbol, bluePrint, generatorCPP, includeStrings);
 
@@ -63,7 +63,7 @@ public class ComponentConverter {
         return bluePrint;
     }
 
-    public static void addVariables(ExpandedComponentInstanceSymbol componentSymbol,BluePrintCPP bluePrint){
+    public static void addVariables(ExpandedComponentInstanceSymbol componentSymbol, BluePrintCPP bluePrint) {
         //add parameters as variables
         for (EMAVariable variable : componentSymbol.getParameters()) {
             Variable var = new Variable();
@@ -143,7 +143,7 @@ public class ComponentConverter {
                     parameterString += var.toString();
                 }
             }
-            String result = ComponentConverter.getTargetLanguageVariableInstanceName(subComponent.getName()) + ".init(" + parameterString + ");\n";
+            String result = GeneralHelperMethods.getTargetLanguageVariableInstanceName(subComponent.getName()) + ".init(" + parameterString + ");\n";
 
             TargetCodeInstruction instruction = new TargetCodeInstruction(result);
             method.addInstruction(instruction);
@@ -151,89 +151,8 @@ public class ComponentConverter {
         bluePrint.addMethod(method);
     }
 
-
-
-
-
     public static BluePrint convertComponentSymbolToBluePrint(ExpandedComponentInstanceSymbol componentSymbol, List<String> includeStrings, GeneratorCPP generatorCPP) {
         return convertComponentSymbolToBluePrint(componentSymbol, null, includeStrings, generatorCPP);
-    }
-
-
-    public static String getTargetLanguageComponentName(String fullName) {
-        return fullName.replaceAll("\\.", "_").replaceAll("\\[", "_").replaceAll("\\]", "_");
-    }
-
-    public static String getTargetLanguageVariableInstanceName(String componentName, BluePrint bluePrint) {
-        while (!bluePrint.getVariable(componentName).isPresent() && componentName.contains("_")) {
-            componentName = componentName.replaceFirst("\\_", "[");
-            componentName = componentName.replaceFirst("\\_", "]");
-        }
-        return getTargetLanguageVariableInstanceName(componentName);
-    }
-
-    /**
-     * fixes array access
-     *
-     * @param name
-     * @return
-     */
-    public static String getTargetLanguageVariableInstanceName(String name) {
-        String nameChanged = "";
-        int indexSecond = 0;
-        while (true) {
-            int indexFirst = name.indexOf("[", indexSecond);
-            if (indexFirst != -1) {
-                nameChanged += name.substring(0, indexFirst);
-            }
-            if (indexFirst != -1) {
-                indexSecond = name.indexOf("]", indexFirst + 1);
-                if (indexSecond != -1) {
-                    String subString = name.substring(indexFirst + 1, indexSecond);
-                    ++indexSecond;
-                    try {
-                        nameChanged += "[" + (Integer.parseInt(subString) - 1) + "]";
-                    } catch (Exception ex) {
-                        nameChanged += "[" + subString + "- 1]";
-                    }
-                } else {
-                    break;
-                }
-            } else {
-                break;
-            }
-        }
-        if (indexSecond != -1 && name.length() > indexSecond)
-            nameChanged += name.substring(indexSecond);
-        if (nameChanged.equals(""))
-            return name;
-        return nameChanged;
-    }
-
-    public static void fixBluePrintVariableArrays(BluePrint bluePrint) {
-        {
-            List<Variable> newVars = new ArrayList<>();
-
-            for (Variable v : bluePrint.getVariables()) {
-                String currentArrayName = v.getNameWithoutArrayNamePart();
-                Log.info(currentArrayName, "CurrentArrayName:");
-                boolean add = true;
-                for (Variable newVar : newVars) {
-                    if (currentArrayName.equals(newVar.getNameWithoutArrayNamePart())) {
-                        newVar.setName(newVar.getNameWithoutArrayNamePart());
-                        add = false;
-                        newVar.setArraySize(newVar.getArraySize() + 1);
-                    }
-                }
-                if (add)
-                    newVars.add(v);
-            }
-            Log.info("", "NEWVARS:");
-            for (Variable v : newVars) {
-                Log.info(v.getName(), "name:");
-            }
-            bluePrint.setVariables(newVars);
-        }
     }
 
     public static void fixMathFunctions(MathExpressionSymbol mathExpressionSymbol, BluePrintCPP bluePrintCPP) {

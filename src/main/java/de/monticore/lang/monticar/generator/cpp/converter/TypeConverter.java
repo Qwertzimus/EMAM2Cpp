@@ -10,6 +10,7 @@ import de.monticore.lang.math.math._symboltable.expression.MathParenthesisExpres
 import de.monticore.lang.math.math._symboltable.expression.MathValueExpressionSymbol;
 import de.monticore.lang.math.math._symboltable.expression.MathValueType;
 import de.monticore.lang.math.math._symboltable.matrix.MathMatrixArithmeticValueSymbol;
+import de.monticore.lang.monticar.generator.cpp.GeneralHelperMethods;
 import de.monticore.lang.monticar.types2._ast.ASTType;
 import de.monticore.lang.monticar.common2._ast.ASTCommonDimensionElement;
 import de.monticore.lang.monticar.common2._ast.ASTCommonMatrixType;
@@ -149,7 +150,7 @@ public class TypeConverter {
             return type;
         type = new VariableType();
         type.setTypeNameMontiCar(instanceSymbol.getFullName());
-        type.setTypeNameTargetLanguage(ComponentConverter.getTargetLanguageComponentName(instanceSymbol.getFullName()));
+        type.setTypeNameTargetLanguage(GeneralHelperMethods.getTargetLanguageComponentName(instanceSymbol.getFullName()));
         type.setIncludeName(type.getTypeNameTargetLanguage());
         TypeConverter.addNonPrimitiveVariableType(type);
         return type;
