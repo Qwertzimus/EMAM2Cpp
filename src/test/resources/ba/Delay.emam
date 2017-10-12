@@ -1,0 +1,13 @@
+package ba;
+
+component Delay(Q(-oo:oo) value) {
+	port
+		in Q(-oo:oo) in1,
+		out Q(-oo:oo) out1;
+
+	implementation Math{
+	    static Q lastVal = value;
+	    out1 = lastVal;
+	    lastVal = in1;
+	}
+}

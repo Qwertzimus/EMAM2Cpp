@@ -1,0 +1,13 @@
+package fas.advancedLibrary;
+
+import fas.basicLibrary.*;
+
+component SysInit {
+	port
+		out Boolean y;
+		
+	instance Memory<Boolean>(true) memory_Init;
+		
+	connect false -> memory_Init.in1;
+	connect memory_Init.out1 -> y;
+}

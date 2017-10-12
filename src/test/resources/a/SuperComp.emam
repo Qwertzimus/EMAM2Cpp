@@ -1,0 +1,6 @@
+package a;
+
+component SuperComp{
+    port in (1:1:100) percentage;
+
+}

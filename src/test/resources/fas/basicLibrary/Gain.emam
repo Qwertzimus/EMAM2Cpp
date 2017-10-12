@@ -1,0 +1,11 @@
+package fas.basicLibrary;
+
+component Gain<T>(T gainValue) {
+	port
+		in T in1,
+		out T out1;
+
+	implementation Math{
+	    out1=in1*gainValue;
+	}
+}

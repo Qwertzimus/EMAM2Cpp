@@ -1,0 +1,10 @@
+package fas.basicLibrary;
+
+component LookUp<T> (Q^{1,n} lookuptable) {
+	ports
+		in T in1,
+		out T out1;
+	implementation Math{
+	    out1 = lookuptable(in1);
+	}
+}
