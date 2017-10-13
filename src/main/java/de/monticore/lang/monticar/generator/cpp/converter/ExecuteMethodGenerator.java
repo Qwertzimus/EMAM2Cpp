@@ -126,7 +126,6 @@ public class ExecuteMethodGenerator {
             result += ";\n";
         }
         ComponentConverter.currentBluePrint.getMathInformationRegister().addVariable(mathValueSymbol);
-        //result += mathValueSymbol.getTextualRepresentation();
         return result;
     }
 
@@ -140,7 +139,6 @@ public class ExecuteMethodGenerator {
             result += " = " + generateExecuteCode(mathValueSymbol.getValue(), includeStrings);
             result += ";\n";
         }
-        //result += mathValueSymbol.getTextualRepresentation();
         return result;
     }
 
@@ -190,11 +188,6 @@ public class ExecuteMethodGenerator {
                 return result;
 
             }
-            /*if (mathAssignmentExpressionSymbol.getNameOfMathValue().equals("eigenVectors")) {
-                for (Variable var : ComponentConverter.currentBluePrint.getMathInformationRegister().getVariables()) {
-                    Log.info(var.getName(), "Var:");
-                }
-            }*/
             String result = mathAssignmentExpressionSymbol.getNameOfMathValue();
             result += generateExecuteCode(mathAssignmentExpressionSymbol.getMathMatrixAccessOperatorSymbol(), includeStrings) + " ";
             result += mathAssignmentExpressionSymbol.getAssignmentOperator().getOperator() + " ";
@@ -249,13 +242,13 @@ public class ExecuteMethodGenerator {
         String result = "";
 
         //if condition
-        result += generateIfConditionCode(mathConditionalExpressionsSymbol.getIfConditionalExpression(), includeStrings);
+        result += ExecuteMethodGeneratorHelper.generateIfConditionCode(mathConditionalExpressionsSymbol.getIfConditionalExpression(), includeStrings);
         //else if condition
         for (MathConditionalExpressionSymbol mathConditionalExpressionSymbol : mathConditionalExpressionsSymbol.getIfElseConditionalExpressions())
-            result += "else " + generateIfConditionCode(mathConditionalExpressionSymbol, includeStrings);
+            result += "else " + ExecuteMethodGeneratorHelper.generateIfConditionCode(mathConditionalExpressionSymbol, includeStrings);
         //else block
         if (mathConditionalExpressionsSymbol.getElseConditionalExpression().isPresent()) {
-            result += "else " + generateIfConditionCode(mathConditionalExpressionsSymbol.getElseConditionalExpression().get(), includeStrings);
+            result += "else " + ExecuteMethodGeneratorHelper.generateIfConditionCode(mathConditionalExpressionsSymbol.getElseConditionalExpression().get(), includeStrings);
         }
         return result;
     }
@@ -302,11 +295,6 @@ public class ExecuteMethodGenerator {
             return generateExecuteCodeMatrixEEPowerOf(mathMatrixArithmeticExpressionSymbol, includeStrings);
         } else if (mathMatrixArithmeticExpressionSymbol.getMathOperator().equals("./")) {
             return generateExecuteCodeMatrixEEDivide(mathMatrixArithmeticExpressionSymbol, includeStrings);
-        /*} else if (mathArithmeticExpressionSymbol.getMathOperator().equals("./")) {
-            Log.error("reace");
-            result += "\"ldivide\"";
-            includeStrings.add("Helper");
-        */
         } else {
 
             result += /*"(" +*/ generateExecuteCode(mathMatrixArithmeticExpressionSymbol.getLeftExpression(), includeStrings) + " " + mathMatrixArithmeticExpressionSymbol.getMathOperator();
@@ -314,9 +302,6 @@ public class ExecuteMethodGenerator {
             if (mathMatrixArithmeticExpressionSymbol.getRightExpression() != null)
                 result += " " + generateExecuteCode(mathMatrixArithmeticExpressionSymbol.getRightExpression(), includeStrings);
         }
-        /*result += ")"*/
-        ;
-
         return result;
     }
 
@@ -401,34 +386,7 @@ public class ExecuteMethodGenerator {
         }
         result += mathMatrixAccessOperatorSymbol.getAccessStartSymbol();
 
-        if (MathFunctionFixer.fixForLoopAccess(mathMatrixAccessOperatorSymbol.getMathMatrixNameExpressionSymbol(), ComponentConverter.currentBluePrint)) {
-            for (MathMatrixAccessSymbol mathMatrixAccessSymbol : mathMatrixAccessOperatorSymbol.getMathMatrixAccessSymbols()) {
-                if (counter == ignoreCounterAt) {
-                    ++counter;
-                } else {
-                    result += generateExecuteCode(mathMatrixAccessSymbol, includeStrings, true);
-                    ++counter;
-                    if (counter < mathMatrixAccessOperatorSymbol.getMathMatrixAccessSymbols().size() && counter != ignoreCounterAt) {
-                        result += ", ";
-                    }
-                }
-            }
-        } else {
-            for (MathMatrixAccessSymbol mathMatrixAccessSymbol : mathMatrixAccessOperatorSymbol.getMathMatrixAccessSymbols()) {
-                if (counter == ignoreCounterAt) {
-                    ++counter;
-                } else {
-                    if (counter == counterSetMinusOne)
-                        result += generateExecuteCode(mathMatrixAccessSymbol, includeStrings, true);
-                    else
-                        result += generateExecuteCode(mathMatrixAccessSymbol, includeStrings);
-                    ++counter;
-                    if (counter < mathMatrixAccessOperatorSymbol.getMathMatrixAccessSymbols().size() && counter != ignoreCounterAt) {
-                        result += ", ";
-                    }
-                }
-            }
-        }
+        ExecuteMethodGeneratorHelper.handleForLoopAccessFix(mathMatrixAccessOperatorSymbol, counter, ignoreCounterAt, counterSetMinusOne, includeStrings);
         result += mathMatrixAccessOperatorSymbol.getAccessEndSymbol();
         return result;
     }
@@ -447,34 +405,5 @@ public class ExecuteMethodGenerator {
 
     public static String generateExecuteCode(MathMatrixAccessSymbol mathMatrixAccessSymbol, List<String> includeStrings) {
         return generateExecuteCode(mathMatrixAccessSymbol, includeStrings, false);
-    }
-/*
-    public static String generateExecuteCodeFixForLoopAccess(MathMatrixAccessSymbol mathMatrixAccessSymbol, List<String> includeStrings) {
-        String result = "";
-
-        if (mathMatrixAccessSymbol.isDoubleDot())
-            result += ":";
-        else {
-            MathFunctionFixer.fixMathFunctions(mathMatrixAccessSymbol.getMathExpressionSymbol().get(), currentBluePrint);
-            result += generateExecuteCode(mathMatrixAccessSymbol.getMathExpressionSymbol().get(), includeStrings);
-            //result += "-1";
-        }
-        return result;
-    }*/
-
-    public static String generateIfConditionCode(MathConditionalExpressionSymbol mathConditionalExpressionSymbol, List<String> includeStrings) {
-
-        String result = "";
-        //condition
-        if (mathConditionalExpressionSymbol.getCondition().isPresent()) {
-            result += "if(" + generateExecuteCode(mathConditionalExpressionSymbol.getCondition().get(), includeStrings) + ")";
-        }
-        //body
-        result += "{\n";
-        for (MathExpressionSymbol mathExpressionSymbol : mathConditionalExpressionSymbol.getBodyExpressions())
-            result += generateExecuteCode(mathExpressionSymbol, includeStrings);
-        result += "}\n";
-
-        return result;
     }
 }
