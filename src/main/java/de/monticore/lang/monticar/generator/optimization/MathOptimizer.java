@@ -105,23 +105,19 @@ public class MathOptimizer {
         if (mathArithmeticExpressionSymbol.getMathOperator().equals("*") && mathArithmeticExpressionSymbol.getLeftExpression() != null && mathArithmeticExpressionSymbol.getRightExpression() != null) {
             result = handleEstimatedOperationsMultiplication(mathArithmeticExpressionSymbol, precedingExpressions);
         } else if (mathArithmeticExpressionSymbol.getMathOperator().equals("+")) {
-            MathExpressionSymbol realLeftExpressionSymbol = getCurrentAssignment(mathArithmeticExpressionSymbol.getLeftExpression().getRealMathExpressionSymbol(), precedingExpressions);
-            MathExpressionSymbol realRightExpressionSymbol = getCurrentAssignment(mathArithmeticExpressionSymbol.getRightExpression().getRealMathExpressionSymbol(), precedingExpressions);
-            int previousOperations = 0;
-            if (isArithmeticExpression(realLeftExpressionSymbol, "*", precedingExpressions)) {
-                previousOperations += getEstimatedOperations(realLeftExpressionSymbol, precedingExpressions);
-            } else if (isArithmeticExpression(realLeftExpressionSymbol, "+", precedingExpressions)) {
-                previousOperations += getEstimatedOperations(realLeftExpressionSymbol, precedingExpressions);
-            }
-            if (isArithmeticExpression(realRightExpressionSymbol, "*", precedingExpressions)) {
-                previousOperations += getEstimatedOperations(realRightExpressionSymbol, precedingExpressions);
-            } else if (isArithmeticExpression(realRightExpressionSymbol, "+", precedingExpressions)) {
-                previousOperations += getEstimatedOperations(realRightExpressionSymbol, precedingExpressions);
-            }
-            result = previousOperations + MathDimensionCalculator.getMatrixColumns(realLeftExpressionSymbol, precedingExpressions) * MathDimensionCalculator.getMatrixRows(realRightExpressionSymbol, precedingExpressions);
+            result = handleEstimatedOperationsAddition(mathArithmeticExpressionSymbol, precedingExpressions);
         }
         Log.info(mathArithmeticExpressionSymbol.getClass().getName() + " operator: " + mathArithmeticExpressionSymbol.getMathOperator(), "Not handled:");
         return result;
+    }
+
+    public static int handleEstimatedOperationsAddition(MathArithmeticExpressionSymbol mathArithmeticExpressionSymbol, List<MathExpressionSymbol> precedingExpressions) {
+        MathExpressionSymbol realLeftExpressionSymbol = getCurrentAssignment(mathArithmeticExpressionSymbol.getLeftExpression().getRealMathExpressionSymbol(), precedingExpressions);
+        MathExpressionSymbol realRightExpressionSymbol = getCurrentAssignment(mathArithmeticExpressionSymbol.getRightExpression().getRealMathExpressionSymbol(), precedingExpressions);
+        int previousOperations = calculatePreviousOperations(realLeftExpressionSymbol, realRightExpressionSymbol, precedingExpressions);
+
+        return previousOperations + MathDimensionCalculator.getMatrixColumns(realLeftExpressionSymbol, precedingExpressions) * MathDimensionCalculator.getMatrixRows(realRightExpressionSymbol, precedingExpressions);
+
     }
 
     public static int handleEstimatedOperationsMultiplication(MathArithmeticExpressionSymbol mathArithmeticExpressionSymbol, List<MathExpressionSymbol> precedingExpressions) {
@@ -130,6 +126,12 @@ public class MathOptimizer {
         int n = MathDimensionCalculator.getMatrixColumns(realLeftExpressionSymbol, precedingExpressions);
         int m = MathDimensionCalculator.getMatrixRows(realLeftExpressionSymbol, precedingExpressions);
         int p = MathDimensionCalculator.getMatrixRows(realRightExpressionSymbol, precedingExpressions);
+        int previousOperations = 0;
+        previousOperations = calculatePreviousOperations(realLeftExpressionSymbol, realRightExpressionSymbol, precedingExpressions);
+        return previousOperations + n * m * p;
+    }
+
+    public static int calculatePreviousOperations(MathExpressionSymbol realLeftExpressionSymbol, MathExpressionSymbol realRightExpressionSymbol, List<MathExpressionSymbol> precedingExpressions) {
         int previousOperations = 0;
         if (isArithmeticExpression(realLeftExpressionSymbol, "*", precedingExpressions)) {
             previousOperations += getEstimatedOperations(realLeftExpressionSymbol, precedingExpressions);
@@ -141,8 +143,7 @@ public class MathOptimizer {
         } else if (isArithmeticExpression(realRightExpressionSymbol, "+", precedingExpressions)) {
             previousOperations += getEstimatedOperations(realRightExpressionSymbol, precedingExpressions);
         }
-        return previousOperations + n * m * p;
-
+        return previousOperations;
     }
 
     public static int getEstimatedOperations(MathMatrixArithmeticExpressionSymbol mathArithmeticExpressionSymbol, List<MathExpressionSymbol> precedingExpressions) {
