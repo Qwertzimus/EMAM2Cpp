@@ -1,5 +1,6 @@
 package de.monticore.lang.monticar.generator.cpp.converter;
 
+import de.monticore.lang.math.math._symboltable.expression.IArithmeticExpression;
 import de.monticore.lang.math.math._symboltable.expression.MathExpressionSymbol;
 import de.monticore.lang.math.math._symboltable.matrix.*;
 import de.monticore.lang.monticar.generator.cpp.MathFunctionFixer;
@@ -41,27 +42,25 @@ public class ExecuteMethodGeneratorMatrixExpressionHandler {
         return result;
     }
 
-    public static String generateExecuteCodeMatrixEEDivide(MathMatrixArithmeticExpressionSymbol mathExpressionSymbol, List<String> includeStrings) {
+    public static String calculateValueListString(IArithmeticExpression mathExpressionSymbol) {
         List<MathExpressionSymbol> list = new ArrayList<MathExpressionSymbol>();
         list.add(mathExpressionSymbol.getLeftExpression());
         list.add(mathExpressionSymbol.getRightExpression());
-        String valueListString = "(" + OctaveHelper.getOctaveValueListString(list) + ")";
+        return "(" + OctaveHelper.getOctaveValueListString(list) + ")";
+    }
+
+    public static String generateExecuteCodeMatrixEEDivide(MathMatrixArithmeticExpressionSymbol mathExpressionSymbol, List<String> includeStrings) {
+        String valueListString = calculateValueListString(mathExpressionSymbol);
         return OctaveHelper.getCallOctaveFunctionFirstResult(mathExpressionSymbol.getLeftExpression(), "ldivide", valueListString, false);
     }
 
     public static String generateExecuteCodeMatrixEEPowerOf(MathMatrixArithmeticExpressionSymbol mathExpressionSymbol, List<String> includeStrings) {
-        List<MathExpressionSymbol> list = new ArrayList<MathExpressionSymbol>();
-        list.add(mathExpressionSymbol.getLeftExpression());
-        list.add(mathExpressionSymbol.getRightExpression());
-        String valueListString = "(" + OctaveHelper.getOctaveValueListString(list) + ")";
+        String valueListString = calculateValueListString(mathExpressionSymbol);
         return OctaveHelper.getCallOctaveFunctionFirstResult(mathExpressionSymbol.getLeftExpression(), "power", valueListString, false);
     }
 
     public static String generateExecuteCodeMatrixPowerOfOperator(MathMatrixArithmeticExpressionSymbol mathExpressionSymbol, List<String> includeStrings) {
-        List<MathExpressionSymbol> list = new ArrayList<MathExpressionSymbol>();
-        list.add(mathExpressionSymbol.getLeftExpression());
-        list.add(mathExpressionSymbol.getRightExpression());
-        String valueListString = "(" + OctaveHelper.getOctaveValueListString(list) + ")";
+        String valueListString = calculateValueListString(mathExpressionSymbol);
         return OctaveHelper.getCallBuiltInFunctionFirstResult(mathExpressionSymbol.getLeftExpression(), "Fmpower", valueListString, false, 1);
     }
 
@@ -89,11 +88,19 @@ public class ExecuteMethodGeneratorMatrixExpressionHandler {
         return result;
     }
 
+    public static boolean isColumnString(String matrixExtractionPart) {
+        return matrixExtractionPart.equals(".column");
+    }
+
+    public static boolean isRowString(String matrixExtractionPart) {
+        return matrixExtractionPart.equals(".row");
+    }
+
     public static int getIgnoreCounterAt(String matrixExtractionPart) {
         int ignoreCounterAt = -1;
-        if (matrixExtractionPart.equals(".column")) {
+        if (isColumnString(matrixExtractionPart)) {
             ignoreCounterAt = 0;
-        } else if (matrixExtractionPart.equals(".row")) {
+        } else if (isRowString(matrixExtractionPart)) {
             ignoreCounterAt = 1;
         }
         return ignoreCounterAt;
@@ -101,9 +108,9 @@ public class ExecuteMethodGeneratorMatrixExpressionHandler {
 
     public static int getCounterSetMinusOne(String matrixExtractionPart) {
         int counterSetMinusOne = -1;
-        if (matrixExtractionPart.equals(".column")) {
+        if (isColumnString(matrixExtractionPart)) {
             counterSetMinusOne = 1;
-        } else if (matrixExtractionPart.equals(".row")) {
+        } else if (isRowString(matrixExtractionPart)) {
             counterSetMinusOne = 0;
         }
         return counterSetMinusOne;
