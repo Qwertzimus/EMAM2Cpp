@@ -235,21 +235,20 @@ public class MathMatrixMultiplicationOrder implements MathOptimizationRule {
 
     public List<MathExpressionSymbol> getNewExpressions(MathArithmeticExpressionSymbol mathArithmeticExpressionSymbol, List<MathExpressionSymbol> precedingExpressions) {
         List<MathExpressionSymbol> mathExpressionSymbols = new ArrayList<>();
-        if (MathOptimizer.isArithmeticExpression(mathArithmeticExpressionSymbol.getLeftExpression().getRealMathExpressionSymbol(), "*", precedingExpressions)) {
-            if (MathOptimizer.isArithmeticMatrixExpression(mathArithmeticExpressionSymbol.getLeftExpression().getRealMathExpressionSymbol(), "*", precedingExpressions))
-                mathExpressionSymbols.addAll(getNewExpressions((MathMatrixArithmeticExpressionSymbol) mathArithmeticExpressionSymbol.getLeftExpression().getRealMathExpressionSymbol(), precedingExpressions));
+        mathExpressionSymbols.addAll(getNewExpressions(mathArithmeticExpressionSymbol, mathArithmeticExpressionSymbol.getLeftExpression(), precedingExpressions));
+        mathExpressionSymbols.addAll(getNewExpressions(mathArithmeticExpressionSymbol, mathArithmeticExpressionSymbol.getRightExpression(), precedingExpressions));
+        return mathExpressionSymbols;
+    }
+
+    public List<MathExpressionSymbol> getNewExpressions(MathArithmeticExpressionSymbol mathArithmeticExpressionSymbol, MathExpressionSymbol mathExpressionSymbol, List<MathExpressionSymbol> precedingExpressions) {
+        List<MathExpressionSymbol> mathExpressionSymbols = new ArrayList<>();
+        if (MathOptimizer.isArithmeticExpression(mathExpressionSymbol.getRealMathExpressionSymbol(), "*", precedingExpressions)) {
+            if (MathOptimizer.isArithmeticMatrixExpression(mathExpressionSymbol.getRealMathExpressionSymbol(), "*", precedingExpressions))
+                mathExpressionSymbols.addAll(getNewExpressions((MathMatrixArithmeticExpressionSymbol) mathExpressionSymbol.getRealMathExpressionSymbol(), precedingExpressions));
             else
-                mathExpressionSymbols.addAll(getNewExpressions((MathArithmeticExpressionSymbol) MathOptimizer.getCurrentAssignment(mathArithmeticExpressionSymbol.getLeftExpression().getRealMathExpressionSymbol(), precedingExpressions), precedingExpressions));
+                mathExpressionSymbols.addAll(getNewExpressions((MathArithmeticExpressionSymbol) MathOptimizer.getCurrentAssignment(mathExpressionSymbol.getRealMathExpressionSymbol(), precedingExpressions), precedingExpressions));
         } else {
-            mathExpressionSymbols.add(mathArithmeticExpressionSymbol.getLeftExpression());
-        }
-        if (MathOptimizer.isArithmeticExpression(mathArithmeticExpressionSymbol.getRightExpression().getRealMathExpressionSymbol(), "*", precedingExpressions)) {
-            if (MathOptimizer.isArithmeticMatrixExpression(mathArithmeticExpressionSymbol.getRightExpression().getRealMathExpressionSymbol(), "*", precedingExpressions))
-                mathExpressionSymbols.addAll(getNewExpressions((MathMatrixArithmeticExpressionSymbol) mathArithmeticExpressionSymbol.getRightExpression().getRealMathExpressionSymbol(), precedingExpressions));
-            else
-                mathExpressionSymbols.addAll(getNewExpressions((MathArithmeticExpressionSymbol) MathOptimizer.getCurrentAssignment(mathArithmeticExpressionSymbol.getRightExpression().getRealMathExpressionSymbol(), precedingExpressions), precedingExpressions));
-        } else {
-            mathExpressionSymbols.add(mathArithmeticExpressionSymbol.getRightExpression());
+            mathExpressionSymbols.add(mathExpressionSymbol);
         }
         return mathExpressionSymbols;
     }
