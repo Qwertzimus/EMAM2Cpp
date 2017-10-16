@@ -140,12 +140,12 @@ public class MathMatrixMultiplicationOrder implements MathOptimizationRule {
             }
         }
     }*/
-
+/*
     public void optimizeMatrixMultiplication(MathMatrixArithmeticExpressionSymbol matrixArithmeticExpressionSymbol, List<MathExpressionSymbol> precedingExpressions) {
         if (MathOptimizer.isArithmeticExpression(matrixArithmeticExpressionSymbol.getLeftExpression().getRealMathExpressionSymbol(), "*", precedingExpressions) && MathOptimizer.isArithmeticExpression(matrixArithmeticExpressionSymbol.getRightExpression().getRealMathExpressionSymbol(), "*", precedingExpressions)) {
             Log.error("b");
         }
-    }
+    }*/
 /*
     public void optimizeMatrixMultiplication(MathArithmeticExpressionSymbol mathArithmeticExpressionSymbol, List<MathExpressionSymbol> precedingExpressions) {
         optimize(mathArithmeticExpressionSymbol.getLeftExpression(), precedingExpressions);
@@ -296,20 +296,6 @@ public class MathMatrixMultiplicationOrder implements MathOptimizationRule {
                 Log.info("i:" + i + " k:" + k + " val: " + m[i][k], "M:");
             }*/
         return buildOptimalExpression(s, mathExpressionSymbols);
-    }
-
-    class ResultOrder {
-        public ResultOrder(int matrixIndexLeft, boolean isResultLeft, int matrixIndexRight, boolean isResultRight) {
-            this.matrixIndexLeft = matrixIndexLeft;
-            this.matrixIndexRight = matrixIndexRight;
-            this.isResultLeft = isResultLeft;
-            this.isResultRight = isResultRight;
-        }
-
-        public int matrixIndexLeft;
-        public int matrixIndexRight;
-        public boolean isResultLeft;
-        public boolean isResultRight;
     }
 
     //Algorithm is based on the algorithm from https://en.wikipedia.org/wiki/Matrix_chain_multiplication
