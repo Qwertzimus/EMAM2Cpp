@@ -47,10 +47,13 @@ public class MathMatrixMultiplicationOrder implements MathOptimizationRule {
         // do nothing
     }
 
-    public void optimize(MathArithmeticExpressionSymbol mathArithmeticExpressionSymbol, List<MathExpressionSymbol> precedingExpressions) {
-        optimize(mathArithmeticExpressionSymbol.getLeftExpression(), precedingExpressions);
-        optimize(mathArithmeticExpressionSymbol.getRightExpression(), precedingExpressions);
+    public void optimizeSubExpressions(IArithmeticExpression mathExpressionSymbol, List<MathExpressionSymbol> precedingExpressions) {
+        optimize(mathExpressionSymbol.getLeftExpression(), precedingExpressions);
+        optimize(mathExpressionSymbol.getRightExpression(), precedingExpressions);
+    }
 
+    public void optimize(MathArithmeticExpressionSymbol mathArithmeticExpressionSymbol, List<MathExpressionSymbol> precedingExpressions) {
+        optimizeSubExpressions(mathArithmeticExpressionSymbol, precedingExpressions);
         if (mathArithmeticExpressionSymbol.getMathOperator().equals("*")) {
             optimizeMatrixMultiplication(mathArithmeticExpressionSymbol, precedingExpressions);
         }
@@ -244,7 +247,7 @@ public class MathMatrixMultiplicationOrder implements MathOptimizationRule {
             if (MathOptimizer.isArithmeticMatrixExpression(mathArithmeticExpressionSymbol.getRightExpression().getRealMathExpressionSymbol(), "*", precedingExpressions))
                 mathExpressionSymbols.addAll(getNewExpressions((MathMatrixArithmeticExpressionSymbol) mathArithmeticExpressionSymbol.getRightExpression().getRealMathExpressionSymbol(), precedingExpressions));
             else
-                mathExpressionSymbols.addAll(getNewExpressions((MathArithmeticExpressionSymbol) MathOptimizer.getCurrentAssignment(mathArithmeticExpressionSymbol.getRightExpression().getRealMathExpressionSymbol(),precedingExpressions), precedingExpressions));
+                mathExpressionSymbols.addAll(getNewExpressions((MathArithmeticExpressionSymbol) MathOptimizer.getCurrentAssignment(mathArithmeticExpressionSymbol.getRightExpression().getRealMathExpressionSymbol(), precedingExpressions), precedingExpressions));
         } else {
             mathExpressionSymbols.add(mathArithmeticExpressionSymbol.getRightExpression());
         }
