@@ -112,58 +112,60 @@ public class NonVirtualBlock implements ExecutionOrder {
      */
     public int compareTo(Object obj) {
         NonVirtualBlock that = (NonVirtualBlock) obj;
+        int result = 0;
         if (this.s == that.s) {
             if (this.b == that.b) {
-                return compareSBEqual(that);
+                result = compareSBEqual(that);
             } else if (this.b < that.b) {
-                return -1;
+                result = -1;
             } else if (this.b > that.b) {
-                return 1;
+                result = 1;
             }
         } else if (this.s < that.s) {
-            return -1;
+            result = -1;
         } else {
-            return 1;
+            result = 1;
         }
-        return 0;
+        return result;
     }
 
     public int compareSBEqual(NonVirtualBlock that) {
-
+        int result = 0;
         if (this.x.isPresent() && that.x.isPresent() && this.x.get() == that.x.get()) {
             if (this.y.isPresent() && that.y.isPresent() && this.y.get() == that.y.get()) {
-                return 0;
+                result = 0;
             } else if (this.y.isPresent() || that.y.isPresent()) {
-                return compareYYEqual(that);
+                result = compareYYEqual(that);
             }
         } else if (this.x.isPresent() || that.x.isPresent()) {
             if (this.x.isPresent() && that.x.isPresent()) {
                 if (this.x.get() < that.x.get()) {
-                    return -1;
+                    result = -1;
                 } else if (this.x.get() > that.x.get()) {
-                    return 1;
+                    result = 1;
                 }
             } else if (this.x.isPresent() && !that.x.isPresent()) {
-                return 1;
+                result = 1;
             } else {
-                return -1;
+                result = -1;
             }
         }
-        return 0;
+        return result;
     }
 
     public int compareYYEqual(NonVirtualBlock that) {
+        int result = 0;
         if (this.y.isPresent() && that.y.isPresent()) {
             if (this.y.get() < that.y.get()) {
-                return -1;
+                result = -1;
             } else if (this.y.get() > that.y.get()) {
-                return 1;
+                result = 1;
             }
         } else if (this.y.isPresent() && !that.y.isPresent()) {
-            return 1;
+            result = 1;
         } else {
-            return -1;
+            result = -1;
         }
-        return 0;
+        return result;
     }
 }
