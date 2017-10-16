@@ -215,14 +215,13 @@ public class MathMatrixMultiplicationOrder implements MathOptimizationRule {
 
         MathExpressionSymbol newExpression = getMostEfficientExpression(getNewExpressions(mathArithmeticExpressionSymbol, precedingExpressions));
 
-        Log.info(newExpression.getTextualRepresentation(), "Term Rewritten:");
+        //Log.info(newExpression.getTextualRepresentation(), "Term Rewritten:");
         int operationsRewrite = MathOptimizer.getEstimatedOperations(newExpression, precedingExpressions);
 
-
-        Log.info(operationsStandard + "", "Operations standard term:");
-        Log.info(operationsRewrite + "", "Operations rewrite term:");
+        //Log.info(operationsStandard + "", "Operations standard term:");
+        //Log.info(operationsRewrite + "", "Operations rewrite term:");
         if (operationsStandard > operationsRewrite) {
-            Log.info("True", "Rewrite:");
+            //Log.info("True", "Rewrite:");
             if (MathOptimizer.isArithmeticExpression(newExpression.getRealMathExpressionSymbol(), "*", precedingExpressions)) {
                 mathArithmeticExpressionSymbol.setLeftExpression(((MathArithmeticExpressionSymbol) newExpression.getRealMathExpressionSymbol()).getLeftExpression());
                 mathArithmeticExpressionSymbol.setRightExpression(((MathArithmeticExpressionSymbol) newExpression.getRealMathExpressionSymbol()).getRightExpression());
@@ -281,7 +280,7 @@ public class MathMatrixMultiplicationOrder implements MathOptimizationRule {
                 }
             }
         }
-        for (MathExpressionSymbol mat : mathExpressionSymbols)
+        /*for (MathExpressionSymbol mat : mathExpressionSymbols)
             Log.info(mat.getTextualRepresentation(), "Mat:");
         for (int i = 0; i < dims.length; ++i)
             Log.info("i:" + dims[i], "Dims:");
@@ -293,7 +292,7 @@ public class MathMatrixMultiplicationOrder implements MathOptimizationRule {
         for (int i = 0; i < n; ++i)
             for (int k = 0; k < n; ++k) {
                 Log.info("i:" + i + " k:" + k + " val: " + m[i][k], "M:");
-            }
+            }*/
         return buildOptimalExpression(s, mathExpressionSymbols);
     }
 
@@ -323,8 +322,8 @@ public class MathMatrixMultiplicationOrder implements MathOptimizationRule {
         buildOptimalExpression(s, 0, s.length - 1, inAResult);
         int lastIndex = 0;
         for (int i = 0; resultMap.containsKey(i); ++i) {
-            Log.info(i + "A_" + resultMap.get(i).matrixIndexLeft + resultMap.get(i).isResultLeft + " A_" +
-                    resultMap.get(i).matrixIndexRight + resultMap.get(i).isResultRight, "Index:");
+            /*Log.info(i + "A_" + resultMap.get(i).matrixIndexLeft + resultMap.get(i).isResultLeft + " A_" +
+                    resultMap.get(i).matrixIndexRight + resultMap.get(i).isResultRight, "Index:");*/
             MathArithmeticExpressionSymbol mathArithmeticExpressionSymbol = new MathArithmeticExpressionSymbol();
             mathArithmeticExpressionSymbol.setMathOperator("*");
             ResultOrder resultOrder = resultMap.get(i);
@@ -352,7 +351,7 @@ public class MathMatrixMultiplicationOrder implements MathOptimizationRule {
             String jstr = inAResult[j] ? "_result " : " ";
             resultMap.put(counter, new ResultOrder(i, inAResult[i], j, inAResult[j]));
             ++counter;
-            System.out.println(" A_" + i + istr + "* A_" + j + jstr);
+            //System.out.println(" A_" + i + istr + "* A_" + j + jstr);
             inAResult[i] = true;
             inAResult[j] = true;
         }
