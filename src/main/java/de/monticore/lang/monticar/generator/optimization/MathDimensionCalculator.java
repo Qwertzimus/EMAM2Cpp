@@ -64,29 +64,7 @@ public class MathDimensionCalculator {
 
 
     public static int getMatrixColumns(MathArithmeticExpressionSymbol mathExpressionSymbol, List<MathExpressionSymbol> precedingExpressions) {
-        int result = 0;
-        if (mathExpressionSymbol.getMathOperator().equals("+")) {
-            MathExpressionSymbol realLeftExpression = MathOptimizer.getCurrentAssignment(mathExpressionSymbol.getLeftExpression(), precedingExpressions);
-            MathExpressionSymbol realRightExpression = MathOptimizer.getCurrentAssignment(mathExpressionSymbol.getRightExpression(), precedingExpressions);
-            result = calculateMatrixColumns(realLeftExpression, realRightExpression, precedingExpressions);
-        } else if (mathExpressionSymbol.getMathOperator().equals("*")) {
-            MathExpressionSymbol realLeftExpression = MathOptimizer.getCurrentAssignment(mathExpressionSymbol.getLeftExpression(), precedingExpressions);
-            MathExpressionSymbol realRightExpression = MathOptimizer.getCurrentAssignment(mathExpressionSymbol.getRightExpression(), precedingExpressions);
-            result = calculateMatrixColumns(realLeftExpression, realRightExpression, precedingExpressions);
-        } else {
-            Log.info(mathExpressionSymbol.getClass().getName(), "Not handled:");
-        }
-        return result;
-    }
-
-    public static int calculateMatrixColumns(MathExpressionSymbol realLeftExpression, MathExpressionSymbol realRightExpression, List<MathExpressionSymbol> precedingExpressions) {
-        int result = 0;
-        if (getMatrixRows(realRightExpression, precedingExpressions) == 1) {
-            result = getMatrixColumns(realLeftExpression, precedingExpressions);
-        } else {
-            result = getMatrixColumns(realLeftExpression, precedingExpressions);
-        }
-        return result;
+        return MathDimensionCalculatorHelper.calculateMatrixColumns(mathExpressionSymbol, precedingExpressions);
     }
 
     public static int getMatrixColumns(MathMatrixNameExpressionSymbol mathExpressionSymbol, List<MathExpressionSymbol> precedingExpressions) {
@@ -157,37 +135,11 @@ public class MathDimensionCalculator {
 
 
     public static int getMatrixRows(MathMatrixArithmeticExpressionSymbol mathExpressionSymbol, List<MathExpressionSymbol> precedingExpressions) {
-        return calculateMatrixRows(mathExpressionSymbol, precedingExpressions);
+        return MathDimensionCalculatorHelper.calculateMatrixRows(mathExpressionSymbol, precedingExpressions);
     }
 
     public static int getMatrixRows(MathArithmeticExpressionSymbol mathExpressionSymbol, List<MathExpressionSymbol> precedingExpressions) {
-        return calculateMatrixRows(mathExpressionSymbol, precedingExpressions);
-    }
-
-    public static int calculateMatrixRows(IArithmeticExpression mathExpressionSymbol, List<MathExpressionSymbol> precedingExpressions) {
-        int result = 0;
-        if (mathExpressionSymbol.getOperator().equals("+")) {
-            MathExpressionSymbol realLeftExpression = MathOptimizer.getCurrentAssignment(mathExpressionSymbol.getLeftExpression(), precedingExpressions);
-            MathExpressionSymbol realRightExpression = MathOptimizer.getCurrentAssignment(mathExpressionSymbol.getRightExpression(), precedingExpressions);
-            result = calculateMatrixRows(realLeftExpression, realRightExpression, precedingExpressions);
-        } else if (mathExpressionSymbol.getOperator().equals("*")) {
-            MathExpressionSymbol realLeftExpression = MathOptimizer.getCurrentAssignment(mathExpressionSymbol.getLeftExpression(), precedingExpressions);
-            MathExpressionSymbol realRightExpression = MathOptimizer.getCurrentAssignment(mathExpressionSymbol.getRightExpression(), precedingExpressions);
-            result = calculateMatrixRows(realLeftExpression, realRightExpression, precedingExpressions);
-        } else {
-            Log.info(mathExpressionSymbol.getClass().getName(), "Not handled:");
-        }
-        return result;
-    }
-
-    public static int calculateMatrixRows(MathExpressionSymbol realLeftExpression, MathExpressionSymbol realRightExpression, List<MathExpressionSymbol> precedingExpressions) {
-        int result;
-        if (getMatrixColumns(realRightExpression, precedingExpressions) == 1) {
-            result = getMatrixRows(realLeftExpression, precedingExpressions);
-        } else {
-            result = getMatrixRows(realRightExpression, precedingExpressions);
-        }
-        return result;
+        return MathDimensionCalculatorHelper.calculateMatrixRows(mathExpressionSymbol, precedingExpressions);
     }
 
     public static int getMatrixRows(MathMatrixNameExpressionSymbol mathExpressionSymbol, List<MathExpressionSymbol> precedingExpressions) {
