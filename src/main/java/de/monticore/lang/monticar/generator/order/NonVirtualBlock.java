@@ -114,16 +114,22 @@ public class NonVirtualBlock implements ExecutionOrder {
         NonVirtualBlock that = (NonVirtualBlock) obj;
         int result = 0;
         if (this.s == that.s) {
-            if (this.b == that.b) {
-                result = compareSBEqual(that);
-            } else if (this.b < that.b) {
-                result = -1;
-            } else if (this.b > that.b) {
-                result = 1;
-            }
+            result = compareBBEqual(that);
         } else if (this.s < that.s) {
             result = -1;
         } else {
+            result = 1;
+        }
+        return result;
+    }
+
+    public int compareBBEqual(NonVirtualBlock that) {
+        int result = 0;
+        if (this.b == that.b) {
+            result = compareSBEqual(that);
+        } else if (this.b < that.b) {
+            result = -1;
+        } else if (this.b > that.b) {
             result = 1;
         }
         return result;
@@ -138,17 +144,19 @@ public class NonVirtualBlock implements ExecutionOrder {
                 result = compareYYEqual(that);
             }
         } else if (this.x.isPresent() || that.x.isPresent()) {
-            if (this.x.isPresent() && that.x.isPresent()) {
-                if (this.x.get() < that.x.get()) {
-                    result = -1;
-                } else if (this.x.get() > that.x.get()) {
-                    result = 1;
-                }
-            } else if (this.x.isPresent() && !that.x.isPresent()) {
-                result = 1;
-            } else {
-                result = -1;
-            }
+            result = compareXXEqual(that);
+        }
+        return result;
+    }
+
+    public int compareXXEqual(NonVirtualBlock that) {
+        int result = 0;
+        if (this.x.isPresent() && that.x.isPresent()) {
+            result = compareOptionalIntEqual(this.x, that.x);
+        } else if (this.x.isPresent() && !that.x.isPresent()) {
+            result = 1;
+        } else {
+            result = -1;
         }
         return result;
     }
@@ -156,15 +164,21 @@ public class NonVirtualBlock implements ExecutionOrder {
     public int compareYYEqual(NonVirtualBlock that) {
         int result = 0;
         if (this.y.isPresent() && that.y.isPresent()) {
-            if (this.y.get() < that.y.get()) {
-                result = -1;
-            } else if (this.y.get() > that.y.get()) {
-                result = 1;
-            }
+            result = compareOptionalIntEqual(this.y, that.y);
         } else if (this.y.isPresent() && !that.y.isPresent()) {
             result = 1;
         } else {
             result = -1;
+        }
+        return result;
+    }
+
+    public int compareOptionalIntEqual(Optional<Integer> a, Optional<Integer> b) {
+        int result = 0;
+        if (a.get() < b.get()) {
+            result = -1;
+        } else if (a.get() > b.get()) {
+            result = 1;
         }
         return result;
     }
