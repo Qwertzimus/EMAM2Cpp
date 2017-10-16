@@ -45,21 +45,7 @@ public class MathDimensionCalculator {
 
 
     public static int getMatrixColumns(MathMatrixArithmeticExpressionSymbol mathExpressionSymbol, List<MathExpressionSymbol> precedingExpressions) {
-        int result = 0;
-        if (mathExpressionSymbol.getMathOperator().equals("+")) {
-            MathExpressionSymbol realLeftExpression = MathOptimizer.getCurrentAssignment(mathExpressionSymbol.getLeftExpression(), precedingExpressions);
-            MathExpressionSymbol realRightExpression = MathOptimizer.getCurrentAssignment(mathExpressionSymbol.getRightExpression(), precedingExpressions);
-
-            result = getMatrixColumns(realLeftExpression, precedingExpressions);
-        } else if (mathExpressionSymbol.getMathOperator().equals("*")) {
-            MathExpressionSymbol realLeftExpression = MathOptimizer.getCurrentAssignment(mathExpressionSymbol.getLeftExpression(), precedingExpressions);
-            MathExpressionSymbol realRightExpression = MathOptimizer.getCurrentAssignment(mathExpressionSymbol.getRightExpression(), precedingExpressions);
-
-            result = getMatrixColumns(realLeftExpression, precedingExpressions);
-        } else {
-            Log.info(mathExpressionSymbol.getClass().getName(), "Not handled:");
-        }
-        return result;
+        return MathDimensionCalculatorHelper.calculateMatrixColumns(mathExpressionSymbol, precedingExpressions);
     }
 
 
@@ -117,8 +103,9 @@ public class MathDimensionCalculator {
             result = getMatrixRows((MathParenthesisExpressionSymbol) mathExpressionSymbol, precedingExpressions);
         } else if (mathExpressionSymbol.isPreOperatorExpression()) {
             result = getMatrixRows(((MathPreOperatorExpressionSymbol) mathExpressionSymbol).getMathExpressionSymbol(), precedingExpressions);
+        } else {
+            Log.info(mathExpressionSymbol.getClass().getName(), "Not handled:");
         }
-        Log.info(mathExpressionSymbol.getClass().getName(), "Not handled:");
         return result;
     }
 
@@ -128,8 +115,9 @@ public class MathDimensionCalculator {
             result = getMatrixRows((MathMatrixNameExpressionSymbol) mathExpressionSymbol, precedingExpressions);
         } else if (mathExpressionSymbol.isMatrixArithmeticExpression()) {
             result = getMatrixRows((MathMatrixArithmeticExpressionSymbol) mathExpressionSymbol, precedingExpressions);
+        } else {
+            Log.info(mathExpressionSymbol.getClass().getName(), "Not handled:");
         }
-        Log.info(mathExpressionSymbol.getClass().getName(), "Not handled:");
         return result;
     }
 
