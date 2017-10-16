@@ -15,10 +15,14 @@ public class GeneralHelperMethods {
         return fullName.replaceAll("\\.", "_").replaceAll("\\[", "_").replaceAll("\\]", "_");
     }
 
+    public static String replaceUnderScoreWithSquareBrackets(String componentName, String regex, String replacement) {
+        return componentName.replaceFirst(regex, replacement);
+    }
+
     public static String getTargetLanguageVariableInstanceName(String componentName, BluePrint bluePrint) {
         while (!bluePrint.getVariable(componentName).isPresent() && componentName.contains("_")) {
-            componentName = componentName.replaceFirst("\\_", "[");
-            componentName = componentName.replaceFirst("\\_", "]");
+            componentName = replaceUnderScoreWithSquareBrackets(componentName, "\\_", "[");
+            componentName = replaceUnderScoreWithSquareBrackets(componentName, "\\_", "]");
         }
         return getTargetLanguageVariableInstanceName(componentName);
     }
