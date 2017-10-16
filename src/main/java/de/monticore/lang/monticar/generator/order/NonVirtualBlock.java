@@ -114,35 +114,7 @@ public class NonVirtualBlock implements ExecutionOrder {
         NonVirtualBlock that = (NonVirtualBlock) obj;
         if (this.s == that.s) {
             if (this.b == that.b) {
-                if (this.x.isPresent() && that.x.isPresent() && this.x.get() == that.x.get()) {
-                    if (this.y.isPresent() && that.y.isPresent() && this.y.get() == that.y.get()) {
-                        return 0;
-                    } else if (this.y.isPresent() || that.y.isPresent()) {
-                        if (this.y.isPresent() && that.y.isPresent()) {
-                            if (this.y.get() < that.y.get()) {
-                                return -1;
-                            } else if (this.y.get() > that.y.get()) {
-                                return 1;
-                            }
-                        } else if (this.y.isPresent() && !that.y.isPresent()) {
-                            return 1;
-                        } else {
-                            return -1;
-                        }
-                    }
-                } else if (this.x.isPresent() || that.x.isPresent()) {
-                    if (this.x.isPresent() && that.x.isPresent()) {
-                        if (this.x.get() < that.x.get()) {
-                            return -1;
-                        } else if (this.x.get() > that.x.get()) {
-                            return 1;
-                        }
-                    } else if (this.x.isPresent() && !that.x.isPresent()) {
-                        return 1;
-                    } else {
-                        return -1;
-                    }
-                }
+                return compareSBEqual(that);
             } else if (this.b < that.b) {
                 return -1;
             } else if (this.b > that.b) {
@@ -152,6 +124,45 @@ public class NonVirtualBlock implements ExecutionOrder {
             return -1;
         } else {
             return 1;
+        }
+        return 0;
+    }
+
+    public int compareSBEqual(NonVirtualBlock that) {
+
+        if (this.x.isPresent() && that.x.isPresent() && this.x.get() == that.x.get()) {
+            if (this.y.isPresent() && that.y.isPresent() && this.y.get() == that.y.get()) {
+                return 0;
+            } else if (this.y.isPresent() || that.y.isPresent()) {
+                return compareYYEqual(that);
+            }
+        } else if (this.x.isPresent() || that.x.isPresent()) {
+            if (this.x.isPresent() && that.x.isPresent()) {
+                if (this.x.get() < that.x.get()) {
+                    return -1;
+                } else if (this.x.get() > that.x.get()) {
+                    return 1;
+                }
+            } else if (this.x.isPresent() && !that.x.isPresent()) {
+                return 1;
+            } else {
+                return -1;
+            }
+        }
+        return 0;
+    }
+
+    public int compareYYEqual(NonVirtualBlock that) {
+        if (this.y.isPresent() && that.y.isPresent()) {
+            if (this.y.get() < that.y.get()) {
+                return -1;
+            } else if (this.y.get() > that.y.get()) {
+                return 1;
+            }
+        } else if (this.y.isPresent() && !that.y.isPresent()) {
+            return 1;
+        } else {
+            return -1;
         }
         return 0;
     }
