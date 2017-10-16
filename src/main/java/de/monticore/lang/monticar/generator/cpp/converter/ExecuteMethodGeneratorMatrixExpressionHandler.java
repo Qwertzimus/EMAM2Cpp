@@ -18,11 +18,11 @@ public class ExecuteMethodGeneratorMatrixExpressionHandler {
     public static String generateExecuteCode(MathMatrixArithmeticExpressionSymbol mathMatrixArithmeticExpressionSymbol, List<String> includeStrings) {
         String result = "";
         if (mathMatrixArithmeticExpressionSymbol.getMathOperator().equals("^")) {
-            return generateExecuteCodeMatrixPowerOfOperator(mathMatrixArithmeticExpressionSymbol, includeStrings);
+            result = generateExecuteCodeMatrixPowerOfOperator(mathMatrixArithmeticExpressionSymbol, includeStrings);
         } else if (mathMatrixArithmeticExpressionSymbol.getMathOperator().equals(".^")) {
-            return generateExecuteCodeMatrixEEPowerOf(mathMatrixArithmeticExpressionSymbol, includeStrings);
+            result = generateExecuteCodeMatrixEEPowerOf(mathMatrixArithmeticExpressionSymbol, includeStrings);
         } else if (mathMatrixArithmeticExpressionSymbol.getMathOperator().equals("./")) {
-            return generateExecuteCodeMatrixEEDivide(mathMatrixArithmeticExpressionSymbol, includeStrings);
+            result = generateExecuteCodeMatrixEEDivide(mathMatrixArithmeticExpressionSymbol, includeStrings);
         /*} else if (mathArithmeticExpressionSymbol.getMathOperator().equals("./")) {
             Log.error("reace");
             result += "\"ldivide\"";
@@ -68,22 +68,51 @@ public class ExecuteMethodGeneratorMatrixExpressionHandler {
     public static String generateExecuteCode(MathMatrixAccessOperatorSymbol mathMatrixAccessOperatorSymbol, List<String> includeStrings, boolean setMinusOne) {
         String result = "";
         int counter = 0;
-        int ignoreCounterAt = -1;
-        int counterSetMinusOne = -1;
+        String matrixExtractionPart = calculateMatrixExtractionPart(mathMatrixAccessOperatorSymbol);
+        result += matrixExtractionPart;
+        result += mathMatrixAccessOperatorSymbol.getAccessStartSymbol();
+        result += updateMatrixAccessString(mathMatrixAccessOperatorSymbol, counter, matrixExtractionPart, setMinusOne, includeStrings);
+
+        result += mathMatrixAccessOperatorSymbol.getAccessEndSymbol();
+        return result;
+    }
+
+    public static String calculateMatrixExtractionPart(MathMatrixAccessOperatorSymbol mathMatrixAccessOperatorSymbol) {
+        String result = "";
         if (mathMatrixAccessOperatorSymbol.getMathMatrixAccessSymbols().size() == 2) {
             if (mathMatrixAccessOperatorSymbol.getMathMatrixAccessSymbols().get(0).isDoubleDot()) {
-                ignoreCounterAt = 0;
                 result += ".column";
-                counterSetMinusOne = 1;
             } else if (mathMatrixAccessOperatorSymbol.getMathMatrixAccessSymbols().get(1).isDoubleDot()) {
-                ignoreCounterAt = 1;
                 result += ".row";
-                counterSetMinusOne = 0;
             }
         }
-        result += mathMatrixAccessOperatorSymbol.getAccessStartSymbol();
+        return result;
+    }
 
+    public static int getIgnoreCounterAt(String matrixExtractionPart) {
+        int ignoreCounterAt = -1;
+        if (matrixExtractionPart.equals(".column")) {
+            ignoreCounterAt = 0;
+        } else if (matrixExtractionPart.equals(".row")) {
+            ignoreCounterAt = 1;
+        }
+        return ignoreCounterAt;
+    }
 
+    public static int getCounterSetMinusOne(String matrixExtractionPart) {
+        int counterSetMinusOne = -1;
+        if (matrixExtractionPart.equals(".column")) {
+            counterSetMinusOne = 1;
+        } else if (matrixExtractionPart.equals(".row")) {
+            counterSetMinusOne = 0;
+        }
+        return counterSetMinusOne;
+    }
+
+    public static String updateMatrixAccessString(MathMatrixAccessOperatorSymbol mathMatrixAccessOperatorSymbol, int counter, String matrixExtractionPart, boolean setMinusOne, List<String> includeStrings) {
+        int ignoreCounterAt = getIgnoreCounterAt(matrixExtractionPart);
+        int counterSetMinusOne = getCounterSetMinusOne(matrixExtractionPart);
+        String result = "";
         for (MathMatrixAccessSymbol mathMatrixAccessSymbol : mathMatrixAccessOperatorSymbol.getMathMatrixAccessSymbols()) {
             if (counter == ignoreCounterAt) {
                 ++counter;
@@ -98,59 +127,40 @@ public class ExecuteMethodGeneratorMatrixExpressionHandler {
                 }
             }
         }
-
-
-        result += mathMatrixAccessOperatorSymbol.getAccessEndSymbol();
         return result;
     }
 
     public static String generateExecuteCode(MathMatrixAccessOperatorSymbol mathMatrixAccessOperatorSymbol, List<String> includeStrings) {
         String result = "";
         int counter = 0;
-        int ignoreCounterAt = -1;
-        int counterSetMinusOne = -1;
-        if (mathMatrixAccessOperatorSymbol.getMathMatrixAccessSymbols().size() == 2) {
-            if (mathMatrixAccessOperatorSymbol.getMathMatrixAccessSymbols().get(0).isDoubleDot()) {
-                ignoreCounterAt = 0;
-                result += ".column";
-                counterSetMinusOne = 1;
-            } else if (mathMatrixAccessOperatorSymbol.getMathMatrixAccessSymbols().get(1).isDoubleDot()) {
-                ignoreCounterAt = 1;
-                result += ".row";
-                counterSetMinusOne = 0;
-            }
-        }
+
+        String matrixExtractionPart = calculateMatrixExtractionPart(mathMatrixAccessOperatorSymbol);
+        result += matrixExtractionPart;
         result += mathMatrixAccessOperatorSymbol.getAccessStartSymbol();
 
         if (MathFunctionFixer.fixForLoopAccess(mathMatrixAccessOperatorSymbol.getMathMatrixNameExpressionSymbol(), ComponentConverter.currentBluePrint)) {
-            for (MathMatrixAccessSymbol mathMatrixAccessSymbol : mathMatrixAccessOperatorSymbol.getMathMatrixAccessSymbols()) {
-                if (counter == ignoreCounterAt) {
-                    ++counter;
-                } else {
-                    result += generateExecuteCode(mathMatrixAccessSymbol, includeStrings, true);
-                    ++counter;
-                    if (counter < mathMatrixAccessOperatorSymbol.getMathMatrixAccessSymbols().size() && counter != ignoreCounterAt) {
-                        result += ", ";
-                    }
-                }
-            }
+            result += updateMatrixAccessStringFixForLoop(mathMatrixAccessOperatorSymbol, counter, matrixExtractionPart, includeStrings);
         } else {
-            for (MathMatrixAccessSymbol mathMatrixAccessSymbol : mathMatrixAccessOperatorSymbol.getMathMatrixAccessSymbols()) {
-                if (counter == ignoreCounterAt) {
-                    ++counter;
-                } else {
-                    if (counter == counterSetMinusOne)
-                        result += generateExecuteCode(mathMatrixAccessSymbol, includeStrings, true);
-                    else
-                        result += generateExecuteCode(mathMatrixAccessSymbol, includeStrings);
-                    ++counter;
-                    if (counter < mathMatrixAccessOperatorSymbol.getMathMatrixAccessSymbols().size() && counter != ignoreCounterAt) {
-                        result += ", ";
-                    }
+            result += updateMatrixAccessString(mathMatrixAccessOperatorSymbol, counter, matrixExtractionPart, false, includeStrings);
+        }
+        result += mathMatrixAccessOperatorSymbol.getAccessEndSymbol();
+        return result;
+    }
+
+    public static String updateMatrixAccessStringFixForLoop(MathMatrixAccessOperatorSymbol mathMatrixAccessOperatorSymbol, int counter, String matrixExtractionPart, List<String> includeStrings) {
+        int ignoreCounterAt = getIgnoreCounterAt(matrixExtractionPart);
+        String result = "";
+        for (MathMatrixAccessSymbol mathMatrixAccessSymbol : mathMatrixAccessOperatorSymbol.getMathMatrixAccessSymbols()) {
+            if (counter == ignoreCounterAt) {
+                ++counter;
+            } else {
+                result += generateExecuteCode(mathMatrixAccessSymbol, includeStrings, true);
+                ++counter;
+                if (counter < mathMatrixAccessOperatorSymbol.getMathMatrixAccessSymbols().size() && counter != ignoreCounterAt) {
+                    result += ", ";
                 }
             }
         }
-        result += mathMatrixAccessOperatorSymbol.getAccessEndSymbol();
         return result;
     }
 
@@ -176,17 +186,18 @@ public class ExecuteMethodGeneratorMatrixExpressionHandler {
 
 
         if (mathMatrixExpressionSymbol.isMatrixArithmeticExpression()) {
-            return generateExecuteCode((MathMatrixArithmeticExpressionSymbol) mathMatrixExpressionSymbol, includeStrings);
+            result = generateExecuteCode((MathMatrixArithmeticExpressionSymbol) mathMatrixExpressionSymbol, includeStrings);
         } else if (mathMatrixExpressionSymbol.isMatrixAccessExpression()) {
-            return generateExecuteCode((MathMatrixAccessSymbol) mathMatrixExpressionSymbol, includeStrings);
+            result = generateExecuteCode((MathMatrixAccessSymbol) mathMatrixExpressionSymbol, includeStrings);
         } else if (mathMatrixExpressionSymbol.isMatrixNameExpression()) {
-            return generateExecuteCode((MathMatrixNameExpressionSymbol) mathMatrixExpressionSymbol, includeStrings);
+            result = generateExecuteCode((MathMatrixNameExpressionSymbol) mathMatrixExpressionSymbol, includeStrings);
         } else if (mathMatrixExpressionSymbol.isValueExpression()) {
-            return generateExecuteCode((MathMatrixArithmeticValueSymbol) mathMatrixExpressionSymbol, includeStrings);
+            result = generateExecuteCode((MathMatrixArithmeticValueSymbol) mathMatrixExpressionSymbol, includeStrings);
+        } else {
+            Log.info(mathMatrixExpressionSymbol.getTextualRepresentation(), "Symbol:");
+            Log.info(mathMatrixExpressionSymbol.getClass().getName(), "Symbol Name:");
+            Log.error("0xMAMAEXSY Case not handled!");
         }
-        Log.info(mathMatrixExpressionSymbol.getTextualRepresentation(), "Symbol:");
-        Log.info(mathMatrixExpressionSymbol.getClass().getName(), "Symbol Name:");
-        Log.error("0xMAMAEXSY Case not handled!");
         return result;
     }
 
