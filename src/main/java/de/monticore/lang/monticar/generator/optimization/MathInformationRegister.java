@@ -55,7 +55,7 @@ public class MathInformationRegister {
                     return Integer.valueOf(var.getDimensionalInformation().get(1));
                 } catch (Exception ex) {
                     // TODO resolve name return bluePrint.
-                    Log.info(name,"Name:");
+                    Log.info(name, "Name:");
                     //ex.printStackTrace();
                     //Log.error(var.getDimensionalInformation().get(1));
                     return 1;
@@ -84,7 +84,7 @@ public class MathInformationRegister {
             } catch (Exception ex) {
                 // TODO resolve name return bluePrint.
             }
-        }else {
+        } else {
             Variable var = getVariable(name);
 
             if (var != null) {
@@ -111,7 +111,7 @@ public class MathInformationRegister {
             } catch (Exception ex) {
                 // TODO resolve name return bluePrint.
             }
-        }else {
+        } else {
             Variable var = getVariable(name);
 
             if (var != null) {
@@ -131,36 +131,34 @@ public class MathInformationRegister {
     public int getAmountColumns(String name, MathMatrixAccessOperatorSymbol mathMatrixAccessOperatorSymbol) {
         MathValueSymbol mathValueSymbol = getMathValueSymbol(name);
         boolean firstDoubleDot = false, secondDoubleDot = false;
+        int result = 0;
         if (mathMatrixAccessOperatorSymbol.getMathMatrixAccessSymbols().size() == 2) {
             firstDoubleDot = mathMatrixAccessOperatorSymbol.getMathMatrixAccessSymbols().get(0).isDoubleDot();
             secondDoubleDot = mathMatrixAccessOperatorSymbol.getMathMatrixAccessSymbols().get(1).isDoubleDot();
         }
-
         if (secondDoubleDot)
-            return 1;
-
-        if (mathValueSymbol != null) {
+            result = 1;
+        else if (mathValueSymbol != null) {
             String numberString = mathValueSymbol.getType().getDimensions().get(0).getTextualRepresentation();
             try {
-                return Integer.valueOf(numberString);
+                result = Integer.valueOf(numberString);
             } catch (Exception ex) {
                 // TODO resolve name return bluePrint.
             }
-        }else {
+        } else {
             Variable var = getVariable(name);
-
             if (var != null) {
                 try {
-                    return Integer.valueOf(var.getDimensionalInformation().get(0));
+                    result = Integer.valueOf(var.getDimensionalInformation().get(0));
                 } catch (Exception ex) {
                     // TODO resolve name return bluePrint.
                     Log.error(var.getDimensionalInformation().get(0));
-                    return 1;
+                    result = 1;
                 }
-            }
+            } else
+                Log.info(name, "Not found:");
         }
-        Log.info(name, "Not found:");
-        return 0;
+        return result;
     }
 
     public List<Variable> getVariables() {
@@ -182,8 +180,6 @@ public class MathInformationRegister {
             var.addDimensionalInformation(dimension.getTextualRepresentation());
         this.variables.add(var);
     }
-
-
 
     public Variable getVariable(String name) {
         for (Variable v : variables)

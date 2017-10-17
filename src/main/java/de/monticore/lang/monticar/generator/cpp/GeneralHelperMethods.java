@@ -19,13 +19,13 @@ public class GeneralHelperMethods {
         return componentName.replaceFirst(regex, replacement);
     }
 
-    /*public static String getTargetLanguageVariableInstanceName(String componentName, BluePrint bluePrint) {
+    public static String getTargetLanguageVariableInstanceName(String componentName, BluePrint bluePrint) {
         while (!bluePrint.getVariable(componentName).isPresent() && componentName.contains("_")) {
             componentName = replaceUnderScoreWithSquareBrackets(componentName, "\\_", "[");
             componentName = replaceUnderScoreWithSquareBrackets(componentName, "\\_", "]");
         }
         return getTargetLanguageVariableInstanceName(componentName);
-    }*/
+    }
 
     /**
      * fixes array access
