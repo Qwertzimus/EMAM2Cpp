@@ -38,108 +38,58 @@ public class MathInformationRegister {
     }
 
     public int getAmountRows(String name) {
-        MathValueSymbol mathValueSymbol = getMathValueSymbol(name);
-
-        if (mathValueSymbol != null) {
-            String numberString = mathValueSymbol.getType().getDimensions().get(1).getTextualRepresentation();
-            try {
-                return Integer.valueOf(numberString);
-            } catch (Exception ex) {
-                // TODO resolve name return bluePrint.
-            }
-        } else {
-            Variable var = getVariable(name);
-
-            if (var != null) {
-                try {
-                    return Integer.valueOf(var.getDimensionalInformation().get(1));
-                } catch (Exception ex) {
-                    // TODO resolve name return bluePrint.
-                    Log.info(name, "Name:");
-                    //ex.printStackTrace();
-                    //Log.error(var.getDimensionalInformation().get(1));
-                    return 1;
-                }
-            }
-        }
-        Log.info(name, "Not found:");
-        return 0;
+        return getAmount(name);
     }
 
     public int getAmountRows(String name, MathMatrixAccessOperatorSymbol mathMatrixAccessOperatorSymbol) {
-        MathValueSymbol mathValueSymbol = getMathValueSymbol(name);
-        boolean firstDoubleDot = false, secondDoubleDot = false;
-        if (mathMatrixAccessOperatorSymbol.getMathMatrixAccessSymbols().size() == 2) {
-            firstDoubleDot = mathMatrixAccessOperatorSymbol.getMathMatrixAccessSymbols().get(0).isDoubleDot();
-            secondDoubleDot = mathMatrixAccessOperatorSymbol.getMathMatrixAccessSymbols().get(1).isDoubleDot();
-        }
-
-        if (firstDoubleDot)
-            return 1;
-
-        if (mathValueSymbol != null) {
-            String numberString = mathValueSymbol.getType().getDimensions().get(1).getTextualRepresentation();
-            try {
-                return Integer.valueOf(numberString);
-            } catch (Exception ex) {
-                // TODO resolve name return bluePrint.
-            }
-        } else {
-            Variable var = getVariable(name);
-
-            if (var != null) {
-                try {
-                    return Integer.valueOf(var.getDimensionalInformation().get(1));
-                } catch (Exception ex) {
-                    // TODO resolve name return bluePrint.
-                    Log.error(var.getDimensionalInformation().get(1));
-                    return 1;
-                }
-            }
-        }
-        Log.info(name, "Not found:");
-        return 0;
-    }
-
-    public int getAmountColumns(String name) {
-        MathValueSymbol mathValueSymbol = getMathValueSymbol(name);
-
-        if (mathValueSymbol != null) {
-            String numberString = mathValueSymbol.getType().getDimensions().get(0).getTextualRepresentation();
-            try {
-                return Integer.valueOf(numberString);
-            } catch (Exception ex) {
-                // TODO resolve name return bluePrint.
-            }
-        } else {
-            Variable var = getVariable(name);
-
-            if (var != null) {
-                try {
-                    return Integer.valueOf(var.getDimensionalInformation().get(0));
-                } catch (Exception ex) {
-                    // TODO resolve name return bluePrint.
-                    //Log.error(var.getDimensionalInformation().get(0));
-                    return 1;
-                }
-            }
-        }
-        Log.info(name, "Not found:");
-        return 0;
-    }
-
-    public int getAmountColumns(String name, MathMatrixAccessOperatorSymbol mathMatrixAccessOperatorSymbol) {
-        MathValueSymbol mathValueSymbol = getMathValueSymbol(name);
         boolean firstDoubleDot = false, secondDoubleDot = false;
         int result = 0;
         if (mathMatrixAccessOperatorSymbol.getMathMatrixAccessSymbols().size() == 2) {
             firstDoubleDot = mathMatrixAccessOperatorSymbol.getMathMatrixAccessSymbols().get(0).isDoubleDot();
             secondDoubleDot = mathMatrixAccessOperatorSymbol.getMathMatrixAccessSymbols().get(1).isDoubleDot();
         }
-        if (secondDoubleDot)
+
+        if (firstDoubleDot)
             result = 1;
-        else if (mathValueSymbol != null) {
-            String numberString = mathValueSymbol.getType().getDimensions().get(0).getTextualRepresentation();
+        else {
+            result = getAmount(name, 1);
+        }
+        return result;
+    }
+
+    public int getAmount(String name) {
+        MathValueSymbol mathValueSymbol = getMathValueSymbol(name);
+        int result = 0;
+        if (mathValueSymbol != null) {
+            String numberString = mathValueSymbol.getType().getDimensions().get(1).getTextualRepresentation();
+            try {
+                result = Integer.valueOf(numberString);
+            } catch (Exception ex) {
+                // TODO resolve name return bluePrint.
+            }
+        } else {
+            Variable var = getVariable(name);
+
+            if (var != null) {
+                try {
+                    result = Integer.valueOf(var.getDimensionalInformation().get(1));
+                } catch (Exception ex) {
+                    // TODO resolve name return bluePrint.
+                    Log.info(name, "Name:");
+                    //ex.printStackTrace();
+                    //Log.error(var.getDimensionalInformation().get(1));
+                    result = 1;
+                }
+            }
+        }
+        return result;
+    }
+
+    public int getAmount(String name, int dimension) {
+        MathValueSymbol mathValueSymbol = getMathValueSymbol(name);
+        int result = 0;
+        if (mathValueSymbol != null) {
+            String numberString = mathValueSymbol.getType().getDimensions().get(dimension).getTextualRepresentation();
             try {
                 result = Integer.valueOf(numberString);
             } catch (Exception ex) {
@@ -149,14 +99,33 @@ public class MathInformationRegister {
             Variable var = getVariable(name);
             if (var != null) {
                 try {
-                    result = Integer.valueOf(var.getDimensionalInformation().get(0));
+                    result = Integer.valueOf(var.getDimensionalInformation().get(dimension));
                 } catch (Exception ex) {
                     // TODO resolve name return bluePrint.
-                    Log.error(var.getDimensionalInformation().get(0));
+                    Log.error(var.getDimensionalInformation().get(dimension));
                     result = 1;
                 }
             } else
                 Log.info(name, "Not found:");
+        }
+        return result;
+    }
+
+    public int getAmountColumns(String name) {
+        return getAmount(name);
+    }
+
+    public int getAmountColumns(String name, MathMatrixAccessOperatorSymbol mathMatrixAccessOperatorSymbol) {
+        boolean firstDoubleDot = false, secondDoubleDot = false;
+        int result = 0;
+        if (mathMatrixAccessOperatorSymbol.getMathMatrixAccessSymbols().size() == 2) {
+            firstDoubleDot = mathMatrixAccessOperatorSymbol.getMathMatrixAccessSymbols().get(0).isDoubleDot();
+            secondDoubleDot = mathMatrixAccessOperatorSymbol.getMathMatrixAccessSymbols().get(1).isDoubleDot();
+        }
+        if (secondDoubleDot)
+            result = 1;
+        else {
+            result = getAmount(name, 0);
         }
         return result;
     }
