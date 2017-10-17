@@ -56,12 +56,11 @@ public class TypeConverter {
 
     public static String getVariableTypeNameForMathLanguageTypeName(MathValueType mathValueType) {
         if (mathValueType.getDimensions().size() == 0) {
-            if(mathValueType.getType().isIsWholeNumberNumber()){
+            if (mathValueType.getType().isIsWholeNumberNumber()) {
                 return "int";//use int for now add range check if bigger number is required
             }
             return "double";
-        }
-        else if (mathValueType.getDimensions().size() == 2) {
+        } else if (mathValueType.getDimensions().size() == 2) {
             return "Matrix";
         }
         Log.error("TypeConverter Case not handled!");
@@ -83,25 +82,10 @@ public class TypeConverter {
             if (variableType.getTypeNameMontiCar().equals(typeNameMontiCar)) {
                 if (typeNameMontiCar.equals("CommonMatrixType")) {
                     ASTCommonMatrixType astCommonMatrixType = (ASTCommonMatrixType) astType;
-                    for (ASTCommonDimensionElement astCommonDimensionElement :
-                            astCommonMatrixType.getCommonDimension().getCommonDimensionElements()) {
-                        if (astCommonDimensionElement.getName().isPresent())
-                            variable.addDimensionalInformation(astCommonDimensionElement.getName().get());
-                        else if (astCommonDimensionElement.getUnitNumber().isPresent())
-                            variable.addDimensionalInformation(astCommonDimensionElement.getUnitNumber().get().getNumber().get().getDividend() + "");
-                        else {
-                            Log.error("Case not handled;");
-                        }
-                    }
+                    handleCommonMatrixType(variable, astCommonMatrixType);
                 } else if (typeNameMontiCar.equals("AssignmentType")) {//TODO Add MatrixProperties to MathInformation
                     ASTAssignmentType astAssignmentType = (ASTAssignmentType) astType;
-                    if (astAssignmentType.getDim().isPresent()) {
-                        ASTDimension astDimension = astAssignmentType.getDim().get();
-                        variable.addDimensionalInformation(((MathExpressionSymbol) astDimension.getMathArithmeticExpressions().get(0).getSymbol().get()).getTextualRepresentation());
-                        variable.addDimensionalInformation(((MathExpressionSymbol) astDimension.getMathArithmeticExpressions().get(1).getSymbol().get()).getTextualRepresentation());
-
-                    }
-
+                    handleAssignmentType(variable, astAssignmentType);
                 }
                 return Optional.of(variableType);
             }
@@ -115,26 +99,9 @@ public class TypeConverter {
         for (VariableType variableType : nonPrimitiveVariableTypes) {
             if (variableType.getTypeNameMontiCar().equals(typeNameMontiCar)) {
                 if (typeNameMontiCar.equals("CommonMatrixType")) {
-                    ASTCommonMatrixType astCommonMatrixType = (ASTCommonMatrixType) ((ASTPort) portSymbol.getAstNode().get()).getType();
-                    for (ASTCommonDimensionElement astCommonDimensionElement :
-                            astCommonMatrixType.getCommonDimension().getCommonDimensionElements()) {
-                        if (astCommonDimensionElement.getName().isPresent())
-                            variable.addDimensionalInformation(astCommonDimensionElement.getName().get());
-                        else if (astCommonDimensionElement.getUnitNumber().isPresent())
-                            variable.addDimensionalInformation(astCommonDimensionElement.getUnitNumber().get().getNumber().get().getDividend() + "");
-                        else {
-                            Log.error("Case not handled;");
-                        }
-                    }
-                } else if (typeNameMontiCar.equals("AssignmentType")) {//TODO Add MatrixProperties to MathInformation
-                    ASTAssignmentType astAssignmentType = (ASTAssignmentType) ((ASTPort) portSymbol.getAstNode().get()).getType();
-                    if (astAssignmentType.getDim().isPresent()) {
-                        ASTDimension astDimension = astAssignmentType.getDim().get();
-                        variable.addDimensionalInformation(((MathExpressionSymbol) astDimension.getMathArithmeticExpressions().get(0).getSymbol().get()).getTextualRepresentation());
-                        variable.addDimensionalInformation(((MathExpressionSymbol) astDimension.getMathArithmeticExpressions().get(1).getSymbol().get()).getTextualRepresentation());
-
-                    }
-
+                    handleCommonMatrixType(variable, portSymbol);
+                } else if (typeNameMontiCar.equals("AssignmentType")) {
+                    handleAssignmentType(variable, portSymbol);
                 }
                 return Optional.of(variableType);
             }
@@ -142,6 +109,38 @@ public class TypeConverter {
         Log.info(typeNameMontiCar, "Unknown Type:");
         //Log.error("0xUNPOTYFOBYGE Unknown Port Type found by generator");
         return Optional.empty();
+    }
+
+    public static void handleCommonMatrixType(Variable variable, PortSymbol portSymbol) {
+        ASTCommonMatrixType astCommonMatrixType = (ASTCommonMatrixType) ((ASTPort) portSymbol.getAstNode().get()).getType();
+        handleCommonMatrixType(variable, astCommonMatrixType);
+    }
+
+    public static void handleCommonMatrixType(Variable variable, ASTCommonMatrixType astCommonMatrixType) {
+        for (ASTCommonDimensionElement astCommonDimensionElement :
+                astCommonMatrixType.getCommonDimension().getCommonDimensionElements()) {
+            if (astCommonDimensionElement.getName().isPresent())
+                variable.addDimensionalInformation(astCommonDimensionElement.getName().get());
+            else if (astCommonDimensionElement.getUnitNumber().isPresent())
+                variable.addDimensionalInformation(astCommonDimensionElement.getUnitNumber().get().getNumber().get().getDividend() + "");
+            else {
+                Log.error("Case not handled;");
+            }
+        }
+    }
+
+    public static void handleAssignmentType(Variable variable, PortSymbol portSymbol) {
+        ASTAssignmentType astAssignmentType = (ASTAssignmentType) ((ASTPort) portSymbol.getAstNode().get()).getType();
+        handleAssignmentType(variable, astAssignmentType);
+    }
+
+    public static void handleAssignmentType(Variable variable, ASTAssignmentType astAssignmentType) {
+        //TODO Add MatrixProperties to MathInformation
+        if (astAssignmentType.getDim().isPresent()) {
+            ASTDimension astDimension = astAssignmentType.getDim().get();
+            variable.addDimensionalInformation(((MathExpressionSymbol) astDimension.getMathArithmeticExpressions().get(0).getSymbol().get()).getTextualRepresentation());
+            variable.addDimensionalInformation(((MathExpressionSymbol) astDimension.getMathArithmeticExpressions().get(1).getSymbol().get()).getTextualRepresentation());
+        }
     }
 
     public static VariableType getVariableTypeForMontiCarInstance(ExpandedComponentInstanceSymbol instanceSymbol) {
@@ -155,24 +154,26 @@ public class TypeConverter {
         TypeConverter.addNonPrimitiveVariableType(type);
         return type;
     }
-    public static String getTypeName(MathMatrixArithmeticValueSymbol mathExpressionSymbol){
-        if(mathExpressionSymbol.getVectors().size()>1){
-            if(mathExpressionSymbol.getVectors().get(0).getMathMatrixAccessSymbols().size()>1)
+
+    public static String getTypeName(MathMatrixArithmeticValueSymbol mathExpressionSymbol) {
+        if (mathExpressionSymbol.getVectors().size() > 1) {
+            if (mathExpressionSymbol.getVectors().get(0).getMathMatrixAccessSymbols().size() > 1)
                 return "Matrix";
-            else{
+            else {
                 return "ColumnVector";
             }
-        }else{
+        } else {
             return "RowVector";
         }
     }
 
-    public static VariableType getVariableTypeForTargetLanguageTypeName(String targetLanguageTypeName){
-        VariableType type=new VariableType();
+    public static VariableType getVariableTypeForTargetLanguageTypeName(String targetLanguageTypeName) {
+        VariableType type = new VariableType();
         type.setTypeNameTargetLanguage(targetLanguageTypeName);
         type.setIncludeName("octave/oct");
         return type;
     }
+
     static {
         addNonPrimitiveVariableType("SIUnitRangesType", "double", "");
         addNonPrimitiveVariableType("ElementType", "double", "");
