@@ -8,6 +8,7 @@
 #include "octave/builtin-defun-decls.h"
 class test_math_sumCommandTest{
 public:
+double in1;
 double out1;
 RowVector CONSTANTCONSTANTVECTOR0;
 void init()
@@ -21,7 +22,7 @@ void execute()
 {
 RowVector mat = CONSTANTCONSTANTVECTOR0;
 double a = (Helper::getDoubleFromOctaveListFirstResult(Fsum(Helper::convertToOctaveValueList(mat),1)));
-out1 = a;
+out1 = a+in1;
 }
 
 };
