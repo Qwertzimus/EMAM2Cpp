@@ -213,12 +213,6 @@ public class OctaveFunctionTest extends AbstractSymtabTest {
     }
 
     @Test
-    public void testSumCommandStream() throws IOException {
-        testMathCommand("sum");
-
-    }
-
-    @Test
     public void testTanCommand() throws IOException {
         testMathCommand("tan");
     }
