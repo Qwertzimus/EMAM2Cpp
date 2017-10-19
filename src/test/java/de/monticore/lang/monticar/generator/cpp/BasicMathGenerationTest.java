@@ -14,7 +14,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  * @author Sascha Schneiders
  */
-public class BasicMathGenerationTests extends AbstractSymtabTest {
+public class BasicMathGenerationTest extends AbstractSymtabTest {
 
     @Test
     public void testRowVectorMathSectionTest() throws IOException {

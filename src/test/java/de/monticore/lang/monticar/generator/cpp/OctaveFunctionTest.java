@@ -19,7 +19,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  * @author Sascha Schneiders
  */
-public class OctaveFunctionTests extends AbstractSymtabTest {
+public class OctaveFunctionTest extends AbstractSymtabTest {
 
     public void testMathCommand(String namePart) throws IOException {
         MathConverter.resetIDs();
