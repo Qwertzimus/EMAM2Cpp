@@ -1,5 +1,9 @@
 package de.monticore.lang.monticar.generator;
 
+import de.monticore.lang.monticar.generator.cpp.converter.ComponentConverter;
+import de.monticore.lang.monticar.generator.cpp.converter.MathConverter;
+import de.monticore.lang.monticar.generator.optimization.MathInformationRegister;
+
 /**
  * @author Sascha Schneiders
  */
@@ -44,5 +48,11 @@ public class VariableType {
 
     public boolean hasInclude() {
         return !includeName.equals("");
+    }
+
+    public void set(VariableType variableType) {
+        this.typeNameMontiCar = variableType.typeNameMontiCar;
+        this.typeNameTargetLanguage = variableType.typeNameTargetLanguage;
+        this.includeName = variableType.includeName;
     }
 }

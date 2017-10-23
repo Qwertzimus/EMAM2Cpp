@@ -15,7 +15,7 @@ component Distronic_Enabled {
 	instance SwitchB<(-oo:d:oo)> switch2;
 	instance Multiplication<(-oo:d:oo)> mult1, mult2, mult3;
 	instance PlusMinusPlus<(-oo:d:oo)> pmp1;
-	instance LookUp<(-oo:d:oo)> look1, look2, look3, look4, look5;
+	instance LookUp<(-oo:d:oo),1> look1, look2, look3, look4, look5;//TODO add constant value
 	instance Smaller<(-oo:d:oo)> smaller1;
 	
 	connect Distance_stat -> switch1.in1;

@@ -1,10 +1,8 @@
 package de.monticore.lang.monticar.generator.cpp;
 
+import de.monticore.lang.embeddedmontiarc.embeddedmontiarc._symboltable.ConstantPortSymbol;
 import de.monticore.lang.embeddedmontiarc.embeddedmontiarc._symboltable.ExpandedComponentInstanceSymbol;
 import de.monticore.lang.monticar.generator.AbstractSymtabTest;
-import de.monticore.lang.monticar.generator.cpp.GeneratorCPP;
-import de.monticore.lang.monticar.generator.cpp.converter.MathConverter;
-import de.monticore.lang.monticar.generator.optimization.ThreadingOptimizer;
 import de.monticore.symboltable.Scope;
 import org.junit.Test;
 
@@ -17,18 +15,18 @@ import static org.junit.Assert.assertNotNull;
 /**
  * @author Sascha Schneiders
  */
-public class ThreadingOptimizerTest extends AbstractSymtabTest {
+public class BasicGenerationTest  extends AbstractSymtabTest {
+
     @Test
-    public void testMathUnitThreading() throws IOException {
+    public void testBasicLookUpInstanceGeneration() throws IOException {
         Scope symtab = createSymTab("src/test/resources");
 
-        ExpandedComponentInstanceSymbol componentSymbol = symtab.<ExpandedComponentInstanceSymbol>resolve("paper.mathUnit", ExpandedComponentInstanceSymbol.KIND).orElse(null);
+        ExpandedComponentInstanceSymbol componentSymbol = symtab.<ExpandedComponentInstanceSymbol>resolve("testing.basicLookUpInstance", ExpandedComponentInstanceSymbol.KIND).orElse(null);
         assertNotNull(componentSymbol);
         GeneratorCPP generatorCPP = new GeneratorCPP();
-        generatorCPP.setUseThreadingOptimization(true);
-        generatorCPP.setGenerationTargetPath("./target/generated-sources-cpp/paperMatrixModifier/l2");
+        generatorCPP.setGenerationTargetPath("./target/generated-sources-cpp/testing/l0");
         List<File> files = generatorCPP.generateFiles(componentSymbol, symtab);
-        String restPath = "paperMatrixModifier/l2/";
+        String restPath = "testing/l0/";
         testFilesAreEqual(files, restPath);
     }
 }

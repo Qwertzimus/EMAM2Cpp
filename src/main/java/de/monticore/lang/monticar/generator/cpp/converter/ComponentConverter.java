@@ -66,6 +66,7 @@ public class ComponentConverter {
     public static void addVariables(ExpandedComponentInstanceSymbol componentSymbol, BluePrintCPP bluePrint) {
         //add parameters as variables
         for (EMAVariable variable : componentSymbol.getParameters()) {
+            System.out.println("EMAVAR: " + variable.getName() + " " + variable.getType().toString());
             Variable var = new Variable();
             var.setName(variable.getName());
             var.setTypeNameMontiCar(variable.getType());
@@ -81,44 +82,14 @@ public class ComponentConverter {
 
     public static void generateInitMethod(ExpandedComponentInstanceSymbol componentSymbol, BluePrintCPP bluePrint, GeneratorCPP generatorCPP, List<String> includeStrings) {
         Method method = new Method("init", "void");
+        bluePrint.addMethod(method);
         for (Variable v : bluePrint.getMathInformationRegister().getVariables()) {
-            Log.info(v.getName(), "Inspecting Variable:");
             if (v.isStaticVariable()) {
-                //TODO add static variable filter function before generate init method
-                //extract the static variable and their possible assignments
-                //generate the static variable and their assignment if present
-                //check if value is constant matrix/vector definition
-                //fix this too
-                VariableStatic variableStatic = (VariableStatic) v;
-
-                if (!variableStatic.getAssignmentSymbol().isPresent()) {
-                    String instructionString = "";
-                    if (variableStatic.getVariableType().getTypeNameTargetLanguage().equals("Matrix")) {
-                        instructionString = MathInformationRegister.getVariableInitName(v, bluePrint) + "=Matrix(" + v.getDimensionalInformation().get(0) + "," + v.getDimensionalInformation().get(1) + ");\n";
-                    } else if (variableStatic.getVariableType().getTypeNameTargetLanguage().equals("double")) {
-                        instructionString = MathInformationRegister.getVariableInitName(v, bluePrint) + "=0;\n";
-                    } else {
-                        //RowVector and ColumnVector generation not handled here
-                    }
-                    method.addInstruction(new TargetCodeInstruction(instructionString));
-                } else {
-                    String instructionString = "";
-                    instructionString += variableStatic.getNameTargetLanguageFormat();
-                    instructionString += "=" + MathConverter.getConstantConversion(variableStatic.getAssignmentSymbol().get());
-                    instructionString += ";\n";
-                    method.addInstruction(new TargetCodeInstruction(instructionString));
-
-                }
-            } else if (v.getVariableType().getTypeNameTargetLanguage().equals("Matrix")) {
-                Log.info(v.getName(), "Matrix found:");
-                if (v.isParameterVariable()) {
-                    method.addInstruction(new TargetCodeInstruction("this->" + MathInformationRegister.getVariableInitName(v, bluePrint) + "=" + MathInformationRegister.getVariableInitName(v, bluePrint) + ";\n"));
-                    method.addParameter(v);
-                } else
-                    method.addInstruction(new TargetCodeInstruction(MathInformationRegister.getVariableInitName(v, bluePrint) + "=Matrix(" + v.getDimensionalInformation().get(0) + "," + v.getDimensionalInformation().get(1) + ");\n"));
+                generateInitStaticVariablePart(method, v, bluePrint);
+            } else {
+                generateInitNonStaticVariable(method, v, bluePrint);
             }
         }
-
         for (Variable v : bluePrint.getVariables()) {
             Log.info("Variable: " + v.getName(), "initBluePrintCreate:");
 
@@ -130,25 +101,93 @@ public class ComponentConverter {
                 Instruction instruction = new ConstantConnectInstructionCPP(v, v);
                 method.addInstruction(instruction);
             }
-
-
         }
 
         for (ExpandedComponentInstanceSymbol subComponent : componentSymbol.getSubComponents()) {
             String parameterString = "";
             for (ASTExpression var : subComponent.getArguments()) {
-                if (var.getSymbol().isPresent()) {
-                    parameterString += ((MathExpressionSymbol) var.getSymbol().get()).getTextualRepresentation();
-                } else {
-                    parameterString += var.toString();
-                }
+                System.out.println(var.toString());
+                parameterString += getExpressionParameterConversion(var);
             }
-            String result = GeneralHelperMethods.getTargetLanguageVariableInstanceName(subComponent.getName()) + ".init(" + parameterString + ");\n";
+            String result = "";
+            result += GeneralHelperMethods.getTargetLanguageVariableInstanceName(subComponent.getName()) + ".init(" + parameterString + ");\n";
 
             TargetCodeInstruction instruction = new TargetCodeInstruction(result);
             method.addInstruction(instruction);
         }
-        bluePrint.addMethod(method);
+    }
+
+    public static void generateInitStaticVariablePart(Method method, Variable v, BluePrintCPP bluePrint) {
+        //TODO add static variable filter function before generate init method
+        //extract the static variable and their possible assignments
+        //generate the static variable and their assignment if present
+        //check if value is constant matrix/vector definition
+        //fix this too
+        VariableStatic variableStatic = (VariableStatic) v;
+
+        if (!variableStatic.getAssignmentSymbol().isPresent()) {
+            String instructionString = "";
+            if (variableStatic.getVariableType().getTypeNameTargetLanguage().equals("Matrix")) {
+                instructionString = MathConverter.getMatrixInitLine(v, bluePrint);
+            } else if (variableStatic.getVariableType().getTypeNameTargetLanguage().equals("double")) {
+                instructionString = MathInformationRegister.getVariableInitName(v, bluePrint) + "=0;\n";
+            } else if (variableStatic.getVariableType().getTypeNameTargetLanguage().equals("RowVector")) {
+                instructionString = MathConverter.getRowVectorInitLine(v, bluePrint);
+            } else if (variableStatic.getVariableType().getTypeNameTargetLanguage().equals("ColumnVector")) {
+                instructionString = MathConverter.getColumnVectorInitLine(v, bluePrint);
+            }
+            method.addInstruction(new TargetCodeInstruction(instructionString));
+        } else {
+            String instructionString = "";
+            instructionString += variableStatic.getNameTargetLanguageFormat();
+            instructionString += "=" + MathConverter.getConstantConversion(variableStatic.getAssignmentSymbol().get());
+            instructionString += ";\n";
+            method.addInstruction(new TargetCodeInstruction(instructionString));
+
+        }
+    }
+
+    public static void generateInitNonStaticVariable(Method method, Variable v, BluePrintCPP bluePrint) {
+        if (v.getVariableType().getTypeNameTargetLanguage().equals("Matrix")) {
+            if (v.isParameterVariable()) {
+                method.addInstruction(new TargetCodeInstruction("this->" + MathInformationRegister.getVariableInitName(v, bluePrint) + "=" + MathInformationRegister.getVariableInitName(v, bluePrint) + ";\n"));
+                method.addParameter(v);
+            } else
+                method.addInstruction(new TargetCodeInstruction(MathConverter.getMatrixInitLine(v, bluePrint)));
+        } else if (v.getVariableType().getTypeNameTargetLanguage().equals("RowVector")) {
+            if (v.isParameterVariable()) {
+                method.addInstruction(new TargetCodeInstruction("this->" + MathInformationRegister.getVariableInitName(v, bluePrint) + "=" + MathInformationRegister.getVariableInitName(v, bluePrint) + ";\n"));
+                method.addParameter(v);
+            } else
+                method.addInstruction(new TargetCodeInstruction(MathConverter.getRowVectorInitLine(v, bluePrint)));
+        } else if (v.getVariableType().getTypeNameTargetLanguage().equals("ColumnVector")) {
+            if (v.isParameterVariable()) {
+                method.addInstruction(new TargetCodeInstruction("this->" + MathInformationRegister.getVariableInitName(v, bluePrint) + "=" + MathInformationRegister.getVariableInitName(v, bluePrint) + ";\n"));
+                method.addParameter(v);
+            } else
+                method.addInstruction(new TargetCodeInstruction(MathConverter.getColumnVectorInitLine(v, bluePrint)));
+        }
+    }
+
+    public static String getExpressionParameterConversion(ASTExpression var) {
+        String parameterString = "";
+        if (var.getSymbol().isPresent()) {
+            boolean handled = false;
+            MathExpressionSymbol symbol = (MathExpressionSymbol) var.getSymbol().get();
+            if (symbol.isMatrixExpression()) {
+                MathMatrixExpressionSymbol mathMatrixExpressionSymbol = (MathMatrixExpressionSymbol) symbol;
+                if (mathMatrixExpressionSymbol.isValueExpression()) {
+                    parameterString = MathConverter.getConstantConversion((MathMatrixArithmeticValueSymbol) mathMatrixExpressionSymbol);
+                    handled = true;
+
+                }
+            }
+            if (!handled)
+                parameterString += symbol.getTextualRepresentation();
+        } else {
+            parameterString += var.toString();
+        }
+        return parameterString;
     }
 
     public static BluePrint convertComponentSymbolToBluePrint(ExpandedComponentInstanceSymbol componentSymbol, List<String> includeStrings, GeneratorCPP generatorCPP) {

@@ -29,6 +29,7 @@ public class Variable {
     Optional<String> constantValue = Optional.empty();
     List<String> additionalInformation = new ArrayList<>();
     List<String> dimensionalInformation = new ArrayList<>();
+    Optional<String> customTypeName = Optional.empty();
 
     public Variable() {
 
@@ -40,7 +41,7 @@ public class Variable {
     }
 
     public Variable(Variable variable) {
-        this.type = variable.getVariableType();
+        this.type.set(variable.getVariableType());
         this.name = variable.getName();
         this.inputVariable = variable.isInputVariable();
         this.constantVariable = variable.constantVariable;
@@ -73,7 +74,8 @@ public class Variable {
     }
 
     public void setVariableType(VariableType variableType) {
-        this.type = variableType;
+
+        this.type.set(variableType);
     }
 
     public VariableType getVariableType() {
@@ -192,8 +194,8 @@ public class Variable {
 
     public void setDimensionalInformation(String dimension1, String dimension2) {
         this.dimensionalInformation.clear();
-        this.dimensionalInformation.add(dimension1);
-        this.dimensionalInformation.add(dimension2);
+        addDimensionalInformation(dimension1);
+        addDimensionalInformation(dimension2);
     }
 
     public int howManyDimensions() {

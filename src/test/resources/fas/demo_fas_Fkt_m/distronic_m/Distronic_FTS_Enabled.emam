@@ -11,7 +11,7 @@ component Distronic_FTS_Enabled {
 		out (-oo:d:oo) Decelerator_pc;
 		
 	instance PlusMinus<(-oo:d:oo)> plusMinus1;
-	instance LookUp<(-oo:d:oo)> look1, look2;
+	instance LookUp<(-oo:d:oo),1> look1, look2;//TODO add constant value
 	instance Smaller<(-oo:d:oo)> smaller1;
 	instance Multiplication<(-oo:d:oo)> mult1;
 	instance SwitchB<(-oo:d:oo)> switch1;

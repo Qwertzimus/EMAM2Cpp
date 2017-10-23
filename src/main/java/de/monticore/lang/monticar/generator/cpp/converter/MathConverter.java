@@ -9,6 +9,7 @@ import de.monticore.lang.monticar.generator.Variable;
 import de.monticore.lang.monticar.generator.cpp.BluePrintCPP;
 import de.monticore.lang.monticar.generator.cpp.symbols.MathChainedExpression;
 import de.monticore.lang.monticar.generator.cpp.symbols.MathStringExpression;
+import de.monticore.lang.monticar.generator.optimization.MathInformationRegister;
 import de.se_rwth.commons.logging.Log;
 
 import java.lang.reflect.Type;
@@ -76,7 +77,7 @@ public class MathConverter {
             }
             ++column;
         }
-        String firstPart = matrixName+" = " + typeName;
+        String firstPart = matrixName + " = " + typeName;
         if (typeName.equals("RowVector")) {
             firstPart += "(" + mathExpressionSymbol.getVectors().get(0).getMathMatrixAccessSymbols().size() + ");\n";
         } else if (typeName.equals("ColumnVector")) {
@@ -98,4 +99,17 @@ public class MathConverter {
     public static int getNextConstantConstantVectorID() {
         return CONSTANTCONSTANTVECTORID++;
     }
+
+    public static String getMatrixInitLine(Variable v, BluePrintCPP bluePrint) {
+        return MathInformationRegister.getVariableInitName(v, bluePrint) + "=Matrix(" + v.getDimensionalInformation().get(0) + "," + v.getDimensionalInformation().get(1) + ");\n";
+    }
+
+    public static String getRowVectorInitLine(Variable v, BluePrintCPP bluePrint) {
+        return MathInformationRegister.getVariableInitName(v, bluePrint) + "= RowVector(" + v.getDimensionalInformation().get(1) + ");\n";
+    }
+
+    public static String getColumnVectorInitLine(Variable v, BluePrintCPP bluePrint) {
+        return MathInformationRegister.getVariableInitName(v, bluePrint) + "= ColumnVector(" + v.getDimensionalInformation().get(0) + ");\n";
+    }
+
 }

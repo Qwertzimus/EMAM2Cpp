@@ -17,7 +17,7 @@ component VelocityControl {
 		out (-oo:d:oo) BrakeForce_pc;
 
 	instance Saturation<(-oo:d:oo)> sat1, sat2;
-	instance LookUp<(-oo:d:oo)> look1,look2;
+	instance LookUp<(-oo:d:oo),1> look1,look2;//TODO add constant value
 	instance Max<(-oo:d:oo),2> max1;
 	instance Max<(-oo:d:oo),5> max2;
 	instance SwitchB<(-oo:d:oo)> switch1;

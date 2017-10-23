@@ -83,6 +83,7 @@ public class TypeConverter {
                 if (typeNameMontiCar.equals("CommonMatrixType")) {
                     ASTCommonMatrixType astCommonMatrixType = (ASTCommonMatrixType) astType;
                     handleCommonMatrixType(variable, astCommonMatrixType);
+                    variableType = getRealVariableType(astCommonMatrixType);
                 } else if (typeNameMontiCar.equals("AssignmentType")) {//TODO Add MatrixProperties to MathInformation
                     ASTAssignmentType astAssignmentType = (ASTAssignmentType) astType;
                     handleAssignmentType(variable, astAssignmentType);
@@ -93,6 +94,29 @@ public class TypeConverter {
         Log.info(typeNameMontiCar, "Unknown Type:");
         //Log.error("0xUNPOTYFOBYGE Unknown Port Type found by generator");
         return Optional.empty();
+    }
+
+    public static VariableType getRealVariableType(ASTCommonMatrixType astCommonMatrixType) {
+        VariableType variableType;
+        List<ASTCommonDimensionElement> dimensionElements = astCommonMatrixType.getCommonDimension().getCommonDimensionElements();
+        if (dimensionElements.size() == 2) {
+            if (isVectorDimension(dimensionElements.get(0)))
+                variableType = new VariableType("CommonRowVectorType", "RowVector", "octave/oct");
+            else if (isVectorDimension(dimensionElements.get(1))) {
+                variableType = new VariableType("CommonColumnVectorType", "ColumnVector", "octave/oct");;
+            }else{
+                variableType = new VariableType("CommonMatrixType", "Matrix", "octave/oct");
+
+            }
+        }else{
+            variableType = new VariableType("CommonMatrixType", "Matrix", "octave/oct");
+        }
+
+        return variableType;
+    }
+
+    public static boolean isVectorDimension(ASTCommonDimensionElement astCommonDimensionElement) {
+        return astCommonDimensionElement.getUnitNumber().get().getNumber().get().intValue() == 1;
     }
 
     public static Optional<VariableType> getVariableTypeForMontiCarTypeName(String typeNameMontiCar, Variable variable, PortSymbol portSymbol) {
