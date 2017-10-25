@@ -9,6 +9,7 @@ import de.monticore.lang.monticar.generator.FileContent;
 import de.monticore.lang.monticar.generator.Generator;
 import de.monticore.lang.monticar.generator.Helper;
 import de.monticore.lang.monticar.generator.optimization.ThreadingOptimizer;
+import de.monticore.lang.monticar.si._symboltable.ResolutionDeclarationSymbol;
 import de.monticore.symboltable.Scope;
 import de.se_rwth.commons.logging.Log;
 import org.apache.commons.io.FileUtils;
@@ -60,7 +61,7 @@ public class GenerationTest extends AbstractSymtabTest {
                 "#ifndef M_PI\n" +
                 "#define M_PI 3.14159265358979323846\n" +
                 "#endif\n" +
-                "#include \"octave/oct.h\"\n"+
+                "#include \"octave/oct.h\"\n" +
                 "class test_basicPorts{\n" +
                 "public:\n" +
                 "double in1;\n" +
@@ -95,7 +96,7 @@ public class GenerationTest extends AbstractSymtabTest {
                 "#ifndef M_PI\n" +
                 "#define M_PI 3.14159265358979323846\n" +
                 "#endif\n" +
-                "#include \"octave/oct.h\"\n"+
+                "#include \"octave/oct.h\"\n" +
                 "class test_basicPortsConstantConnector{\n" +
                 "public:\n" +
                 "double out1;\n" +
@@ -134,7 +135,7 @@ public class GenerationTest extends AbstractSymtabTest {
                 "#ifndef M_PI\n" +
                 "#define M_PI 3.14159265358979323846\n" +
                 "#endif\n" +
-                "#include \"octave/oct.h\"\n"+
+                "#include \"octave/oct.h\"\n" +
                 "class test_basicPortsMath{\n" +
                 "public:\n" +
                 "double counter;\n" +
@@ -175,7 +176,7 @@ public class GenerationTest extends AbstractSymtabTest {
                 "#ifndef M_PI\n" +
                 "#define M_PI 3.14159265358979323846\n" +
                 "#endif\n" +
-                "#include \"octave/oct.h\"\n"+
+                "#include \"octave/oct.h\"\n" +
                 "class test_basicPortsLoop{\n" +
                 "public:\n" +
                 "double counter;\n" +
@@ -311,18 +312,20 @@ public class GenerationTest extends AbstractSymtabTest {
     }
 
     @Test
-    public void testBasicGenericInstance() {
+    public void testBasicGenericInstance() throws Exception{
         Scope symtab = createSymTab("src/test/resources");
 
         ExpandedComponentInstanceSymbol componentSymbol = symtab.<ExpandedComponentInstanceSymbol>resolve("test.basicGenericInstance", ExpandedComponentInstanceSymbol.KIND).orElse(null);
         assertNotNull(componentSymbol);
+        /*System.out.println(componentSymbol.getSubComponents().iterator().next().toString());
+        for(ResolutionDeclarationSymbol sym:componentSymbol.getSubComponents().iterator().next().getResolutionDeclarationSymbols())
+        {
+            System.out.println(sym.getNameToResolve());
+        }*/
         MathStatementsSymbol mathSymbol = Helper.getMathStatementsSymbolFor(componentSymbol, symtab);
         GeneratorCPP generatorCPP = new GeneratorCPP();
         generatorCPP.setGenerationTargetPath("./target/generated-sources-cpp/testBasicGenericInstance");
-        System.out.println(generatorCPP.generateStrings(componentSymbol, symtab));
-
-        System.out.println(generatorCPP.generateString(componentSymbol.getSubComponents().iterator().next(), mathSymbol));
-
+        generatorCPP.generateFiles(componentSymbol, symtab);
     }
 
     @Test
@@ -333,9 +336,9 @@ public class GenerationTest extends AbstractSymtabTest {
         assertNotNull(componentSymbol);
         GeneratorCPP generatorCPP = new GeneratorCPP();
         generatorCPP.setGenerationTargetPath("./target/generated-sources-cpp/testBasicGenericArrayInstance");
-        generatorCPP.generateFiles(componentSymbol, symtab);
-        //System.out.println(generatorCPP.generateString(componentSymbol.getSubComponents().iterator().next(), mathSymbol));
-
+        List<File> files = generatorCPP.generateFiles(componentSymbol, symtab);
+        String restPath = "testBasicGenericArrayInstance/";
+        testFilesAreEqual(files, restPath);
     }
 
     @Test
@@ -438,7 +441,6 @@ public class GenerationTest extends AbstractSymtabTest {
         String restPath = "paperMatrixModifier/l3/";
         testFilesAreEqual(files, restPath);
     }
-
 
 
 }
