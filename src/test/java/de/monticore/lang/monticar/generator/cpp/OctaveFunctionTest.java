@@ -99,6 +99,10 @@ public class OctaveFunctionTest extends AbstractSymtabTest {
     public void testAtanCommand() throws IOException {
         testMathCommand("atan");
     }
+    @Test
+    public void testAtanhCommand() throws IOException {
+        testMathCommand("atanh");
+    }
 
     @Test
     public void testCosCommand() throws IOException {
