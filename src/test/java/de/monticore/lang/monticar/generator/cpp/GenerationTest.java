@@ -452,7 +452,7 @@ public class GenerationTest extends AbstractSymtabTest {
         GeneratorCPP generatorCPP = new GeneratorCPP();
         generatorCPP.setGenerationTargetPath("./target/generated-sources-cpp/testing");
         List<File> files = generatorCPP.generateFiles(componentSymbol, symtab);
-        String restPath = "test/";
+        String restPath = "testing/";
         testFilesAreEqual(files, restPath);
     }
 }

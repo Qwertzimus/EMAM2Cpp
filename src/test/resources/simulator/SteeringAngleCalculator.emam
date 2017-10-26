@@ -29,6 +29,7 @@ component SteeringAngleCalculator{
      if (globalOrientation > M_PI) {
          globalOrientation -= 2 * M_PI;
      }
+     end
 
      Q orientedDistance = distance;
      Q angleTowardsTrajectory = atan(orientedDistance / 2);
