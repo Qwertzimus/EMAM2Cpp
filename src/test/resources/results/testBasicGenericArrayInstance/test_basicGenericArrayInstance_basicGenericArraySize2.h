@@ -15,7 +15,10 @@ void init()
 void execute()
 {
 for( auto i=1/1 ;i<=n;++i){
-valOut(i) = val1[i-1-1]*2/1 ;
+valOut(i) = val1[i-1]*2/1 ;
+}
+for( auto i=1/1 ;i<=n;++i){
+valOut(i) = val1[i-1]*3/1 ;
 }
 }
 

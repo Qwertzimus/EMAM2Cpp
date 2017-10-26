@@ -442,5 +442,17 @@ public class GenerationTest extends AbstractSymtabTest {
         testFilesAreEqual(files, restPath);
     }
 
+    @Test
+    public void testForLoopIf() throws IOException {
+        ConstantPortSymbol.resetLastID();
+        Scope symtab = createSymTab("src/test/resources");
 
+        ExpandedComponentInstanceSymbol componentSymbol = symtab.<ExpandedComponentInstanceSymbol>resolve("testing.forLoopIfInstance", ExpandedComponentInstanceSymbol.KIND).orElse(null);
+        assertNotNull(componentSymbol);
+        GeneratorCPP generatorCPP = new GeneratorCPP();
+        generatorCPP.setGenerationTargetPath("./target/generated-sources-cpp/testing");
+        List<File> files = generatorCPP.generateFiles(componentSymbol, symtab);
+        String restPath = "test/";
+        testFilesAreEqual(files, restPath);
+    }
 }

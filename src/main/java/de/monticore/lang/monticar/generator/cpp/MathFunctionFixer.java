@@ -78,7 +78,7 @@ public class MathFunctionFixer {
             if (mathMatrixExpressionSymbol.isMatrixAccessExpression()) {
                 if (mathChainedExpression.getSecondExpressionSymbol().getExpressionID() == MathStringExpression.ID) {
                     MathStringExpression mathStringExpression = (MathStringExpression) mathChainedExpression.getSecondExpressionSymbol();
-                    if (mathStringExpression.getText().equals("-1"))
+                    if (mathStringExpression.getText().contains("-1"))
                         return;
                 }
             }
@@ -194,7 +194,9 @@ public class MathFunctionFixer {
         if (mathExpressionSymbol.getMathExpressionSymbol().isPresent()) {
             fixMathFunctions(mathExpressionSymbol.getMathExpressionSymbol().get(), bluePrintCPP);
             MathExpressionSymbol mathExp = mathExpressionSymbol.getMathExpressionSymbol().get();
-            mathExpressionSymbol.setMathExpressionSymbol(new MathChainedExpression(mathExp, new MathStringExpression("-1")));
+            //mathExpressionSymbol.setMathExpressionSymbol(mathExp);
+            if (!(mathExp instanceof MathChainedExpression))
+                mathExpressionSymbol.setMathExpressionSymbol(new MathChainedExpression(mathExp, new MathStringExpression("-1")));
             /*if (mathExp.getExpressionID() != MathChainedExpression.ID && mathExp.getExpressionID() != MathStringExpression.ID) {
 
                 mathExpressionSymbol.setMathExpressionSymbol(new MathChainedExpression(mathExp, new MathStringExpression("-1")));

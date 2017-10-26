@@ -6,7 +6,11 @@ component BasicGenericArraySize<N1 n=1>{
 
     implementation Math{
         for i=1:n
-            valOut(i) = val1(i) * 2;
+           valOut(i) = val1(i) * 2;
+        end
+
+        for i=1:n
+           valOut(i) = val1(i) * 3;
         end
     }
 }
