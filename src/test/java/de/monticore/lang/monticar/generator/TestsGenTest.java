@@ -33,4 +33,21 @@ public class TestsGenTest extends AbstractSymtabTest {
         List<File> files = generatorCPP.generateFiles(symTab, componentSymbol, symTab);
         assertEquals(15, files.size());
     }
+
+    @Test
+    public void testSimpleMatrixComponent() throws IOException {
+        TaggingResolver symTab = createSymTabAndTaggingResolver(MODELS_DIR_PATH.toString());
+        ExpandedComponentInstanceSymbol componentSymbol = symTab.<ExpandedComponentInstanceSymbol>resolve(
+                "test.simpleMatrixComponent",
+                ExpandedComponentInstanceSymbol.KIND
+        ).orElse(null);
+        assertNotNull(componentSymbol);
+        GeneratorCPP generatorCPP = new GeneratorCPP();
+        generatorCPP.setModelsDirPath(MODELS_DIR_PATH);
+        generatorCPP.setGenerateTests(true);
+        generatorCPP.setGenerationTargetPath("./target/generated-sources-cpp/test/simpleMatrixComponent");
+        List<File> files = generatorCPP.generateFiles(symTab, componentSymbol, symTab);
+        String restPath = "test/simpleMatrixComponent/";
+        testFilesAreEqual(files, restPath);
+    }
 }

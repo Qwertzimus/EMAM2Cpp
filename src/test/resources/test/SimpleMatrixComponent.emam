@@ -1,0 +1,18 @@
+package test;
+
+component SimpleMatrixComponent{
+    ports in N1 status,
+        out Q^{1,3} direction;
+
+    implementation Math{
+        if status == 1
+          direction = [1, 0, 0];
+        elseif status == 2
+          direction = [0, 1, 0];
+        else
+         direction = [0, 0, 1];
+        end
+    }
+
+
+}

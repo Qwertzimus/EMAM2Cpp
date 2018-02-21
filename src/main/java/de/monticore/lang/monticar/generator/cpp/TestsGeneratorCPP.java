@@ -14,11 +14,7 @@ import de.monticore.lang.monticar.generator.cpp.viewmodel.check.ComponentCheckVi
 import de.monticore.lang.monticar.generator.cpp.viewmodel.check.IOutputPortCheck;
 import de.monticore.lang.monticar.generator.cpp.viewmodel.check.RangeOutputPortCheck;
 import de.monticore.lang.monticar.literals2._ast.ASTBooleanLiteral;
-import de.monticore.lang.monticar.streamunits._ast.ASTNamedStreamUnits;
-import de.monticore.lang.monticar.streamunits._ast.ASTPrecisionNumber;
-import de.monticore.lang.monticar.streamunits._ast.ASTStream;
-import de.monticore.lang.monticar.streamunits._ast.ASTStreamInstruction;
-import de.monticore.lang.monticar.streamunits._ast.ASTStreamValue;
+import de.monticore.lang.monticar.streamunits._ast.*;
 import de.monticore.lang.monticar.streamunits._symboltable.ComponentStreamUnitsSymbol;
 import de.monticore.lang.monticar.streamunits._symboltable.NamedStreamUnitsSymbol;
 import de.monticore.lang.monticar.streamunits._visitor.StreamUnitsVisitor;
@@ -196,7 +192,7 @@ public final class TestsGeneratorCPP {
 
     private static FileContent getCatchLib() {
         InputStream resource = TestsGeneratorCPP.class.getResourceAsStream("/vendor/catch.hpp");
-        String body = new Scanner(resource, "UTF-8").useDelimiter("\\A").next();
+        String body = new Scanner(resource).useDelimiter("\\A").next();
         return new FileContent(body, TESTS_DIRECTORY_NAME + "/catch.hpp");
     }
 
@@ -236,6 +232,18 @@ public final class TestsGeneratorCPP {
                 result = RangeOutputPortCheck.from(baseValue, baseValue);
             }
         }
+
+
+        @Override
+        public void visit(ASTMatrixPair node) {
+            //TODO handle matrices
+            //node.getValuePairs()
+        }
+
+        /*@Override
+        public void visit(ASTArrayValues node) {
+            //TODO handle port arrays
+        }*/
     }
 
     private static final class ASTStreamValue2InputPortValue implements StreamUnitsVisitor {
@@ -259,5 +267,17 @@ public final class TestsGeneratorCPP {
             }
             result = Double.toString(unitNumber.getNumber().get().doubleValue());
         }
+
+        @Override
+        public void visit(ASTMatrixPair node) {
+            //TODO handle matrices
+            //node.getValuePairs()
+            //node.get
+        }
+
+        /*@Override
+        public void visit(ASTArrayValues node) {
+            //TODO handle port arrays
+        }*/
     }
 }
