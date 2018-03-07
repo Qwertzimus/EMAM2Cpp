@@ -136,7 +136,35 @@ public class ExecuteMethodGeneratorHandler {
             } else {
                 Log.error("0xGEEXCOMAVAT Type conversion Case not handled!");
             }
-        } else {
+        } else if(mathValueType.getType().isIsWholeNumberNumber()) {
+            if (mathValueType.getDimensions().size() == 0)
+                return "int";
+            else if (mathValueType.getDimensions().size() == 2) {
+                Log.info("Dim1:" + mathValueType.getDimensions().get(0).getTextualRepresentation() + "Dim2: " + mathValueType.getDimensions().get(1).getTextualRepresentation(), "DIMS:");
+                if (mathValueType.getDimensions().get(0).getTextualRepresentation().equals("1")) {
+                    return "Row<int>";
+                } else if (mathValueType.getDimensions().get(1).getTextualRepresentation().equals("1")) {
+                    return "Col<int>";
+                }
+                return MathConverter.curBackend.getMatrixTypeName();//TODO improve in future
+            } else {
+                Log.error("0xGEEXCOMAVAT Type conversion Case not handled!");
+            }
+        } else if(mathValueType.getType().isIsBoolean()) {
+            if (mathValueType.getDimensions().size() == 0)
+                return "bool";
+            else if (mathValueType.getDimensions().size() == 2) {
+                Log.info("Dim1:" + mathValueType.getDimensions().get(0).getTextualRepresentation() + "Dim2: " + mathValueType.getDimensions().get(1).getTextualRepresentation(), "DIMS:");
+                if (mathValueType.getDimensions().get(0).getTextualRepresentation().equals("1")) {
+                    return "Row<bool>";
+                } else if (mathValueType.getDimensions().get(1).getTextualRepresentation().equals("1")) {
+                    return "Col<bool>";
+                }
+                return MathConverter.curBackend.getMatrixTypeName();//TODO improve in future
+            } else {
+                Log.error("0xGEEXCOMAVAT Type conversion Case not handled!");
+            }
+        }else{
             Log.error("Case not handled!");
         }
         return result;
@@ -144,7 +172,15 @@ public class ExecuteMethodGeneratorHandler {
 
     public static String generateExecuteCode(MathNameExpressionSymbol mathNameExpressionSymbol, List<String> includeStrings) {
         Log.info(mathNameExpressionSymbol.getNameToResolveValue(), "NameToResolveValue:");
-        return mathNameExpressionSymbol.getNameToResolveValue();
+        //TODO: refactor!
+        String nameToResolveValue = mathNameExpressionSymbol.getNameToResolveValue();
+        if(nameToResolveValue.equals("True")){
+            nameToResolveValue = "true";
+        }else if(nameToResolveValue.equals("False")){
+            nameToResolveValue = "false";
+        }
+
+        return nameToResolveValue;
     }
 
 
