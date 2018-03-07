@@ -28,17 +28,21 @@ int main () {
   de_rwth_armin_modeling_autopilot_motion_motionPlanning motionPlanning;
   motionPlanning.init();
   const int N = 1000000;
+  double _currentDirectionX = 0.0;
+  double _desiredDirectionX = 1.0;
   std::cout << "running benchmark\n";
   Timer tmr;
   for (int i=0; i<N; i++) {
-    motionPlanning.currentDirectionX = 0.0;
+    motionPlanning.currentDirectionX = _currentDirectionX;
     motionPlanning.currentDirectionY = 1.0;
-    motionPlanning.desiredDirectionX = 1.0;
+    motionPlanning.desiredDirectionX = _desiredDirectionX;
     motionPlanning.desiredDirectionY = 1.0;
     motionPlanning.signedDistanceToTrajectory = 0.15;
     motionPlanning.currentVelocity = 10.0;
     motionPlanning.desiredVelocity = 11.0;
     motionPlanning.execute();
+    _currentDirectionX = motionPlanning.steering;
+    _desiredDirectionX = motionPlanning.brakes;
   }
   double t = tmr.elapsed();
   double avgDuration = t / N;

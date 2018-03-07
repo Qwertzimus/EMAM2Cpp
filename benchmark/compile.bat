@@ -4,7 +4,7 @@ set OUTPUT_DIR=build
 if exist "%OUTPUT_DIR%" rmdir "%OUTPUT_DIR%" /s /q
 mkdir "%OUTPUT_DIR%"
 
-g++ -I"%PATH_TO_JDK_HOME%\include" ^
+g++ -O3 -I"%PATH_TO_JDK_HOME%\include" ^
    -I"%PATH_TO_JDK_HOME%\include\win32" ^
    -I"%PATH_TO_OCTAVE_HOME%\include\octave-4.2.1" ^
    -I"%PATH_TO_OCTAVE_HOME%\include\octave-4.2.1\octave" ^
