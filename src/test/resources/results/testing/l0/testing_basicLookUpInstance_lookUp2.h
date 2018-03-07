@@ -15,7 +15,7 @@ this->lookuptable=lookuptable;
 }
 void execute()
 {
-out1 = lookuptable(in1);
+out1 = lookuptable(in1-1);
 }
 
 };

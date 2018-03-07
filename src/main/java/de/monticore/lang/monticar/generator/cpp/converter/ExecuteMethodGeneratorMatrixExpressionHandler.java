@@ -222,6 +222,10 @@ public class ExecuteMethodGeneratorMatrixExpressionHandler {
         if (mathMatrixNameExpressionSymbol.hasMatrixAccessExpression()) {
             mathMatrixNameExpressionSymbol.getMathMatrixAccessOperatorSymbol().setMathMatrixNameExpressionSymbol(mathMatrixNameExpressionSymbol);
             result += generateExecuteCode(mathMatrixNameExpressionSymbol.getMathMatrixAccessOperatorSymbol(), includeStrings);
+            //TODO: fix properly
+            if(!mathMatrixNameExpressionSymbol.getNameToAccess().equals("") && !result.contains("-1")){
+                result = result.replace(")","-1)").replace(",","-1,");
+            }
         }
         return result;
     }

@@ -140,6 +140,10 @@ public class GeneratorCPP implements Generator {
             fileContents.addAll(SimulatorIntegrationHelper.getSimulatorIntegrationHelperFileContent());
         }
 
+        //TODO: remove, dirty fix
+        fileContents.stream()
+                .forEach(fc -> fc.setFileContent(fc.getFileContent().replace("-1-1","-1")));
+
         return fileContents;
     }
 
