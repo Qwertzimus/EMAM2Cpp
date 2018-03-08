@@ -562,4 +562,20 @@ public class GenerationTest extends AbstractSymtabTest {
         testFilesAreEqual(files,"testing/Parameter/");
 
     }
+
+    @Test
+    public void testArrayPortsComp() throws IOException {
+        TaggingResolver taggingResolver = createSymTabAndTaggingResolver("src/test/resources");
+        ExpandedComponentInstanceSymbol componentInstanceSymbol = taggingResolver.<ExpandedComponentInstanceSymbol>resolve("testing.arrayPortsComp",ExpandedComponentInstanceSymbol.KIND).orElse(null);
+
+        assertNotNull(componentInstanceSymbol);
+
+        GeneratorCPP generatorCPP = new GeneratorCPP();
+        generatorCPP.useArmadilloBackend();
+        generatorCPP.setGenerationTargetPath("./target/generated-sources-cpp/testing/ArrayPortsComp/");
+
+        List<File> files = generatorCPP.generateFiles(componentInstanceSymbol, taggingResolver);
+
+        testFilesAreEqual(files,"testing/ArrayPortsComp/");
+    }
 }
