@@ -142,7 +142,22 @@ public class GeneratorCPP implements Generator {
 
         //TODO: remove, dirty fix
         fileContents.stream()
-                .forEach(fc -> fc.setFileContent(fc.getFileContent().replace("-1-1","-1")));
+                .forEach(fc -> {
+                    String cur = fc.getFileContent();
+                    if(cur.contains("-1-1")){
+                        cur = cur.replace("-1-1","-1");
+                    }
+                    int indexExe = cur.indexOf("void execute()");
+                    if(indexExe > -1) {
+                        String beforeExecute = cur.substring(0,indexExe);
+                        String afterExecute = cur.substring(indexExe,cur.length());
+                        if (beforeExecute.contains("[0];")) {
+                            beforeExecute = beforeExecute.replace("[0];", "[1];");
+                        }
+                        cur = beforeExecute + afterExecute;
+                    }
+                    fc.setFileContent(cur);
+                });
 
         return fileContents;
     }
