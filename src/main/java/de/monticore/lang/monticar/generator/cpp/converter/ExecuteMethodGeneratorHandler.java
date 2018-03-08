@@ -103,6 +103,10 @@ public class ExecuteMethodGeneratorHandler {
                 result = "=" + MathConverter.curBackend.getMatrixTypeName() + "(" + ExecuteMethodGenerator.
                         generateExecuteCode(rows, includeStrings) + "," + ExecuteMethodGenerator.
                         generateExecuteCode(cols, includeStrings) + ")";
+            }else if(typeString.startsWith("Col<")){
+                result = "=" + typeString + "("+ ExecuteMethodGenerator.generateExecuteCode(cols,includeStrings) + ")";
+            }else if(typeString.startsWith("Row<")){
+                result = "=" + typeString + "(" + ExecuteMethodGenerator.generateExecuteCode(rows,includeStrings) + ")";
             }
         }
         return result;
