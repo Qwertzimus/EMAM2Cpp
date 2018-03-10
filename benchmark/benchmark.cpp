@@ -6,6 +6,8 @@
 #include <iostream>
 #include <chrono>
 
+void execute(de_rwth_armin_modeling_autopilot_motion_motionPlanning&, double&, double&);
+
 // https://stackoverflow.com/a/19471595/1432357
 class Timer
 {
@@ -30,24 +32,32 @@ int main () {
   const int N = 1000000;
   double _currentDirectionX = 0.0;
   double _desiredDirectionX = 1.0;
+  // warm up, load DLLs if needed
+  execute(motionPlanning, _currentDirectionX, _desiredDirectionX);
   std::cout << "running benchmark\n";
   Timer tmr;
   for (int i=0; i<N; i++) {
-    motionPlanning.currentDirectionX = _currentDirectionX;
-    motionPlanning.currentDirectionY = 1.0;
-    motionPlanning.desiredDirectionX = _desiredDirectionX;
-    motionPlanning.desiredDirectionY = 1.0;
-    motionPlanning.signedDistanceToTrajectory = 0.15;
-    motionPlanning.currentVelocity = 10.0;
-    motionPlanning.desiredVelocity = 11.0;
-    motionPlanning.execute();
-    _currentDirectionX = motionPlanning.steering;
-    _desiredDirectionX = motionPlanning.brakes;
+    execute(motionPlanning, _currentDirectionX, _desiredDirectionX);
   }
   double t = tmr.elapsed();
   double avgDuration = t / N;
   std::cout << "avgDuration = " << avgDuration << " sec\n";
   return 0;
+}
+
+void execute(de_rwth_armin_modeling_autopilot_motion_motionPlanning& cmp,
+        double& _currentDirectionX,
+        double& _desiredDirectionX) {
+    cmp.currentDirectionX = _currentDirectionX;
+    cmp.currentDirectionY = 1.0;
+    cmp.desiredDirectionX = _desiredDirectionX;
+    cmp.desiredDirectionY = 1.0;
+    cmp.signedDistanceToTrajectory = 0.15;
+    cmp.currentVelocity = 10.0;
+    cmp.desiredVelocity = 11.0;
+    cmp.execute();
+    _currentDirectionX = cmp.steering;
+    _desiredDirectionX = cmp.brakes;
 }
 
 #endif
