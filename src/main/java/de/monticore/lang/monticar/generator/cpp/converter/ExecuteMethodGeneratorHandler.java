@@ -279,4 +279,8 @@ public class ExecuteMethodGeneratorHandler {
         return result;
     }
 
+    public static String generateExecuteCode(MathOptimizationExpressionSymbol mathOptimizationExpressionSymbol, List<String> includeStrings) {
+        return OptimizationSolverConverter.getOptimizationExpressionCode(mathOptimizationExpressionSymbol, includeStrings, ComponentConverter.currentBluePrint);
+    }
+
 }

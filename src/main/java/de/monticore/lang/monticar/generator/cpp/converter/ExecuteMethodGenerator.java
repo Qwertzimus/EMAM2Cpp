@@ -55,7 +55,10 @@ public class ExecuteMethodGenerator {
             result = ExecuteMethodGeneratorHandler.generateExecuteCode((MathChainedExpression) mathExpressionSymbol, includeStrings);
         } else if (mathExpressionSymbol.isParenthesisExpression()) {
             result = ExecuteMethodGeneratorHandler.generateExecuteCode((MathParenthesisExpressionSymbol) mathExpressionSymbol, includeStrings);
-        } else {
+        } else if (mathExpressionSymbol instanceof MathOptimizationExpressionSymbol) {
+            result = ExecuteMethodGeneratorHandler.generateExecuteCode((MathOptimizationExpressionSymbol) mathExpressionSymbol, includeStrings);
+        }
+        else {
             Log.info(mathExpressionSymbol.getTextualRepresentation(), "Symbol:");
             Log.error("Case not handled!");
         }

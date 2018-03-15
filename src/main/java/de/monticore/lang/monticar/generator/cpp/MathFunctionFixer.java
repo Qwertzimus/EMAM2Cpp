@@ -62,6 +62,15 @@ public class MathFunctionFixer {
         } else if (mathExpressionSymbol.getExpressionID() == MathStringExpression.ID) {
             notHandled = false;
             //MathStringExpressions should be correct
+        } else if (mathExpressionSymbol instanceof MathOptimizationExpressionSymbol) {
+            // TODO: fix optimization functions
+            MathOptimizationExpressionSymbol optSymbol = (MathOptimizationExpressionSymbol) mathExpressionSymbol;
+            fixMathFunctions(optSymbol.getOptimizationVariable(), bluePrintCPP);
+            fixMathFunctions(optSymbol.getObjectiveExpression(), bluePrintCPP);
+            for (MathExpressionSymbol sym: optSymbol.getSubjectToExpressions())
+                fixMathFunctions(sym, bluePrintCPP);
+            Log.warn("Optimization not fully handled in MathFunctionFixer.fixMathFunctions yet");
+            notHandled = false;
         }
         if (notHandled) {
             Log.info(mathExpressionSymbol.getClass().getName(), "Symbol name:");
