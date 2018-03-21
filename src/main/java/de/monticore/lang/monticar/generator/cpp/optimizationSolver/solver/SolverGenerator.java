@@ -1,7 +1,8 @@
-package de.monticore.lang.monticar.generator.cpp.optimizationSolver;
+package de.monticore.lang.monticar.generator.cpp.optimizationSolver.solver;
 
-import de.monticore.lang.math.math._symboltable.expression.MathOptimizationExpressionSymbol;
+import de.monticore.lang.monticar.generator.cpp.optimizationSolver.problem.Problem;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,6 +17,8 @@ public abstract class SolverGenerator {
     private SolverGeneratorImplementation implementationHook;
 
     private String generationTargetPath = "./target/generated-sources-cpp/";
+
+    private List<String> necessaryIncludes = new ArrayList<>();
 
     // getter setter
 
@@ -35,16 +38,19 @@ public abstract class SolverGenerator {
         this.implementationHook = implementationHook;
     }
 
+    public List<String> getNecessaryIncludes() {
+        return necessaryIncludes;
+    }
+
     // methods
 
     /**
      * Generates code from a MathOptimizationExpressionSymbol to solve the described optimization problem.
      *
-     * @param expression     MathOptimizationExpressionSymbol which describes the minimization problem
-     * @param includeStrings Needed dependencies as string
+     * @param optimizationProblem optimization problem which should be solved
      * @return Executable code instruction as string
      */
-    public String generateSolverInstruction(MathOptimizationExpressionSymbol expression, List<String> includeStrings) {
-        return implementationHook.generateSolverCode(expression);
+    public String generateSolverInstruction(Problem optimizationProblem) {
+        return implementationHook.generateSolverCode(optimizationProblem);
     }
 }

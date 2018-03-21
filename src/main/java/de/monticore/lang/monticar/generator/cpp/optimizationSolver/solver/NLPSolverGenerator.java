@@ -1,4 +1,4 @@
-package de.monticore.lang.monticar.generator.cpp.optimizationSolver;
+package de.monticore.lang.monticar.generator.cpp.optimizationSolver.solver;
 
 /**
  * Generates solver code which solves non linear optimization problems
