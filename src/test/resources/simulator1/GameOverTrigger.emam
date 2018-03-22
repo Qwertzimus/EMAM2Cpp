@@ -1,0 +1,25 @@
+package simulator1;
+
+component GameOverTrigger {
+    port
+        in Q x,
+        in Q y,
+        in Q(0s:oos) time,        //use to know when to stop after passing the circle
+        out B status;
+
+    implementation Math{
+
+        B aboveBnd = x > 200;
+        B belowBnd = x < -200;
+        B rightBnd = y > 120;
+        B leftBnd = y < -50;
+
+        B xloc = x < 1 && x > -1;
+        B yloc = y < 15 && y > -15;
+        B tloc = time > 3s;
+
+        B finishCircle = xloc && yloc && tloc;            
+  
+        status = aboveBnd || belowBnd || rightBnd || leftBnd || finishCircle;
+    }
+}
