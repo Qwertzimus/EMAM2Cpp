@@ -1,5 +1,6 @@
 package de.monticore.lang.monticar.generator.cpp.optimizationSolver.solver;
 
+import de.monticore.lang.monticar.generator.FileContent;
 import de.monticore.lang.monticar.generator.cpp.optimizationSolver.problem.Problem;
 
 import java.util.ArrayList;
@@ -16,19 +17,9 @@ public abstract class SolverGenerator {
     // fields
     private SolverGeneratorImplementation implementationHook;
 
-    private String generationTargetPath = "./target/generated-sources-cpp/";
-
     private List<String> necessaryIncludes = new ArrayList<>();
 
     // getter setter
-
-    public String getGenerationTargetPath() {
-        return generationTargetPath;
-    }
-
-    public void setGenerationTargetPath(String generationTargetPath) {
-        this.generationTargetPath = generationTargetPath;
-    }
 
     protected SolverGeneratorImplementation getImplementationHook() {
         return implementationHook;
@@ -36,6 +27,7 @@ public abstract class SolverGenerator {
 
     protected void setImplementationHook(SolverGeneratorImplementation implementationHook) {
         this.implementationHook = implementationHook;
+        necessaryIncludes.addAll(getImplementationHook().getNecessaryIncludes());
     }
 
     public List<String> getNecessaryIncludes() {
@@ -50,7 +42,7 @@ public abstract class SolverGenerator {
      * @param optimizationProblem optimization problem which should be solved
      * @return Executable code instruction as string
      */
-    public String generateSolverInstruction(Problem optimizationProblem) {
-        return implementationHook.generateSolverCode(optimizationProblem);
+    public String generateSolverInstruction(Problem optimizationProblem, List<FileContent> auxiliaryFiles) {
+        return implementationHook.generateSolverCode(optimizationProblem, auxiliaryFiles);
     }
 }
