@@ -6,7 +6,9 @@ import de.monticore.lang.embeddedmontiarc.embeddedmontiarc._symboltable.Instance
 import de.monticore.lang.monticar.generator.BluePrint;
 import de.monticore.lang.monticar.generator.Instruction;
 import de.monticore.lang.monticar.generator.Variable;
+import de.monticore.lang.monticar.resolution._ast.ASTResolution;
 import de.monticore.lang.monticar.si._symboltable.ResolutionDeclarationSymbol;
+import de.monticore.lang.monticar.types2._ast.ASTUnitNumberResolution;
 import de.se_rwth.commons.logging.Log;
 
 import java.util.ArrayList;
@@ -63,14 +65,26 @@ public class BluePrintCPP extends BluePrint {
                 if (number == -1) {
                     Log.info(subComponent.toString(), "No number added for" + resolutionDeclarationSymbol.getNameToResolve());
                     ++index;
-                    break;
+
+                    //ASTResolution fallback
+                    ASTResolution astResolution = resolutionDeclarationSymbol.getASTResolution();
+                    if (astResolution instanceof ASTUnitNumberResolution) {
+                        ASTUnitNumberResolution astUnitNumberResolution = (ASTUnitNumberResolution) astResolution;
+                        if (astUnitNumberResolution.getNumber().isPresent()) {
+                            number = astUnitNumberResolution.getNumber().get().intValue();
+                        }
+                    }
+                } else {
+                    fixSubComponentInstanceNumbers(componentSymbol, resolutionDeclarationSymbol.getNameToResolve(), number, index);
                 }
-                fixSubComponentInstanceNumbers(componentSymbol, resolutionDeclarationSymbol.getNameToResolve(), number, index);
-                Variable constVar = new Variable();
-                constVar.setName(resolutionDeclarationSymbol.getNameToResolve());
-                constVar.setConstantValue("" + number);
-                addGenericVariable(constVar);
-                ++index;
+
+                if (number != -1) {
+                    Variable constVar = new Variable();
+                    constVar.setName(resolutionDeclarationSymbol.getNameToResolve());
+                    constVar.setConstantValue("" + number);
+                    addGenericVariable(constVar);
+                    ++index;
+                }
 
             }
         }
