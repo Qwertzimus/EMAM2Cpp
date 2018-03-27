@@ -10,7 +10,7 @@ public abstract class Problem {
     /**
      * identification number for problem
      */
-    private int id;
+    private int id = this.hashCode();
 
     // fields
     /**
@@ -41,6 +41,9 @@ public abstract class Problem {
 
     public void setId(int id) {
         this.id = id;
+        if (id <= 0) {
+            this.id = this.hashCode();
+        }
     }
 
     public int getN() {

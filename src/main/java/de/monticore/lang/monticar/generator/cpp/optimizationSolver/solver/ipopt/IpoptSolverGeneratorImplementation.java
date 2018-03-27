@@ -70,7 +70,7 @@ public class IpoptSolverGeneratorImplementation extends NLPSolverGeneratorImplem
             generateIpoptTemplates(vm, auxillaryFiles);
             necessaryIncludes.add(vm.getCallIpoptName());
             // set execute command
-            result = String.format("solveOptimizationProblemIpOpt(%s, %s)", vm.getOptimizationVariableName(), vm.getObjectiveVariableName());
+            result = String.format("solveOptimizationProblemIpOpt(%s, %s);\n", vm.getOptimizationVariableName(), vm.getObjectiveVariableName());
 
         } else {
             Log.error(String.format("Ipopt can not solve problemes of type %s", optimizationProblem.getClass().toString()));

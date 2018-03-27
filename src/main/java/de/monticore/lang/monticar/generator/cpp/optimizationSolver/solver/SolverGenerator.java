@@ -17,8 +17,6 @@ public abstract class SolverGenerator {
     // fields
     private SolverGeneratorImplementation implementationHook;
 
-    private List<String> necessaryIncludes = new ArrayList<>();
-
     // getter setter
 
     protected SolverGeneratorImplementation getImplementationHook() {
@@ -27,11 +25,10 @@ public abstract class SolverGenerator {
 
     protected void setImplementationHook(SolverGeneratorImplementation implementationHook) {
         this.implementationHook = implementationHook;
-        necessaryIncludes.addAll(getImplementationHook().getNecessaryIncludes());
     }
 
     public List<String> getNecessaryIncludes() {
-        return necessaryIncludes;
+        return this.implementationHook.getNecessaryIncludes();
     }
 
     // methods

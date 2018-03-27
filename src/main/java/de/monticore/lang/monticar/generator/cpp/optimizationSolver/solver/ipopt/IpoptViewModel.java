@@ -14,6 +14,16 @@ import java.util.Vector;
 public class IpoptViewModel extends ViewModelBase {
 
     /**
+     * Reservated in IPOPT calculations as optimization variable
+     */
+    private static final String IPOPT_OPTIMIZATION_VAR = "x";
+
+    /**
+     * Reservated in IPOPT calculations as objective variable
+     */
+    private static final String IPOPT_OBJECTIVE_VAR = "obj_value";
+
+    /**
      * Name of the generated ipopt problem class name
      */
     private String nlpClassName;
@@ -100,6 +110,8 @@ public class IpoptViewModel extends ViewModelBase {
         this.callIpoptName = "CallIpopt" + problem.getId();
         this.nlpClassName = "NLP" + problem.getId();
         this.initX = calculateInitialX();
+
+        resolveIpoptNameConflicts();
     }
 
     // getter setter methods
@@ -222,5 +234,76 @@ public class IpoptViewModel extends ViewModelBase {
             result.add(xL.get(i) + (xU.get(i) - xL.get(i)) / 2);
         }
         return result;
+    }
+
+    private void resolveIpoptNameConflicts() {
+
+        // first replace variables which are reservated but not optimization var
+        if (!optimizationVariableName.contentEquals(IPOPT_OPTIMIZATION_VAR)) {
+            if (containsVariable(IPOPT_OPTIMIZATION_VAR)) {
+                String replacementVar = findRelpacementVariable(IPOPT_OPTIMIZATION_VAR);
+                replaceVariable(IPOPT_OPTIMIZATION_VAR, replacementVar);
+            }
+            // then replace optimization var by reservated optimization var
+            replaceVariable(optimizationVariableName, IPOPT_OPTIMIZATION_VAR);
+        }
+        // also replace reservated objective variable
+        if (containsVariable(IPOPT_OBJECTIVE_VAR)) {
+            String replacementVar = findRelpacementVariable(IPOPT_OBJECTIVE_VAR);
+            replaceVariable(IPOPT_OBJECTIVE_VAR, replacementVar);
+        }
+    }
+
+    private static String replaceVariableInExpr(String expr, String var, String replacementVar) {
+        String result = expr;
+
+        String sepVar1 = " " + var + " ";
+        String sepVar2 = " " + var + "[";
+
+        String sepRepVar1 = " " + replacementVar + " ";
+        String sepRepVar2 = " " + replacementVar + "[";
+
+        result = result.replace(sepVar1, sepRepVar1);
+        result = result.replace(sepVar2, sepRepVar2);
+        return result;
+    }
+
+    private void replaceVariable(String var, String replacementVar) {
+        objectiveFunction = replaceVariableInExpr(objectiveFunction, var, replacementVar);
+        for (int i = 0; i < constraintFunctions.size(); i++) {
+            constraintFunctions.set(i, replaceVariableInExpr(constraintFunctions.get(i), var, replacementVar));
+        }
+    }
+
+    private boolean containsVariable(String variable) {
+        Boolean result = false;
+        if (exprContainsVar(objectiveFunction, variable)) {
+            result = true;
+        }
+        for (String s : constraintFunctions) {
+            if (exprContainsVar(s, variable)) {
+                result = true;
+            }
+        }
+        return result;
+    }
+
+    private boolean exprContainsVar(String expr, String variable) {
+
+        String sepVar1 = " " + variable + " ";
+        String sepVar2 = " " + variable + "[";
+
+        Boolean matches1 = expr.contains(sepVar1);
+        Boolean matches2 = expr.contains(sepVar2);
+
+        return matches1 || matches2;
+    }
+
+    private String findRelpacementVariable(String variable) {
+        String replacementVar = variable;
+        while (containsVariable(replacementVar)) {
+            replacementVar += "Tmp";
+        }
+        return replacementVar;
     }
 }

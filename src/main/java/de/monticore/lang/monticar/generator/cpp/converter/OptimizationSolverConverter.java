@@ -53,9 +53,6 @@ public class OptimizationSolverConverter {
         // second step: decide for implementation
         SolverGenerator solverGenerator = SolverGeneratorFactory.getInstance().createDefaultSolverForProblem(problemType);
 
-        // do not forget to add include strings
-        bluePrint.additionalIncludeStrings.addAll(solverGenerator.getNecessaryIncludes());
-
         // third step: generate code from solver generator
         ArrayList<FileContent> auxiliaryFiles = new ArrayList<FileContent>();
         result = solverGenerator.generateSolverInstruction(problemType, auxiliaryFiles);
@@ -68,6 +65,9 @@ public class OptimizationSolverConverter {
                 Log.error(e.toString());
             }
         }
+
+        // do not forget to add include strings
+        bluePrint.additionalIncludeStrings.addAll(solverGenerator.getNecessaryIncludes());
 
         return result;
     }
