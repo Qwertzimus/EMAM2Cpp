@@ -20,7 +20,7 @@ component MainController{
         in Q y,
 
         out Q(-2m/s^2:2m/s^2) acceleration,
-        out Q(-180°:180°) steering,
+        out Q(-180:180) steering,
         out B status;
 
     instance SteeringControl steeringControl;

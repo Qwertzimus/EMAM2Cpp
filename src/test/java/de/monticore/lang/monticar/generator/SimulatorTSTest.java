@@ -10,6 +10,14 @@ import de.monticore.lang.embeddedmontiarc.embeddedmontiarc._symboltable.Expanded
 
 public class SimulatorTSTest extends AbstractSymtab{
 
+    @Test
+    public void resolveMainController() {
+        TaggingResolver symtab = createSymTabAndTaggingResolver("src/test/resources");
+        ExpandedComponentInstanceSymbol instanceSymbol = symtab.<ExpandedComponentInstanceSymbol>resolve("simulator.mainController",
+                ExpandedComponentInstanceSymbol.KIND).orElse(null);
+
+        Assert.assertNotNull(instanceSymbol);
+    }
 
     @Test
     public void resolveModelDoorStatus() {
@@ -56,9 +64,8 @@ public class SimulatorTSTest extends AbstractSymtab{
         Assert.assertNotNull(instanceSymbol);
     }
 
-    //Does not work in maven for some reason
-    @Ignore
     @Test
+    @Ignore
     public void resolveModel() {
         TaggingResolver symtab = createSymTabAndTaggingResolver("src/test/resources");
         ExpandedComponentInstanceSymbol instanceSymbol = symtab.<ExpandedComponentInstanceSymbol>resolve("simulatorts.visualization.main.sDCS",
@@ -76,9 +83,8 @@ public class SimulatorTSTest extends AbstractSymtab{
         Assert.assertNotNull(instanceSymbol);
     }
 
-    //Does not work in maven for some reason
-    @Ignore
     @Test
+    @Ignore
     public void resolveModelsSteeringControl() {
         TaggingResolver symtab = createSymTabAndTaggingResolver("src/test/resources");
         ExpandedComponentInstanceSymbol instanceSymbol = symtab.<ExpandedComponentInstanceSymbol>resolve("simulatorts.visualization.movement.steeringControl",

@@ -9,7 +9,7 @@ component SteeringControl {
         in Q(0m:200m) slb,              //sideleftback
         in Q(0m:200m) srf,              //siderightfront
         in Q(0m:200m) srb,              //siderightback
-        out Q(-180°:180°) steering;     //out angle
+        out Q(-180:180) steering;     //out angle
 
     implementation Math{
 
@@ -20,21 +20,21 @@ component SteeringControl {
         B resComp3;
 
         if (comp3)
-            resComp3 = -1°;
+            resComp3 = -1;
         else
-            resComp3 = 0°;
+            resComp3 = 0;
         end
         
         B resComp2;
         
         if (comp2)
-            resComp2 = 5°;
+            resComp2 = 5;
         else
             resComp2 = resComp3;
         end
 
         if (comp1)
-            steering = -5°;
+            steering = -5;
         else
             steering = resComp2;
         end
