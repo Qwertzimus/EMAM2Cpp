@@ -1,6 +1,3 @@
-/**
-*
-*/
 #include "${viewModel.nlpClassName}.hpp"
 #include "armadillo.h"
 
@@ -22,11 +19,10 @@ bool ${viewModel.nlpClassName}::get_nlp_info(Index& n, Index& m, Index& nnz_jac_
 
 	m = ${viewModel.numberConstraints};
 
-	// in this example the jacobian is dense. Hence, it contains n*m nonzeros
+	// assume the jacobian is dense. Hence, it contains n*m nonzeros
 	nnz_jac_g = n * n;
 
-	// the hessian is also dense and has n*n total nonzeros, but we
-	// only need the lower left corner (since it is symmetric)
+	// assume the hessian is also dense and has n*n total nonzeros
 	nnz_h_lag = n * n;
 
 	generate_tapes(n, m);
@@ -72,9 +68,7 @@ bool ${viewModel.nlpClassName}::get_starting_point(Index n, bool init_x, Number*
 	Index m, bool init_lambda,
 	Number* lambda)
 {
-	// Here, we assume we only have starting values for x, if you code
-	// your own NLP, you can provide starting values for the others if
-	// you wish.
+	// assume we only have starting values for x
 	assert(init_x == true);
 	assert(init_z == false);
 	assert(init_lambda == false);
@@ -105,7 +99,7 @@ template<class T> bool  ${viewModel.nlpClassName}::eval_constraints(Index n, con
     {
         int i = 0;
         <#list viewModel.constraintFunctions as g>
-            g[i] = g;
+            g[i] = ${g};
             i++;
         </#list>
     }
@@ -144,8 +138,8 @@ bool ${viewModel.nlpClassName}::eval_jac_g(Index n, const Number* x, bool new_x,
 		// assuming that the Jacobian is dense
 
 		Index idx = 0;
-		for (Index i = 0; i<m; i++)
-			for (Index j = 0; j<n; j++)
+		for (Index i = 0; i < m; i++)
+			for (Index j = 0; j < n; j++)
 			{
 				iRow[idx] = i;
 				jCol[idx++] = j;
@@ -157,8 +151,8 @@ bool ${viewModel.nlpClassName}::eval_jac_g(Index n, const Number* x, bool new_x,
 		jacobian(tag_g, m, n, x, Jac);
 
 		Index idx = 0;
-		for (Index i = 0; i<m; i++)
-			for (Index j = 0; j<n; j++)
+		for (Index i = 0; i < m; i++)
+			for (Index j = 0; j < n; j++)
 				values[idx++] = Jac[i][j];
 
 	}
@@ -172,8 +166,6 @@ bool ${viewModel.nlpClassName}::eval_h(Index n, const Number* x, bool new_x,
 	Index* jCol, Number* values)
 {
 	if (values == NULL) {
-		// return the structure. This is a symmetric matrix, fill the lower left
-		// triangle only.
 
 		// the hessian for this problem is actually dense
 		Index idx = 0;
@@ -191,9 +183,9 @@ bool ${viewModel.nlpClassName}::eval_h(Index n, const Number* x, bool new_x,
 		// return the values. This is a symmetric matrix, fill the lower left
 		// triangle only
 
-		for (Index i = 0; i<n; i++)
+		for (Index i = 0; i < n; i++)
 			x_lam[i] = x[i];
-		for (Index i = 0; i<m; i++)
+		for (Index i = 0; i < m; i++)
 			x_lam[n + i] = lambda[i];
 		x_lam[n + m] = obj_factor;
 
@@ -201,7 +193,7 @@ bool ${viewModel.nlpClassName}::eval_h(Index n, const Number* x, bool new_x,
 
 		Index idx = 0;
 
-		for (Index i = 0; i<n; i++)
+		for (Index i = 0; i < n; i++)
 		{
 			for (Index j = 0; j <= i; j++)
 			{
@@ -225,21 +217,21 @@ void ${viewModel.nlpClassName}::finalize_solution(SolverReturn status,
 	printf("${viewModel.objectiveVariableName} = %e\n", obj_value);
 
     printf("\n\nPrimal value\n");
-    printf("${viewModel.objectiveVariableName} = [")
+    printf("${viewModel.objectiveVariableName} = [");
     for(int i = 0; i < n; i++)
     {
         printf("%e; ", x[i]);
     }
-    printf("]")
+    printf("]");
 	// Memory deallocation for ADOL-C variables
 
 	delete[] x_lam;
 
-	for (Index i = 0; i<m; i++)
+	for (Index i = 0; i < m; i++)
 		delete[] Jac[i];
 	delete[] Jac;
 
-	for (Index i = 0; i<n + m + 1; i++)
+	for (Index i = 0; i < n + m + 1; i++)
 		delete[] Hess[i];
 	delete[] Hess;
 }
@@ -263,20 +255,20 @@ void ${viewModel.nlpClassName}::generate_tapes(Index n, Index m)
 	double dummy;
 
 	Jac = new double*[m];
-	for (Index i = 0; i<m; i++)
+	for (Index i = 0; i < m; i++)
 		Jac[i] = new double[n];
 
 	x_lam = new double[n + m + 1];
 
 	Hess = new double*[n + m + 1];
-	for (Index i = 0; i<n + m + 1; i++)
+	for (Index i = 0; i < n + m + 1; i++)
 		Hess[i] = new double[i + 1];
 
 	get_starting_point(n, 1, xp, 0, zl, zu, m, 0, lamp);
 
 	trace_on(tag_f);
 
-	for (Index i = 0; i<n; i++)
+	for (Index i = 0; i < n; i++)
 		xa[i] <<= xp[i];
 
 	eval_obj(n, xa, obj_value);
@@ -287,22 +279,22 @@ void ${viewModel.nlpClassName}::generate_tapes(Index n, Index m)
 
 	trace_on(tag_g);
 
-	for (Index i = 0; i<n; i++)
+	for (Index i = 0; i < n; i++)
 		xa[i] <<= xp[i];
 
 	eval_constraints(n, xa, m, g);
 
 
-	for (Index i = 0; i<m; i++)
+	for (Index i = 0; i < m; i++)
 		g[i] >>= dummy;
 
 	trace_off();
 
 	trace_on(tag_L);
 
-	for (Index i = 0; i<n; i++)
+	for (Index i = 0; i < n; i++)
 		xa[i] <<= xp[i];
-	for (Index i = 0; i<m; i++)
+	for (Index i = 0; i < m; i++)
 		lam[i] <<= 1.0;
 	sig <<= 1.0;
 
@@ -311,7 +303,7 @@ void ${viewModel.nlpClassName}::generate_tapes(Index n, Index m)
 	obj_value *= sig;
 	eval_constraints(n, xa, m, g);
 
-	for (Index i = 0; i<m; i++)
+	for (Index i = 0; i < m; i++)
 		obj_value += g[i] * lam[i];
 
 	obj_value >>= dummy;

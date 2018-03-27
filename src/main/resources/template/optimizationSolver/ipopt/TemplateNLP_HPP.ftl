@@ -43,32 +43,27 @@ public:
 	/** Template to compute contraints */
 	template<class T> bool eval_constraints(Index n, const T *x, Index m, T *g);
 
-	/** Original method from Ipopt to return the objective value */
-	/** remains unchanged */
+	/** return the objective value */
 	virtual bool eval_f(Index n, const Number* x, bool new_x, Number& obj_value);
 
-	/** Original method from Ipopt to return the gradient of the objective */
-	/** remains unchanged */
+	/** return the gradient of the objective */
 	virtual bool eval_grad_f(Index n, const Number* x, bool new_x, Number* grad_f);
 
-	/**  Original method from Ipopt to return the constraint residuals */
-	/** remains unchanged */
+	/** return the constraint residuals */
 	virtual bool eval_g(Index n, const Number* x, bool new_x, Index m, Number* g);
 
-	/** Original method from Ipopt to return:
+	/** return:
 	*   1) The structure of the jacobian (if "values" is NULL)
 	*   2) The values of the jacobian (if "values" is not NULL)
 	*/
-	/** remains unchanged */
 	virtual bool eval_jac_g(Index n, const Number* x, bool new_x,
 		Index m, Index nele_jac, Index* iRow, Index *jCol,
 		Number* values);
 
-	/** Original method from Ipopt to return:
+	/** return:
 	*   1) The structure of the hessian of the lagrangian (if "values" is NULL)
 	*   2) The values of the hessian of the lagrangian (if "values" is not NULL)
 	*/
-	/** remains unchanged */
 	virtual bool eval_h(Index n, const Number* x, bool new_x,
 		Number obj_factor, Index m, const Number* lambda,
 		bool new_lambda, Index nele_hess, Index* iRow,

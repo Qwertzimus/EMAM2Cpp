@@ -8,13 +8,10 @@ using namespace Ipopt;
 
 int solveOptimizationProblemIpOpt(double &x, double &y)
 {
-	// Create an instance of your nlp...
+	// Create nlp instance
 	SmartPtr<TNLP> ${viewModel.nlpClassName?lower_case} = new ${viewModel.nlpClassName}();
 
-	// Create an instance of the IpoptApplication
-	//
-	// We are using the factory, since this allows us to compile this
-	// example with an Ipopt Windows DLL
+	// Create instance of the IpoptApplication
 	SmartPtr<IpoptApplication> app = IpoptApplicationFactory();
 
 	// Initialize the IpoptApplication and process the options
@@ -36,8 +33,8 @@ int solveOptimizationProblemIpOpt(double &x, double &y)
 		std::cout << std::endl << std::endl << "*** The final value of the objective function is " << final_obj << '.' << std::endl;
 	
 		y = final_obj;
+		// TODO also assign x
 	}
 
 	return (int)status;
 }
-

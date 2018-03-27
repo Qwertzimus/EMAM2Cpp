@@ -71,12 +71,12 @@ public class IpoptViewModel extends ViewModelBase {
     /**
      * objective function, x and obj_value are resavated for optimization variable and objective value
      */
-    private String objectiveFunction = "";
+    private String objectiveFunction;
 
     /**
      * list of constraints
      */
-    private Vector<String> constraintFunctions = new Vector<>();
+    private Vector<String> constraintFunctions;
 
     // constructor
 
@@ -97,8 +97,8 @@ public class IpoptViewModel extends ViewModelBase {
         this.optimizationVariableName = problem.getOptimizationVariableName();
         this.objectiveVariableName = problem.getObjectiveValueVariable();
 
-        this.callIpoptName = "NLP" + problem.getId();
-        this.nlpClassName += "CallIpopt" + problem.getId();
+        this.callIpoptName = "CallIpopt" + problem.getId();
+        this.nlpClassName = "NLP" + problem.getId();
         this.initX = calculateInitialX();
     }
 
