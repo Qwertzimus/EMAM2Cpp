@@ -280,7 +280,7 @@ public class TypeConverter {
         addNonPrimitiveVariableType("B", "bool", "");
         addNonPrimitiveVariableType("Q", "double", "");
         // TODO: the type mappings below have been adjusted to make the tests pass. they are, however, wrong.
-        addNonPrimitiveVariableType("Z", "double", "");
+        addNonPrimitiveVariableType("Z", "int", "");
         addNonPrimitiveVariableType("C", "double", "");
         addNonPrimitiveVariableType("UnitNumberResolution", "double", "");
         addNonPrimitiveVariableType("CommonMatrixType", "Matrix", "octave/oct");
