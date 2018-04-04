@@ -1,9 +1,9 @@
 #include "${viewModel.nlpClassName}.hpp"
-#include "armadillo.h"
 
 #include <cassert>
 
 using namespace Ipopt;
+using namespace arma;
 
 /* Constructor. */
 ${viewModel.nlpClassName}::${viewModel.nlpClassName}()
@@ -76,33 +76,52 @@ bool ${viewModel.nlpClassName}::get_starting_point(Index n, bool init_x, Number*
 	// set the starting point
     int i = 0;
     <#list viewModel.initX as x>
-        x = ${x};
+        x[i] = ${x};
         i++;
     </#list>
 
     return true;
 }
 
-template<class T> bool  ${viewModel.nlpClassName}::eval_obj(Index n, const T *x, T& obj_value)
+template<class T> void ${viewModel.nlpClassName}::convertXToOptVar(Index n, const T *x, ${viewModel.optimizationVariableType} &optVar)
 {
-    namespace arma
+    <#if viewModel.numberVariables <= 1>
+    optVar = ((adouble) x[0]).getValue();
+    <#else>
+    std::vector optAsVec = std::vector(n);
+    for (int i = 0; i < n; i++)
     {
-        obj_value = ${viewModel.objectiveFunction};
+        optAsVec[i] = ((adouble) x[i]).getValue();
     }
+    optVar = conv_to<${viewModel.optimizationVariableType}>::from(optAsVec);
+    </#if>
+}
+
+template<class T> bool ${viewModel.nlpClassName}::eval_obj(Index n, const T *x, T& obj_value)
+{
+    // init optimization var
+    ${viewModel.optimizationVariableType} ${viewModel.optimizationVariableName};
+    convertXToOptVar(n, x, ${viewModel.optimizationVariableName});
+
+    // evaluate obj_value
+    obj_value = ${viewModel.objectiveFunction};
 
 	return true;
 }
 
-template<class T> bool  ${viewModel.nlpClassName}::eval_constraints(Index n, const T *x, Index m, T* g)
+template<class T> bool ${viewModel.nlpClassName}::eval_constraints(Index n, const T *x, Index m, T* g)
 {
-    namespace arma
-    {
-        int i = 0;
-        <#list viewModel.constraintFunctions as g>
-            g[i] = ${g};
-            i++;
-        </#list>
-    }
+    // init optimization var
+    ${viewModel.optimizationVariableType} ${viewModel.optimizationVariableName};
+    convertXToOptVar(n, x, ${viewModel.optimizationVariableName});
+
+    // evaluate constraint function
+    int i = 0;
+    <#list viewModel.constraintFunctions as g>
+        g[i] = ${g};
+        i++;
+    </#list>
+
 	return true;
 }
 

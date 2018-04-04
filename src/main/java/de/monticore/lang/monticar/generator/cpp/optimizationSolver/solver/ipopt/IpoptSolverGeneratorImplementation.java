@@ -34,6 +34,7 @@ public class IpoptSolverGeneratorImplementation extends NLPSolverGeneratorImplem
         conf.setTemplateExceptionHandler(TemplateExceptionHandler.DEBUG_HANDLER);
         conf.setLogTemplateExceptions(false);
         conf.setClassForTemplateLoading(AllTemplates.class, "/template/optimizationSolver/ipopt/");
+        conf.setNumberFormat("0.####E0");
         try {
             CALL_IPOPT_HPP = conf.getTemplate("CallIpoptTemplate_HPP.ftl");
             CALL_IPOPT_CPP = conf.getTemplate("CallIpoptTemplate_CPP.ftl");
@@ -66,12 +67,12 @@ public class IpoptSolverGeneratorImplementation extends NLPSolverGeneratorImplem
             setNlpProblem(nlpOptimizationProblem);
             // create view model from problem class
             IpoptViewModel vm = new IpoptViewModel(nlpOptimizationProblem);
-            // generate templates by view model
-            generateIpoptTemplates(vm, auxillaryFiles);
-            necessaryIncludes.add(vm.getCallIpoptName());
             // set execute command
             result = String.format("solveOptimizationProblemIpOpt(%s, %s);\n", vm.getOptimizationVariableName(), vm.getObjectiveVariableName());
-
+            // generate templates by view model
+            vm.resolveIpoptNameConflicts();
+            generateIpoptTemplates(vm, auxillaryFiles);
+            necessaryIncludes.add(vm.getCallIpoptName());
         } else {
             Log.error(String.format("Ipopt can not solve problemes of type %s", optimizationProblem.getClass().toString()));
         }

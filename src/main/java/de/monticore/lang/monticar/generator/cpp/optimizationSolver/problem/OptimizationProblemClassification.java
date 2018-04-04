@@ -2,6 +2,7 @@ package de.monticore.lang.monticar.generator.cpp.optimizationSolver.problem;
 
 import de.monticore.lang.math.math._symboltable.expression.*;
 import de.monticore.lang.monticar.generator.cpp.converter.ExecuteMethodGenerator;
+import de.monticore.lang.monticar.generator.cpp.converter.TypeConverter;
 import de.se_rwth.commons.logging.Log;
 
 import java.util.ArrayList;
@@ -64,13 +65,22 @@ public class OptimizationProblemClassification {
     protected static NLPProblem getNLPFromSymbol(MathOptimizationExpressionSymbol symbol) {
         NLPProblem nlp = new NLPProblem();
         nlp.setId(symbol.getExpressionID());
-        // TODO assign all properties
-        nlp.setN(getOptimizationVarDimension(symbol));
-        nlp.setOptimizationVariableName(getOptimizationVarName(symbol));
-        nlp.setObjectiveValueVariable(getObjectiveValueVarName(symbol));
-        nlp.setObjectiveFunction(getObjectiveFunctionAsCode(symbol));
+        // assign all properties
+        setNLPOptimizationVariableFromSymbol(nlp, symbol);
+        setNLPObjectiveFunctionFromSymbol(nlp, symbol);
         setNLPConstraintsFromSymbol(nlp, symbol);
         return nlp;
+    }
+
+    protected static void setNLPOptimizationVariableFromSymbol(NLPProblem nlp, MathOptimizationExpressionSymbol symbol) {
+        nlp.setN(getOptimizationVarDimension(symbol));
+        nlp.setOptimizationVariableName(getOptimizationVarName(symbol));
+        nlp.setOptimizationVariableType(getOptimizationVarType(symbol));
+    }
+
+    protected static void setNLPObjectiveFunctionFromSymbol(NLPProblem nlp, MathOptimizationExpressionSymbol symbol) {
+        nlp.setObjectiveValueVariable(getObjectiveValueVarName(symbol));
+        nlp.setObjectiveFunction(getObjectiveFunctionAsCode(symbol));
     }
 
     protected static void setNLPConstraintsFromSymbol(NLPProblem nlp, MathOptimizationExpressionSymbol symbol) {
@@ -154,6 +164,10 @@ public class OptimizationProblemClassification {
 
     protected static String getOptimizationVarName(MathOptimizationExpressionSymbol symbol) {
         return symbol.getOptimizationVariable().getName();
+    }
+
+    protected static String getOptimizationVarType(MathOptimizationExpressionSymbol symbol) {
+        return TypeConverter.getVariableTypeNameForMathLanguageTypeName(symbol.getOptimizationVariable().getType());
     }
 
     protected static String getObjectiveValueVarName(MathOptimizationExpressionSymbol symbol) {

@@ -3,7 +3,6 @@ package de.monticore.lang.monticar.generator.cpp.optimizationSolver.solver;
 import de.monticore.lang.monticar.generator.FileContent;
 import de.monticore.lang.monticar.generator.cpp.optimizationSolver.problem.Problem;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

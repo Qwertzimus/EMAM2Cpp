@@ -1,7 +1,7 @@
 package de.monticore.lang.monticar.generator.cpp.converter;
 
 import de.monticore.lang.math.math._symboltable.expression.MathOptimizationExpressionSymbol;
-import de.monticore.lang.monticar.generator.BluePrint;
+import de.monticore.lang.math.math._symboltable.expression.MathValueSymbol;
 import de.monticore.lang.monticar.generator.FileContent;
 import de.monticore.lang.monticar.generator.cpp.BluePrintCPP;
 import de.monticore.lang.monticar.generator.cpp.GeneratorCPP;
@@ -44,7 +44,15 @@ public class OptimizationSolverConverter {
      */
     public static String getOptimizationExpressionCode(MathOptimizationExpressionSymbol symbol, List<String> includeStrings, BluePrintCPP bluePrint) {
 
-        String result;
+        // declare needed variables
+        String result = "";
+        result += ExecuteMethodGenerator.generateExecuteCode(symbol.getOptimizationVariable(), new ArrayList<>());
+        if (symbol.getObjectiveExpression() instanceof MathValueSymbol) {
+            MathValueSymbol expr = (MathValueSymbol) symbol.getObjectiveExpression();
+            MathValueSymbol decl = new MathValueSymbol(expr.getName());
+            decl.setType(expr.getType());
+            result += ExecuteMethodGenerator.generateExecuteCode(decl, new ArrayList<>());
+        }
 
         // first step: decide for correct solver for problem class
         OptimizationProblemClassification problemClassification = new OptimizationProblemClassification(symbol);
@@ -55,7 +63,7 @@ public class OptimizationSolverConverter {
 
         // third step: generate code from solver generator
         ArrayList<FileContent> auxiliaryFiles = new ArrayList<FileContent>();
-        result = solverGenerator.generateSolverInstruction(problemType, auxiliaryFiles);
+        result += solverGenerator.generateSolverInstruction(problemType, auxiliaryFiles);
 
         // also generate auxiliaryFiles
         if (bluePrint.getGenerator() instanceof GeneratorCPP) {

@@ -24,6 +24,11 @@ public abstract class Problem {
     private String optimizationVariableName;
 
     /**
+     * data type of the optimization variable
+     */
+    private String optimizationVariableType;
+
+    /**
      * variable which contains the objective value
      */
     private String objectiveValueVariable;
@@ -76,5 +81,13 @@ public abstract class Problem {
 
     public void setObjectiveFunction(String objectiveFunction) {
         this.objectiveFunction = objectiveFunction;
+    }
+
+    public String getOptimizationVariableType() {
+        return optimizationVariableType;
+    }
+
+    public void setOptimizationVariableType(String optimizationVariableType) {
+        this.optimizationVariableType = optimizationVariableType;
     }
 }

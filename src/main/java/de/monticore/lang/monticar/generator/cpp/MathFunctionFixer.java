@@ -65,6 +65,9 @@ public class MathFunctionFixer {
         } else if (mathExpressionSymbol instanceof MathOptimizationExpressionSymbol) {
             // TODO: fix optimization functions
             MathOptimizationExpressionSymbol optSymbol = (MathOptimizationExpressionSymbol) mathExpressionSymbol;
+
+            ComponentConverter.currentBluePrint.getMathInformationRegister().addVariable(new Variable(optSymbol.getOptimizationVariable().getName(), Variable.VARIABLE));
+
             fixMathFunctions(optSymbol.getOptimizationVariable(), bluePrintCPP);
             fixMathFunctions(optSymbol.getObjectiveExpression(), bluePrintCPP);
             for (MathExpressionSymbol sym: optSymbol.getSubjectToExpressions())

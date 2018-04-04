@@ -24,6 +24,21 @@ public class IpoptViewModel extends ViewModelBase {
     private static final String IPOPT_OBJECTIVE_VAR = "obj_value";
 
     /**
+     * Reservated in IPOPT calculations as dimensions of optimization var
+     */
+    private static final String IPOPT_DIM_VAR = "n";
+
+    /**
+     * Reservated in IPOPT calculations as constraint function pointer
+     */
+    private static final String IPOPT_CONSTRAINT_FUNCTION_VAR = "g";
+
+    /**
+     * array of all reservated variables used by IPOPT
+     */
+    private static final String[] IPOPT_RESERVATED_VARS = {IPOPT_OPTIMIZATION_VAR, IPOPT_OBJECTIVE_VAR, IPOPT_DIM_VAR, IPOPT_CONSTRAINT_FUNCTION_VAR};
+
+    /**
      * Name of the generated ipopt problem class name
      */
     private String nlpClassName;
@@ -37,6 +52,11 @@ public class IpoptViewModel extends ViewModelBase {
      * Name of the optimization variable
      */
     private String optimizationVariableName;
+
+    /**
+     * Data type of the optimization variable
+     */
+    private String optimizationVariableType;
 
     /**
      * Name of the final objective value variable
@@ -105,13 +125,12 @@ public class IpoptViewModel extends ViewModelBase {
         this.xU = problem.getxU();
         this.objectiveFunction = problem.getObjectiveFunction();
         this.optimizationVariableName = problem.getOptimizationVariableName();
+        this.optimizationVariableType = problem.getOptimizationVariableType();
         this.objectiveVariableName = problem.getObjectiveValueVariable();
 
         this.callIpoptName = "CallIpopt" + problem.getId();
         this.nlpClassName = "NLP" + problem.getId();
         this.initX = calculateInitialX();
-
-        resolveIpoptNameConflicts();
     }
 
     // getter setter methods
@@ -220,6 +239,14 @@ public class IpoptViewModel extends ViewModelBase {
         this.constraintFunctions = constraintFunctions;
     }
 
+    public String getOptimizationVariableType() {
+        return optimizationVariableType;
+    }
+
+    public void setOptimizationVariableType(String optimizationVariableType) {
+        this.optimizationVariableType = optimizationVariableType;
+    }
+
     // methods
 
     /**
@@ -236,32 +263,27 @@ public class IpoptViewModel extends ViewModelBase {
         return result;
     }
 
-    private void resolveIpoptNameConflicts() {
-
-        // first replace variables which are reservated but not optimization var
-        if (!optimizationVariableName.contentEquals(IPOPT_OPTIMIZATION_VAR)) {
-            if (containsVariable(IPOPT_OPTIMIZATION_VAR)) {
-                String replacementVar = findRelpacementVariable(IPOPT_OPTIMIZATION_VAR);
-                replaceVariable(IPOPT_OPTIMIZATION_VAR, replacementVar);
+    public void resolveIpoptNameConflicts() {
+        for (String reservated : IPOPT_RESERVATED_VARS) {
+            if (containsVariable(reservated)) {
+                String replacementVar = findRelpacementVariable(reservated);
+                replaceVariable(reservated, replacementVar);
+                if (optimizationVariableName.contentEquals(reservated))
+                    setOptimizationVariableName(replacementVar);
+                if (objectiveVariableName.contentEquals(reservated))
+                    setObjectiveVariableName(replacementVar);
             }
-            // then replace optimization var by reservated optimization var
-            replaceVariable(optimizationVariableName, IPOPT_OPTIMIZATION_VAR);
-        }
-        // also replace reservated objective variable
-        if (containsVariable(IPOPT_OBJECTIVE_VAR)) {
-            String replacementVar = findRelpacementVariable(IPOPT_OBJECTIVE_VAR);
-            replaceVariable(IPOPT_OBJECTIVE_VAR, replacementVar);
         }
     }
 
     private static String replaceVariableInExpr(String expr, String var, String replacementVar) {
         String result = expr;
 
-        String sepVar1 = " " + var + " ";
-        String sepVar2 = " " + var + "[";
+        String sepVar1 = "" + var + "";
+        String sepVar2 = "" + var + "[";
 
-        String sepRepVar1 = " " + replacementVar + " ";
-        String sepRepVar2 = " " + replacementVar + "[";
+        String sepRepVar1 = "" + replacementVar + "";
+        String sepRepVar2 = "" + replacementVar + "[";
 
         result = result.replace(sepVar1, sepRepVar1);
         result = result.replace(sepVar2, sepRepVar2);
@@ -290,8 +312,8 @@ public class IpoptViewModel extends ViewModelBase {
 
     private boolean exprContainsVar(String expr, String variable) {
 
-        String sepVar1 = " " + variable + " ";
-        String sepVar2 = " " + variable + "[";
+        String sepVar1 = "" + variable + "";
+        String sepVar2 = "" + variable + "[";
 
         Boolean matches1 = expr.contains(sepVar1);
         Boolean matches2 = expr.contains(sepVar2);

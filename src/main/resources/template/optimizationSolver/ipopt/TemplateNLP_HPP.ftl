@@ -3,6 +3,7 @@
 
 #include "coin/IpTNLP.hpp"
 #include "adolc/adolc.h"
+#include <armadillo>
 
 
 #define tag_f 1
@@ -10,6 +11,7 @@
 #define tag_L 3
 
 using namespace Ipopt;
+using namespace arma;
 
 class ${viewModel.nlpClassName} : public TNLP
 {
@@ -110,6 +112,11 @@ private:
 	double *x_lam;
 	double **Hess;
 	//@}
+
+    /**
+    * Converts Ipopt optimization variable x to EMAM optimization variable
+    */
+    template<class T> static void convertXToOptVar(Index n, const T *x, ${viewModel.optimizationVariableType}& optVar);
 
 };
 
