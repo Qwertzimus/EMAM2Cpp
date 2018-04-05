@@ -88,10 +88,10 @@ template<class T> void ${viewModel.nlpClassName}::convertXToOptVar(Index n, cons
     <#if viewModel.numberVariables <= 1>
     optVar = ((adouble) x[0]).getValue();
     <#else>
-    std::vector optAsVec = std::vector(n);
-    for (int i = 0; i < n; i++)
+    std::vector<double> optAsVec = std::vector<double>(n);
+    for (int i = 1; i <= n; i++)
     {
-        optAsVec[i] = ((adouble) x[i]).getValue();
+        optAsVec[i] = ((adouble) x[i-1]).getValue();
     }
     optVar = conv_to<${viewModel.optimizationVariableType}>::from(optAsVec);
     </#if>
