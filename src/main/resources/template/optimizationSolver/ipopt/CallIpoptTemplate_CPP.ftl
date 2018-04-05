@@ -6,7 +6,7 @@
 
 using namespace Ipopt;
 
-int solveOptimizationProblemIpOpt(double &x, double &y)
+int solveOptimizationProblemIpOpt(${viewModel.optimizationVariableType} &x, double &y)
 {
 	// Create nlp instance
 	SmartPtr<${viewModel.nlpClassName}> ${viewModel.nlpClassName?lower_case} = new ${viewModel.nlpClassName}();

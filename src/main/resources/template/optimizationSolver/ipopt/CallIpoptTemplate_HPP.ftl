@@ -1,6 +1,6 @@
 #ifndef __${viewModel.callIpoptName?upper_case}_H__
 #define __${viewModel.callIpoptName?upper_case}_H__
 
-int solveOptimizationProblemIpOpt(double &x, double &y);
+int solveOptimizationProblemIpOpt(${viewModel.optimizationVariableType} &x, double &y);
 
 #endif
