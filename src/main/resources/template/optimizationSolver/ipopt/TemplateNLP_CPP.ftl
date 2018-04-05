@@ -242,6 +242,11 @@ void ${viewModel.nlpClassName}::finalize_solution(SolverReturn status,
         printf("%e; ", x[i]);
     }
     printf("]");
+
+    // assign results
+    finalPrimalValue = *x;
+    finalObjectiveValue = obj_value;
+
 	// Memory deallocation for ADOL-C variables
 
 	delete[] x_lam;
@@ -337,4 +342,14 @@ void ${viewModel.nlpClassName}::generate_tapes(Index n, Index m)
 	delete[] zu;
 	delete[] zl;
 
+}
+
+Number ${viewModel.nlpClassName}::getFinalPrimalValue()
+{
+    return finalPrimalValue;
+}
+
+ Number ${viewModel.nlpClassName}::getFinalObjectiveValue()
+{
+    return finalObjectiveValue;
 }

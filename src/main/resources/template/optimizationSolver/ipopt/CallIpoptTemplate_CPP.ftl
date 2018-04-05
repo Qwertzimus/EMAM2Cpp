@@ -9,7 +9,7 @@ using namespace Ipopt;
 int solveOptimizationProblemIpOpt(double &x, double &y)
 {
 	// Create nlp instance
-	SmartPtr<TNLP> ${viewModel.nlpClassName?lower_case} = new ${viewModel.nlpClassName}();
+	SmartPtr<${viewModel.nlpClassName}> ${viewModel.nlpClassName?lower_case} = new ${viewModel.nlpClassName}();
 
 	// Create instance of the IpoptApplication
 	SmartPtr<IpoptApplication> app = IpoptApplicationFactory();
@@ -31,9 +31,9 @@ int solveOptimizationProblemIpOpt(double &x, double &y)
 
 		Number final_obj = app->Statistics()->FinalObjective();
 		std::cout << std::endl << std::endl << "*** The final value of the objective function is " << final_obj << '.' << std::endl;
-	
-		y = final_obj;
-		// TODO also assign x
+
+        x = ${viewModel.nlpClassName?lower_case}->getFinalPrimalValue();
+        y = ${viewModel.nlpClassName?lower_case}->getFinalObjectiveValue();
 	}
 
 	return (int)status;

@@ -15,12 +15,20 @@ using namespace arma;
 
 class ${viewModel.nlpClassName} : public TNLP
 {
+private:
+    Number finalPrimalValue;
+    Number finalObjectiveValue;
+
 public:
 	/** default constructor */
 	${viewModel.nlpClassName}();
 
 	/** default destructor */
 	virtual ~${viewModel.nlpClassName}();
+
+    virtual Number getFinalPrimalValue();
+
+    virtual Number getFinalObjectiveValue();
 
 	/**@name Overloaded from TNLP */
 	//@{
