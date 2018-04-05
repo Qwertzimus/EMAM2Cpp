@@ -1,6 +1,6 @@
 package test.math.optimization;
 
-component SimpleOptimizationTest{
+component ScalarOptimizationTest{
     implementation Math{
         minimize(Q x)
             Q y = (x*x) - 2 * x + 1;
