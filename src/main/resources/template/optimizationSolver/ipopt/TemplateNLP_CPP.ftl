@@ -231,16 +231,17 @@ void ${viewModel.nlpClassName}::finalize_solution(SolverReturn status,
 	const IpoptData* ip_data,
 	IpoptCalculatedQuantities* ip_cq)
 {
-
+	// print output
 	printf("\n\nObjective value\n");
 	printf("${viewModel.objectiveVariableName} = %e\n", obj_value);
 
     printf("\n\nPrimal value\n");
-    printf("${viewModel.objectiveVariableName} = [");
-    for(int i = 0; i < n; i++)
+    printf("${viewModel.optimizationVariableName?replace("Tmp", "")} = [");
+	for(int i = 0; i < (n - 1); i++)
     {
         printf("%e; ", x[i]);
     }
+	printf("%e", x[(n - 1)]);
     printf("]");
 
     // assign results
