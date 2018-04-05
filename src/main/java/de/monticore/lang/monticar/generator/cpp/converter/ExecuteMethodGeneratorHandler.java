@@ -132,9 +132,11 @@ public class ExecuteMethodGeneratorHandler {
     }
 
     private static String handleRationalType(MathValueType mathValueType) {
-        if (mathValueType.getDimensions().size() == 0)
+        if (mathValueType.getDimensions().size() == 0) {
             return "double";
-        else if (mathValueType.getDimensions().size() == 2) {
+        } else if (mathValueType.getDimensions().size() == 1) {
+            return MathConverter.curBackend.getColumnVectorTypeName();
+        } else if (mathValueType.getDimensions().size() == 2) {
             Log.info("Dim1:" + mathValueType.getDimensions().get(0).getTextualRepresentation() + "Dim2: " + mathValueType.getDimensions().get(1).getTextualRepresentation(), "DIMS:");
             if (mathValueType.getDimensions().get(0).getTextualRepresentation().equals("1")) {
                 return MathConverter.curBackend.getRowVectorTypeName();
@@ -149,9 +151,11 @@ public class ExecuteMethodGeneratorHandler {
     }
 
     private static String handleWholeNumberType(MathValueType mathValueType) {
-        if (mathValueType.getDimensions().size() == 0)
+        if (mathValueType.getDimensions().size() == 0) {
             return "int";
-        else if (mathValueType.getDimensions().size() == 2) {
+        } else if (mathValueType.getDimensions().size() == 1) {
+            return MathConverter.curBackend.getColumnVectorTypeName();
+        } else if (mathValueType.getDimensions().size() == 2) {
             //TODO handle just like RationalMatrix right now
             Log.info("Dim1:" + mathValueType.getDimensions().get(0).getTextualRepresentation() + "Dim2: " + mathValueType.getDimensions().get(1).getTextualRepresentation(), "DIMS:");
             if (mathValueType.getDimensions().get(0).getTextualRepresentation().equals("1")) {
