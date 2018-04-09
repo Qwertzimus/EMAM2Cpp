@@ -25,8 +25,6 @@ public class IpoptSolverGeneratorImplementation extends NLPSolverGeneratorImplem
 
     private static final Template CALL_IPOPT_HPP;
     private static final Template CALL_IPOPT_CPP;
-    private static final Template TEMPLATE_NLP_HPP;
-    private static final Template TEMPLATE_NLP_CPP;
 
     static {
         Configuration conf = new Configuration(Configuration.VERSION_2_3_23);
@@ -38,8 +36,6 @@ public class IpoptSolverGeneratorImplementation extends NLPSolverGeneratorImplem
         try {
             CALL_IPOPT_HPP = conf.getTemplate("CallIpoptTemplate_HPP.ftl");
             CALL_IPOPT_CPP = conf.getTemplate("CallIpoptTemplate_CPP.ftl");
-            TEMPLATE_NLP_HPP = conf.getTemplate("TemplateNLP_HPP.ftl");
-            TEMPLATE_NLP_CPP = conf.getTemplate("TemplateNLP_CPP.ftl");
         } catch (IOException e) {
             String msg = "could not load ipopt templates";
             Log.error(msg, e);
@@ -98,14 +94,6 @@ public class IpoptSolverGeneratorImplementation extends NLPSolverGeneratorImplem
             sw = new StringWriter();
             CALL_IPOPT_CPP.process(dataForTemplate, sw);
             auxillaryFiles.add(new FileContent(sw.toString(), "/" + viewModel.getCallIpoptName() + ".cpp"));
-
-            sw = new StringWriter();
-            TEMPLATE_NLP_HPP.process(dataForTemplate, sw);
-            auxillaryFiles.add(new FileContent(sw.toString(), "/" + viewModel.getNlpClassName() + ".hpp"));
-
-            sw = new StringWriter();
-            TEMPLATE_NLP_CPP.process(dataForTemplate, sw);
-            auxillaryFiles.add(new FileContent(sw.toString(), "/" + viewModel.getNlpClassName() + ".cpp"));
 
         } catch (TemplateException | IOException e) {
             Log.error("Ipopt template generation failed. ", e);

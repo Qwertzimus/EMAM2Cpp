@@ -2,6 +2,7 @@ package de.monticore.lang.monticar.generator.cpp.optimizationSolver.solver.ipopt
 
 import de.monticore.lang.monticar.generator.cpp.optimizationSolver.problem.NLPProblem;
 import de.monticore.lang.monticar.generator.cpp.viewmodel.ViewModelBase;
+import de.se_rwth.commons.logging.Log;
 
 import java.util.List;
 import java.util.Vector;
@@ -57,6 +58,11 @@ public class IpoptViewModel extends ViewModelBase {
      * Data type of the optimization variable
      */
     private String optimizationVariableType;
+
+    /**
+     * For automatic differentiation a active type is required
+     */
+    private String optimizationVariableTypeActive;
 
     /**
      * Name of the final objective value variable
@@ -125,7 +131,7 @@ public class IpoptViewModel extends ViewModelBase {
         this.xU = problem.getxU();
         this.objectiveFunction = problem.getObjectiveFunction();
         this.optimizationVariableName = problem.getOptimizationVariableName();
-        this.optimizationVariableType = problem.getOptimizationVariableType();
+        setOptimizationVariableType(problem.getOptimizationVariableType());
         this.objectiveVariableName = problem.getObjectiveValueVariable();
 
         this.callIpoptName = "CallIpopt" + problem.getId();
@@ -245,6 +251,16 @@ public class IpoptViewModel extends ViewModelBase {
 
     public void setOptimizationVariableType(String optimizationVariableType) {
         this.optimizationVariableType = optimizationVariableType;
+        // also set active type
+        if (optimizationVariableType.contentEquals("mat")) {
+            this.optimizationVariableTypeActive = "Mat<AD<double>>";
+        } else if (optimizationVariableType.contentEquals("colvec")) {
+            this.optimizationVariableTypeActive = "Col<AD<double>>";
+        } else if (optimizationVariableType.contentEquals("double")) {
+            this.optimizationVariableTypeActive = "AD<double>";
+        } else {
+            Log.error(String.format("Could not determine active variable type for type: \"%s\"", optimizationVariableType));
+        }
     }
 
     // methods
@@ -327,5 +343,9 @@ public class IpoptViewModel extends ViewModelBase {
             replacementVar += "Tmp";
         }
         return replacementVar;
+    }
+
+    public String getOptimizationVariableTypeActive() {
+        return optimizationVariableTypeActive;
     }
 }
