@@ -1,0 +1,37 @@
+// transportation problem example (linear)
+// see https://www.gams.com/products/simple-example/
+
+package test.math.optimization;
+
+component LPOptimizationTest{
+    implementation Math
+    {
+        // define problem
+        Q m = 2;
+        Q n = 3;
+
+        // define A, b
+        Q^{m, 1} A = [350; 600];
+        Q^{n, 1} b = [325; 300; 275];
+
+        // cost matrix
+        Q^{m, n} dist = [2.5 1.7 1.8; 2.5 1.8 1.4];
+        Q factor = 90;
+        Q^{m, n} c = factor * dist / 1000;
+
+        // minimization problem
+        minimize(Q^{2, 3} x)
+          Q z = c(1,1) * x(1,1) + c(2,1) * x(2,1) + c(1,2) * x(1,2) + c(1,3) * x(1,3) + c(2,2) * x(2,2) + c(2,3) * x(2,3);
+        subject to
+          // sum(X, 2) == A;
+          x(1,1) + x(1,2) + x(1,3) == A(1);
+          x(2,1) + x(2,2) + x(2,3) == A(2);
+          // sum(X, 1) == b;
+          x(1,1) + x(2,1) == b(1);
+          x(1,2) + x(2,2) == b(2);
+          x(1,3) + x(2,3) == b(3);
+          //
+          x >= 0;
+        end
+    }
+}

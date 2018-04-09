@@ -26,6 +26,7 @@ public class MathOptimizationSolverTest extends AbstractSymtabTest {
 
     /**
      * helper method to generate optimization models in CPP code
+     *
      * @param modelName
      * @return
      * @throws IOException
@@ -53,15 +54,27 @@ public class MathOptimizationSolverTest extends AbstractSymtabTest {
 
     /**
      * example problem, number 71 from the Hock-Schittkowsky test suite
-     *   min_{x \in \R^4}	 x_1 x_4 (x_1 + x_2 + x_3) + x_3
-     *   s.t.
-     *     x_1 x_2 x_3 x_4 \ge 25
-     *     x_1^2 + x_2^2 + x_3^2 + x_4^2 = 40
-     *     1 \leq x_1, x_2, x_3, x_4 \leq 5
+     * min_{x \in \R^4}	 x_1 x_4 (x_1 + x_2 + x_3) + x_3
+     * s.t.
+     * x_1 x_2 x_3 x_4 \ge 25
+     * x_1^2 + x_2^2 + x_3^2 + x_4^2 = 40
+     * 1 \leq x_1, x_2, x_3, x_4 \leq 5
      */
     @Test
     public void testStandardIpoptOptimizationTest() throws IOException {
         List<File> files = doGenerateOptimizationModel("standardIpoptOptimizationTest");
+        // TODO: create reference solution
+        // String restPath = "testMath/optimizationSolver/";
+        // testFilesAreEqual(files, restPath);
+    }
+
+    /**
+     * instance of the transportation problem (linear)
+     * see https://www.gams.com/products/simple-example/
+     */
+    @Test
+    public void testLPOptimizationTest() throws IOException {
+        List<File> files = doGenerateOptimizationModel("lPOptimizationTest");
         // TODO: create reference solution
         // String restPath = "testMath/optimizationSolver/";
         // testFilesAreEqual(files, restPath);
