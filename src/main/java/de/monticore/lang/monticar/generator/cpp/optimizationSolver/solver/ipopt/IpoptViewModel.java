@@ -22,7 +22,7 @@ public class IpoptViewModel extends ViewModelBase {
     /**
      * Reservated in IPOPT calculations as objective variable
      */
-    private static final String IPOPT_OBJECTIVE_VAR = "obj_value";
+    private static final String IPOPT_OBJECTIVE_VAR = "fg";
 
     /**
      * Reservated in IPOPT calculations as dimensions of optimization var
@@ -32,7 +32,7 @@ public class IpoptViewModel extends ViewModelBase {
     /**
      * Reservated in IPOPT calculations as constraint function pointer
      */
-    private static final String IPOPT_CONSTRAINT_FUNCTION_VAR = "g";
+    private static final String IPOPT_CONSTRAINT_FUNCTION_VAR = "fg";
 
     /**
      * array of all reservated variables used by IPOPT
