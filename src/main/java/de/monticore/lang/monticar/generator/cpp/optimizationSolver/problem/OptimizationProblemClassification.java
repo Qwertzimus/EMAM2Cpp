@@ -4,7 +4,6 @@ import de.monticore.lang.math.math._symboltable.expression.*;
 import de.monticore.lang.monticar.generator.cpp.converter.ExecuteMethodGenerator;
 import de.monticore.lang.monticar.generator.cpp.converter.TypeConverter;
 import de.se_rwth.commons.logging.Log;
-import org.apache.commons.math3.geometry.euclidean.oned.Interval;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,57 +83,53 @@ public class OptimizationProblemClassification {
         nlp.setObjectiveFunction(getObjectiveFunctionAsCode(symbol));
     }
 
-    protected static Interval getBoundsAndExpressionFromConstraint(NLPProblem nlp, MathCompareExpressionSymbol constraint, MathExpressionSymbol expr) {
-        double lowerBound = LOWER_BOUND_INF;
-        double upperBound = UPPER_BOUND_INF;
+    protected static String[] getBoundsAndExpressionFromConstraint(NLPProblem nlp, MathCompareExpressionSymbol constraint, MathExpressionSymbol expr) {
+        String lowerBound = LOWER_BOUND_INF;
+        String upperBound = UPPER_BOUND_INF;
 
-        MathNumberExpressionSymbol value = null;
-        expr = null;
+        MathExpressionSymbol value = null;
         String op = constraint.getCompareOperator();
-        if (getNumber(constraint.getLeftExpression()) != null) {
-            value = getNumber(constraint.getLeftExpression());
-        } else if (getNumber(constraint.getRightExpression()) != null) {
-            value = getNumber(constraint.getRightExpression());
+        if (constraint.getLeftExpression() == expr) {
+            value = constraint.getRightExpression();
+        } else if (constraint.getRightExpression() == expr) {
+            value = constraint.getLeftExpression();
         }
         if (op.contains("==")) {
-            lowerBound = value.getValue().getRealNumber().doubleValue();
-            upperBound = value.getValue().getRealNumber().doubleValue();
-        } else if (getNumber(constraint.getLeftExpression()) != null) {
+            lowerBound = ExecuteMethodGenerator.generateExecuteCode(value, new ArrayList<String>());
+            upperBound = ExecuteMethodGenerator.generateExecuteCode(value, new ArrayList<String>());
+        } else if (constraint.getRightExpression() == expr) {
             if (op.contains("<")) {
-                lowerBound = value.getValue().getRealNumber().doubleValue();
+                lowerBound = ExecuteMethodGenerator.generateExecuteCode(value, new ArrayList<String>());
             } else if (op.contains(">")) {
-                upperBound = value.getValue().getRealNumber().doubleValue();
+                upperBound = ExecuteMethodGenerator.generateExecuteCode(value, new ArrayList<String>());
             }
-        } else if (getNumber(constraint.getRightExpression()) != null) {
+        } else if (constraint.getLeftExpression() == expr) {
             if (op.contains(">")) {
-                lowerBound = value.getValue().getRealNumber().doubleValue();
+                lowerBound = ExecuteMethodGenerator.generateExecuteCode(value, new ArrayList<String>());
             } else if (op.contains("<")) {
-                upperBound = value.getValue().getRealNumber().doubleValue();
+                upperBound = ExecuteMethodGenerator.generateExecuteCode(value, new ArrayList<String>());
             }
         }
-
-        return new Interval(lowerBound, upperBound);
+        return new String[]{lowerBound, upperBound};
     }
 
     protected static boolean isConstraintOnOptVar(NLPProblem nlp, MathExpressionSymbol expr) {
         return expr.getTextualRepresentation().contentEquals(nlp.getOptimizationVariableName());
     }
 
-    protected static void mergeBoundsInX(NLPProblem nlp, Vector<Double> xL, Vector<Double> xU, MathExpressionSymbol expr, Interval mergeBounds) {
+    protected static void mergeBoundsInX(NLPProblem nlp, Vector<String> xL, Vector<String> xU, MathExpressionSymbol expr, String currXL, String currXU) {
         for (int i = 0; i < nlp.getN(); i++) {
-            if (mergeBounds.getInf() > xL.get(i))
-                xL.set(i, mergeBounds.getInf());
-            if (mergeBounds.getSup() < xU.get(i))
-                xU.set(i, mergeBounds.getSup());
+            xL.set(i, String.format("std::fmax(%s, %s)", xL.get(i), currXL));
+            xU.set(i, String.format("std::fmin(%s, %s)", xU.get(i), currXU));
         }
     }
 
-    private static void setBoundsOnXFromTypeDeclaration(MathValueType type, Vector<Double> xL, Vector<Double> xU, int n) {
-        double lowerBoundX = LOWER_BOUND_INF;
-        double upperBoundX = UPPER_BOUND_INF;
+    private static void setBoundsOnXFromTypeDeclaration(MathValueType type, Vector<String> xL, Vector<String> xU, int n) {
+        String lowerBoundX = LOWER_BOUND_INF;
+        String upperBoundX = UPPER_BOUND_INF;
         if (type.getType().getRange().isPresent()) {
-            lowerBoundX = type.getType().getRange().get().getStartValue().doubleValue();
-            upperBoundX = type.getType().getRange().get().getEndValue().doubleValue();
+            lowerBoundX = Double.toString(type.getType().getRange().get().getStartValue().doubleValue());
+            upperBoundX = Double.toString(type.getType().getRange().get().getEndValue().doubleValue());
         }
         for (int i = 0; i < n; i++) {
             xL.add(lowerBoundX);
@@ -142,30 +137,36 @@ public class OptimizationProblemClassification {
         }
     }
 
+    private static MathExpressionSymbol getGFromContraint(NLPProblem nlp,  MathCompareExpressionSymbol constraint) {
+        MathExpressionSymbol left = constraint.getLeftExpression();
+        MathExpressionSymbol right = constraint.getRightExpression();
+        MathExpressionSymbol g = null;
+        if (left.getTextualRepresentation().contains(nlp.getOptimizationVariableName()))
+            g = left;
+        else if (right.getTextualRepresentation().contains(nlp.getOptimizationVariableName()))
+            g = right;
+        return g;
+    }
+
     protected static void setNLPConstraintsFromSymbol(NLPProblem nlp, MathOptimizationExpressionSymbol symbol) {
         Vector<String> g = new Vector<>();
-        Vector<Double> gL = new Vector<>();
-        Vector<Double> gU = new Vector<>();
-        Vector<Double> xL = new Vector<>();
-        Vector<Double> xU = new Vector<>();
+        Vector<String> gL = new Vector<>();
+        Vector<String> gU = new Vector<>();
+        Vector<String> xL = new Vector<>();
+        Vector<String> xU = new Vector<>();
 
         setBoundsOnXFromTypeDeclaration(symbol.getOptimizationVariable().getType(), xL, xU, nlp.getN());
 
         for (MathCompareExpressionSymbol constraint : symbol.getSubjectToExpressions()) {
             // find function
-            MathExpressionSymbol expr = null;
-            if (getNumber(constraint.getLeftExpression()) != null) {
-                expr = constraint.getRightExpression();
-            } else if (getNumber(constraint.getRightExpression()) != null) {
-                expr = constraint.getLeftExpression();
-            }
-            Interval bounds = getBoundsAndExpressionFromConstraint(nlp, constraint, expr);
+            MathExpressionSymbol expr = getGFromContraint(nlp, constraint);
+            String[] bounds = getBoundsAndExpressionFromConstraint(nlp, constraint, expr);
             if (isConstraintOnOptVar(nlp, expr)) {
-                mergeBoundsInX(nlp, xL, xU, expr, bounds);
+                mergeBoundsInX(nlp, xL, xU, expr, bounds[0], bounds[1]);
             } else {
                 g.add(ExecuteMethodGenerator.generateExecuteCode(expr, new ArrayList<String>()));
-                gL.add(bounds.getInf());
-                gU.add(bounds.getSup());
+                gL.add(bounds[0]);
+                gU.add(bounds[1]);
             }
         }
         nlp.setM(g.size());

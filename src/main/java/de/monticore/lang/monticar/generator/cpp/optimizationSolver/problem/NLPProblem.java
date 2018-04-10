@@ -30,32 +30,32 @@ public class NLPProblem extends GeneralNLPProblem {
     /**
      * Default value if no lower bound is set
      */
-    public final static double LOWER_BOUND_INF = -1E+19;
+    public final static String LOWER_BOUND_INF = "-1E+19";
 
     /**
      * Default value if no upper bound is set
      */
-    public final static double UPPER_BOUND_INF = 1E+19;
+    public final static String UPPER_BOUND_INF = "1E+19";
 
     /**
      * lower bound of x
      */
-    private Vector<Double> xL = new Vector<>();
+    private Vector<String> xL = new Vector<>();
 
     /**
      * upper bound of x
      */
-    private Vector<Double> xU = new Vector<>();
+    private Vector<String> xU = new Vector<>();
 
     /**
      * lower bound of g
      */
-    private Vector<Double> gL = new Vector<>();
+    private Vector<String> gL = new Vector<>();
 
     /**
      * upper bound of g
      */
-    private Vector<Double> gU = new Vector<>();
+    private Vector<String> gU = new Vector<>();
 
     // getter setter
 
@@ -75,35 +75,35 @@ public class NLPProblem extends GeneralNLPProblem {
         this.constraintFunctions = constraintFunctions;
     }
 
-    public Vector<Double> getxL() {
+    public Vector<String> getxL() {
         return xL;
     }
 
-    public void setxL(Vector<Double> xL) {
+    public void setxL(Vector<String> xL) {
         this.xL = xL;
     }
 
-    public Vector<Double> getxU() {
+    public Vector<String> getxU() {
         return xU;
     }
 
-    public void setxU(Vector<Double> xU) {
+    public void setxU(Vector<String> xU) {
         this.xU = xU;
     }
 
-    public Vector<Double> getgL() {
+    public Vector<String> getgL() {
         return gL;
     }
 
-    public void setgL(Vector<Double> gL) {
+    public void setgL(Vector<String> gL) {
         this.gL = gL;
     }
 
-    public Vector<Double> getgU() {
+    public Vector<String> getgU() {
         return gU;
     }
 
-    public void setgU(Vector<Double> gU) {
+    public void setgU(Vector<String> gU) {
         this.gU = gU;
     }
 }

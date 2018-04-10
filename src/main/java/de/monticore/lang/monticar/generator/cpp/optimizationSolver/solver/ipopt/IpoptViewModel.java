@@ -82,22 +82,22 @@ public class IpoptViewModel extends ViewModelBase {
     /**
      * Lower bound for x
      */
-    private Vector<Double> xL;
+    private Vector<String> xL;
 
     /**
      * Upper bound for x
      */
-    private Vector<Double> xU;
+    private Vector<String> xU;
 
     /**
      * Lower bound for g(x)
      */
-    private Vector<Double> gL;
+    private Vector<String> gL;
 
     /**
      * Upper bound for g(x)
      */
-    private Vector<Double> gU;
+    private Vector<String> gU;
 
     /**
      * starting point of the iteration for x
@@ -189,35 +189,35 @@ public class IpoptViewModel extends ViewModelBase {
         this.numberConstraints = numberConstraints;
     }
 
-    public List<Double> getxL() {
+    public List<String> getxL() {
         return xL;
     }
 
-    public void setxL(Vector<Double> xL) {
+    public void setxL(Vector<String> xL) {
         this.xL = xL;
     }
 
-    public List<Double> getxU() {
+    public List<String> getxU() {
         return xU;
     }
 
-    public void setxU(Vector<Double> xU) {
+    public void setxU(Vector<String> xU) {
         this.xU = xU;
     }
 
-    public List<Double> getgL() {
+    public List<String> getgL() {
         return gL;
     }
 
-    public void setgL(Vector<Double> gL) {
+    public void setgL(Vector<String> gL) {
         this.gL = gL;
     }
 
-    public List<Double> getgU() {
+    public List<String> getgU() {
         return gU;
     }
 
-    public void setgU(Vector<Double> gU) {
+    public void setgU(Vector<String> gU) {
         this.gU = gU;
     }
 
@@ -272,11 +272,11 @@ public class IpoptViewModel extends ViewModelBase {
      * @return initial starting point for x
      */
     protected Vector<Double> calculateInitialX() {
-        Vector<Double> result = new Vector<>(getNumberVariables());
+        Vector<Double> initX = new Vector<>(getNumberVariables());
         for (int i = 0; i < getNumberVariables(); i++) {
-            result.add(xL.get(i) + (xU.get(i) - xL.get(i)) / 2);
+            initX.add(0.0);
         }
-        return result;
+        return initX;
     }
 
     public void resolveIpoptNameConflicts() {
