@@ -1,6 +1,7 @@
 package de.monticore.lang.monticar.generator.cpp.optimizationSolver.solver;
 
 import de.monticore.lang.monticar.generator.FileContent;
+import de.monticore.lang.monticar.generator.cpp.BluePrintCPP;
 import de.monticore.lang.monticar.generator.cpp.optimizationSolver.problem.Problem;
 
 import java.util.List;
@@ -36,9 +37,10 @@ public abstract class SolverGenerator {
      * Generates code from a MathOptimizationExpressionSymbol to solve the described optimization problem.
      *
      * @param optimizationProblem optimization problem which should be solved
+     * @param bluePrint
      * @return Executable code instruction as string
      */
-    public String generateSolverInstruction(Problem optimizationProblem, List<FileContent> auxiliaryFiles) {
-        return implementationHook.generateSolverCode(optimizationProblem, auxiliaryFiles);
+    public String generateSolverInstruction(Problem optimizationProblem, List<FileContent> auxiliaryFiles, BluePrintCPP bluePrint) {
+        return implementationHook.generateSolverCode(optimizationProblem, auxiliaryFiles, bluePrint);
     }
 }

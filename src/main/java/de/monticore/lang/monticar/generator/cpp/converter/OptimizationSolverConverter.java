@@ -63,7 +63,7 @@ public class OptimizationSolverConverter {
 
         // third step: generate code from solver generator
         ArrayList<FileContent> auxiliaryFiles = new ArrayList<FileContent>();
-        result += solverGenerator.generateSolverInstruction(problemType, auxiliaryFiles);
+        result += solverGenerator.generateSolverInstruction(problemType, auxiliaryFiles, bluePrint);
 
         // also generate auxiliaryFiles
         if (bluePrint.getGenerator() instanceof GeneratorCPP) {

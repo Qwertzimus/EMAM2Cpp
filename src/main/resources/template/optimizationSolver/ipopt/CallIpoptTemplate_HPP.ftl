@@ -1,6 +1,15 @@
 #ifndef __${viewModel.callIpoptName?upper_case}_H__
 #define __${viewModel.callIpoptName?upper_case}_H__
+#include<armadillo>
 
-bool solveOptimizationProblemIpOpt(${viewModel.optimizationVariableType} &x, double &y);
+using namespace arma;
+
+bool solveOptimizationProblemIpOpt(
+    ${viewModel.optimizationVariableType} &x,
+    double &y<#if 0 < viewModel.knownVariablesWithType?size>,</#if>
+    <#list viewModel.knownVariablesWithType as arg>
+    const ${arg}<#sep>,</#sep>
+    </#list>
+    );
 
 #endif

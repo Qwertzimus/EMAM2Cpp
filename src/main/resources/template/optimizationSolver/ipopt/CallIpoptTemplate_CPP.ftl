@@ -1,19 +1,25 @@
 #include<cppad/ipopt/solve.hpp>
-#include<armadillo>
 #include<iostream>
+#include <armadillo>
+#include "${viewModel.callIpoptName}.h"
 
 namespace
 {
     using CppAD::AD;
     using namespace arma;
+    using namespace ${viewModel.callIpoptName};
+
+    <#list viewModel.knownVariablesWithType as var>
+    static ${var};
+    </#list>
 
     class FG_eval {
     public:
         typedef CPPAD_TESTVECTOR(AD<double>) ADvector;
 
         void operator()(ADvector &fg,const ADvector &x) {
-            assert (fg.size() == (${viewModel.numberConstraints} + 1));
-            assert (x.size() == ${viewModel.numberVariables});
+            assert (fg.size() == (${viewModel.numberConstraints?c} + 1));
+            assert (x.size() == ${viewModel.numberVariables?c});
 
             // create active optimization var
             <#if viewModel.numberVariables <= 1>
@@ -44,9 +50,21 @@ namespace
 
 using namespace arma;
 
-bool solveOptimizationProblemIpOpt(${viewModel.optimizationVariableType} &x,double &y)
+bool solveOptimizationProblemIpOpt(
+    ${viewModel.optimizationVariableType} &x,
+    double &y <#if 0 < viewModel.knownVariablesWithType?size>,</#if>
+    <#list viewModel.knownVariablesWithType as arg>
+    const ${arg}<#sep>,</#sep>
+    </#list>
+)
 {
     bool ok = true;
+
+    // assign parameter variables
+    <#list viewModel.knownVariables as var>
+    ::${var} = ${var};
+    </#list>
+
     typedef CPPAD_TESTVECTOR(double)Dvector;
 
     // number of independent variables (domain dimension for f and g)

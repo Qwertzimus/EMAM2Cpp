@@ -1,11 +1,12 @@
 package de.monticore.lang.monticar.generator.cpp.optimizationSolver.solver.ipopt;
 
+import de.monticore.lang.monticar.generator.Variable;
+import de.monticore.lang.monticar.generator.cpp.BluePrintCPP;
 import de.monticore.lang.monticar.generator.cpp.optimizationSolver.problem.NLPProblem;
 import de.monticore.lang.monticar.generator.cpp.viewmodel.ViewModelBase;
 import de.se_rwth.commons.logging.Log;
 
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * Contains all necessary information needed to generate a freemarker template of IPOPT C++ code.
@@ -113,6 +114,16 @@ public class IpoptViewModel extends ViewModelBase {
      * list of constraints
      */
     private Vector<String> constraintFunctions;
+
+    /**
+     * all variables from EMAM workspace
+     */
+    private HashSet<String> knownVariables = new LinkedHashSet<>();
+
+    /**
+     * all variables with declaration type from EMAM workspace
+     */
+    private HashSet<String> knownVariablesWithType = new LinkedHashSet<>();
 
     // constructor
 
@@ -347,5 +358,24 @@ public class IpoptViewModel extends ViewModelBase {
 
     public String getOptimizationVariableTypeActive() {
         return optimizationVariableTypeActive;
+    }
+
+    public HashSet<String> getKnownVariables() {
+        return knownVariables;
+    }
+
+    public HashSet<String> getKnownVariablesWithType() {
+        return knownVariablesWithType;
+    }
+
+    public void setKnownVariablesFromBluePrint(BluePrintCPP bluePrint) {
+        for (Variable v : bluePrint.getMathInformationRegister().getVariables()) {
+            String name = v.getNameTargetLanguageFormat();
+            String type = v.getVariableType().getTypeNameTargetLanguage();
+            if ((!name.contentEquals(optimizationVariableName)) && (!name.contentEquals(objectiveVariableName))) {
+                knownVariables.add(name);
+                knownVariablesWithType.add(String.format("%s %s", type, name));
+            }
+        }
     }
 }

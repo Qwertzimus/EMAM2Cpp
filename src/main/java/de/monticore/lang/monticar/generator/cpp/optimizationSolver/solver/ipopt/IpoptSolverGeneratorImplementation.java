@@ -1,6 +1,7 @@
 package de.monticore.lang.monticar.generator.cpp.optimizationSolver.solver.ipopt;
 
 import de.monticore.lang.monticar.generator.FileContent;
+import de.monticore.lang.monticar.generator.cpp.BluePrintCPP;
 import de.monticore.lang.monticar.generator.cpp.optimizationSolver.problem.NLPProblem;
 import de.monticore.lang.monticar.generator.cpp.optimizationSolver.problem.Problem;
 import de.monticore.lang.monticar.generator.cpp.optimizationSolver.solver.NLPSolverGeneratorImplementation;
@@ -56,7 +57,7 @@ public class IpoptSolverGeneratorImplementation extends NLPSolverGeneratorImplem
     }
 
     @Override
-    public String generateSolverCode(Problem optimizationProblem, List<FileContent> auxillaryFiles) {
+    public String generateSolverCode(Problem optimizationProblem, List<FileContent> auxillaryFiles, BluePrintCPP bluePrint) {
         String result = "";
         if (optimizationProblem instanceof NLPProblem) {
             NLPProblem nlpOptimizationProblem = (NLPProblem) optimizationProblem;
@@ -64,7 +65,15 @@ public class IpoptSolverGeneratorImplementation extends NLPSolverGeneratorImplem
             // create view model from problem class
             IpoptViewModel vm = new IpoptViewModel(nlpOptimizationProblem);
             // set execute command
-            result = String.format("solveOptimizationProblemIpOpt(%s, %s);\n", vm.getOptimizationVariableName(), vm.getObjectiveVariableName());
+            vm.setKnownVariablesFromBluePrint(bluePrint);
+            String knownVariables = ", ";
+            for (String s : vm.getKnownVariables()) {
+                knownVariables += s + ", ";
+            }
+            if (knownVariables.length() >= 2) {
+                knownVariables = knownVariables.substring(0, knownVariables.length() - 2);
+            }
+            result = String.format("solveOptimizationProblemIpOpt(%s, %s%s);\n", vm.getOptimizationVariableName(), vm.getObjectiveVariableName(), knownVariables);
             // generate templates by view model
             vm.resolveIpoptNameConflicts();
             generateIpoptTemplates(vm, auxillaryFiles);

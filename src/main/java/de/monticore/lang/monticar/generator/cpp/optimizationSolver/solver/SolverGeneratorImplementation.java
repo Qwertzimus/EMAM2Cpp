@@ -1,6 +1,7 @@
 package de.monticore.lang.monticar.generator.cpp.optimizationSolver.solver;
 
 import de.monticore.lang.monticar.generator.FileContent;
+import de.monticore.lang.monticar.generator.cpp.BluePrintCPP;
 import de.monticore.lang.monticar.generator.cpp.optimizationSolver.problem.Problem;
 
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.List;
  */
 public interface SolverGeneratorImplementation {
 
-    public abstract String generateSolverCode(Problem optimizationProblem, List<FileContent> auxillaryFiles);
+    public abstract String generateSolverCode(Problem optimizationProblem, List<FileContent> auxillaryFiles, BluePrintCPP bluePrint);
 
     public abstract List<String> getNecessaryIncludes();
 }
