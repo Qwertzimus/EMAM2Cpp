@@ -3,6 +3,7 @@ package de.monticore.lang.monticar.generator.cpp.converter;
 import de.monticore.lang.math.math._symboltable.expression.IArithmeticExpression;
 import de.monticore.lang.math.math._symboltable.expression.MathExpressionSymbol;
 import de.monticore.lang.math.math._symboltable.matrix.*;
+import de.monticore.lang.monticar.generator.cpp.ArmadilloBackend;
 import de.monticore.lang.monticar.generator.cpp.MathFunctionFixer;
 import de.monticore.lang.monticar.generator.cpp.OctaveHelper;
 import de.se_rwth.commons.logging.Log;
@@ -151,13 +152,13 @@ public class ExecuteMethodGeneratorMatrixExpressionHandler {
         if (MathFunctionFixer.fixForLoopAccess(mathMatrixAccessOperatorSymbol.getMathMatrixNameExpressionSymbol(), ComponentConverter.currentBluePrint)) {
             result += updateMatrixAccessStringFixForLoop(mathMatrixAccessOperatorSymbol, counter, matrixExtractionPart, includeStrings);
         } else {
-            result += updateMatrixAccessString(mathMatrixAccessOperatorSymbol, counter, matrixExtractionPart, false, includeStrings);
+            result += updateMatrixAccessString(mathMatrixAccessOperatorSymbol, counter, matrixExtractionPart, (MathConverter.curBackend instanceof ArmadilloBackend), includeStrings);
         }
         result += mathMatrixAccessOperatorSymbol.getAccessEndSymbol();
         Log.info("MatrixExtractionPart: " + matrixExtractionPart, "MathMatrixAccessOperatorSymbol");
         Log.info("mathMatrixAccessOperatorSymbol: " + mathMatrixAccessOperatorSymbol.getTextualRepresentation(), "MathMatrixAccessOperatorSymbol");
         Log.info("Oldresult: " + result, "MathMatrixAccessOperatorSymbol");
-        result = tryFix(result, mathMatrixAccessOperatorSymbol);
+        // result = tryFix(result, mathMatrixAccessOperatorSymbol);
         return result;
     }
 
