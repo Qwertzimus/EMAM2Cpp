@@ -1,5 +1,7 @@
 package de.monticore.lang.monticar.generator.cpp.optimizationSolver.problem;
 
+import java.util.Vector;
+
 /**
  * Represents an abstract optimization problem of the general form
  *
@@ -27,6 +29,11 @@ public abstract class Problem {
      * data type of the optimization variable
      */
     private String optimizationVariableType;
+
+    /**
+     * dimensions of the optimization variable
+     */
+    private Vector<Integer> optimizationVariableDimensions;
 
     /**
      * variable which contains the objective value
@@ -89,5 +96,13 @@ public abstract class Problem {
 
     public void setOptimizationVariableType(String optimizationVariableType) {
         this.optimizationVariableType = optimizationVariableType;
+    }
+
+    public Vector<Integer> getOptimizationVariableDimensions() {
+        return optimizationVariableDimensions;
+    }
+
+    public void setOptimizationVariableDimensions(Vector<Integer> optimizationVariableDimensions) {
+        this.optimizationVariableDimensions = optimizationVariableDimensions;
     }
 }

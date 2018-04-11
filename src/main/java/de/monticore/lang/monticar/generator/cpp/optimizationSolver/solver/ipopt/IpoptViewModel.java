@@ -61,6 +61,11 @@ public class IpoptViewModel extends ViewModelBase {
     private String optimizationVariableType;
 
     /**
+     * Dimensions of the optimization variable
+     */
+    private Vector<Integer> optimizationVariableDimensions;
+
+    /**
      * For automatic differentiation a active type is required
      */
     private String optimizationVariableTypeActive;
@@ -144,6 +149,7 @@ public class IpoptViewModel extends ViewModelBase {
         this.optimizationVariableName = problem.getOptimizationVariableName();
         setOptimizationVariableType(problem.getOptimizationVariableType());
         this.objectiveVariableName = problem.getObjectiveValueVariable();
+        this.optimizationVariableDimensions = problem.getOptimizationVariableDimensions();
 
         this.callIpoptName = "CallIpopt" + problem.getId();
         this.nlpClassName = "NLP" + problem.getId();
@@ -377,5 +383,9 @@ public class IpoptViewModel extends ViewModelBase {
                 knownVariablesWithType.add(String.format("%s %s", type, name));
             }
         }
+    }
+
+    public Vector<Integer> getOptimizationVariableDimensions() {
+        return optimizationVariableDimensions;
     }
 }

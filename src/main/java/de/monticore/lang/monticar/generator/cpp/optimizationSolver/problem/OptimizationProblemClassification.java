@@ -73,9 +73,12 @@ public class OptimizationProblemClassification {
     }
 
     protected static void setNLPOptimizationVariableFromSymbol(NLPProblem nlp, MathOptimizationExpressionSymbol symbol) {
-        nlp.setN(getOptimizationVarDimension(symbol));
+
+        Vector<Integer> dimensions = new Vector<>();
+        nlp.setN(getOptimizationVarDimension(symbol, dimensions));
         nlp.setOptimizationVariableName(getOptimizationVarName(symbol));
         nlp.setOptimizationVariableType(getOptimizationVarType(symbol));
+        nlp.setOptimizationVariableDimensions(dimensions);
     }
 
     protected static void setNLPObjectiveFunctionFromSymbol(NLPProblem nlp, MathOptimizationExpressionSymbol symbol) {
@@ -187,12 +190,15 @@ public class OptimizationProblemClassification {
         return numberExpr;
     }
 
-    protected static int getOptimizationVarDimension(MathOptimizationExpressionSymbol symbol) {
+    protected static int getOptimizationVarDimension(MathOptimizationExpressionSymbol symbol, Vector<Integer> dimensions) {
         int n = 1;
+        dimensions.clear();
         List<MathExpressionSymbol> dims = symbol.getOptimizationVariable().getType().getDimensions();
         for (MathExpressionSymbol d : dims) {
             if (getNumber(d) != null) {
-                n *= getNumber(d).getValue().getRealNumber().intValue();
+                int currDim = getNumber(d).getValue().getRealNumber().intValue();
+                n *= currDim;
+                dimensions.add(currDim);
             }
         }
         return n;

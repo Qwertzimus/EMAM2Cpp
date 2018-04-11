@@ -7,7 +7,6 @@ namespace
 {
     using CppAD::AD;
     using namespace arma;
-    using namespace ${viewModel.callIpoptName};
 
     <#list viewModel.knownVariablesWithType as var>
     static ${var};
@@ -22,15 +21,35 @@ namespace
             assert (x.size() == ${viewModel.numberVariables?c});
 
             // create active optimization var
-            <#if viewModel.numberVariables <= 1>
+            <#if viewModel.optimizationVariableDimensions?size == 0>
             ${viewModel.optimizationVariableTypeActive} ${viewModel.optimizationVariableName} = x[0];
-            <#else>
-            std::vector<AD<double>> optAsVec = std::vector<AD<double>>(${viewModel.numberVariables?c});
-            for (int i = 0; i < ${viewModel.numberVariables}; i++)
+            <#elseif viewModel.optimizationVariableDimensions?size == 1>
+            ${viewModel.optimizationVariableTypeActive} ${viewModel.optimizationVariableName} = ${viewModel.optimizationVariableTypeActive}(${viewModel.optimizationVariableDimensions[0]});
+            for (int i = 0; i < ${viewModel.optimizationVariableDimensions[0]?c}; i++)
             {
-                optAsVec[i] = x[i];
+                xTmp(i) = x[i];
             }
-            ${viewModel.optimizationVariableTypeActive} ${viewModel.optimizationVariableName} = conv_to<${viewModel.optimizationVariableTypeActive}>::from(optAsVec);
+            <#elseif viewModel.optimizationVariableDimensions?size == 2>
+            ${viewModel.optimizationVariableTypeActive} ${viewModel.optimizationVariableName} = ${viewModel.optimizationVariableTypeActive}(${viewModel.optimizationVariableDimensions[0]}, ${viewModel.optimizationVariableDimensions[1]});
+            for (int i = 0; i < ${viewModel.optimizationVariableDimensions[0]?c}; i++)
+            {
+                for (int j = 0; j < ${viewModel.optimizationVariableDimensions[1]?c}; j++)
+                {
+                    xTmp(i, j) = x[i + j];
+                }
+            }
+            <#elseif viewModel.optimizationVariableDimensions?size == 3>
+            ${viewModel.optimizationVariableTypeActive} ${viewModel.optimizationVariableName} = ${viewModel.optimizationVariableTypeActive}(${viewModel.optimizationVariableDimensions[0]}, ${viewModel.optimizationVariableDimensions[1]}, ${viewModel.optimizationVariableDimensions[2]});
+            for (int i = 0; i < ${viewModel.optimizationVariableDimensions[0]?c}; i++)
+            {
+                for (int j = 0; j < ${viewModel.optimizationVariableDimensions[1]?c}; j++)
+                {
+                    for (int k = 0; k < ${viewModel.optimizationVariableDimensions[2]?c}; k++)
+                    {
+                        xTmp(i, j, k) = x[i + j + k];
+                    }
+                }
+            }
             </#if>
 
             // f(x)
@@ -135,17 +154,33 @@ bool solveOptimizationProblemIpOpt(
     ok&=solution.status==CppAD::ipopt::solve_result<Dvector>::success;
 
     // assign solution values
-    <#if viewModel.numberVariables <= 1>
+    <#if viewModel.optimizationVariableDimensions?size == 0>
     x = solution.x[0];
-    <#else>
-    std::vector<double> optAsVec = std::vector<double>(nx);
-    for (int i = 0; i < nx; i++)
+    <#elseif viewModel.optimizationVariableDimensions?size == 1>
+    for (int i = 0; i < ${viewModel.optimizationVariableDimensions[0]?c}; i++)
     {
-        optAsVec[i] = solution.x[i];
+        x(i) = solution.x[i];
     }
-    x = conv_to<${viewModel.optimizationVariableType}>::from(optAsVec);
+    <#elseif viewModel.optimizationVariableDimensions?size == 2>
+    for (int i = 0; i < ${viewModel.optimizationVariableDimensions[0]?c}; i++)
+            {
+            for (int j = 0; j < ${viewModel.optimizationVariableDimensions[1]?c}; j++)
+        {
+            x(i, j) = solution.x[i + j];
+        }
+    }
+    <#elseif viewModel.optimizationVariableDimensions?size == 3>
+    for (int i = 0; i < ${viewModel.optimizationVariableDimensions[0]?c}; i++)
+    {
+        for (int j = 0; j < ${viewModel.optimizationVariableDimensions[1]?c}; j++)
+        {
+            for (int k = 0; k < ${viewModel.optimizationVariableDimensions[2]?c}; k++)
+            {
+                x(i, j, k) = solution.x[i + j + k];
+            }
+        }
+    }
     </#if>
-
     y = solution.obj_value;
 
     // print short message
