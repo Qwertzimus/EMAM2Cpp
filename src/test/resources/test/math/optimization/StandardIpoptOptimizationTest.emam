@@ -9,10 +9,10 @@ package test.math.optimization;
 component StandardIpoptOptimizationTest{
     implementation Math{
         minimize(Q^{4} x)
-            Q y = x(0) * x(3) * (x(0) + x(1) + x(2)) + x(2);
+            Q y = x(1) * x(4) * (x(1) + x(2) + x(3)) + x(3);
         subject to
-            x(0) * x(1) * x(2) * x(3) >= 25;
-            x(0) * x(0) + x(1) * x(1) + x(2) * x(2) + x(3) * x(3) == 40;
+            x(1) * x(2) * x(3) * x(4) >= 25;
+            x(1) * x(1) + x(2) * x(2) + x(3) * x(3) + x(4) * x(4) == 40;
             1 <= x;
             x <= 5;
         end
