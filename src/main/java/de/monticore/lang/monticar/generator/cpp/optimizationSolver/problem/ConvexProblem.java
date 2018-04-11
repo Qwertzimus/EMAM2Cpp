@@ -5,5 +5,5 @@ package de.monticore.lang.monticar.generator.cpp.optimizationSolver.problem;
  *
  * @author Christoph Richter
  */
-public class ConvexProblem extends NLPProblem{
+public class ConvexProblem extends NLPProblem {
 }

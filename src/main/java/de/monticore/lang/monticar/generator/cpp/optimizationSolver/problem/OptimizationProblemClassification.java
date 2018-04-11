@@ -30,15 +30,6 @@ public class OptimizationProblemClassification {
         this.problemType = classifySymbol(symbol);
     }
 
-    // methods
-    public MathOptimizationExpressionSymbol getSymbol() {
-        return symbol;
-    }
-
-    public Problem getProblemType() {
-        return problemType;
-    }
-
     /**
      * Classifies MathOptimizationExpression to a optimization problem class
      *
@@ -140,7 +131,7 @@ public class OptimizationProblemClassification {
         }
     }
 
-    private static MathExpressionSymbol getGFromContraint(NLPProblem nlp,  MathCompareExpressionSymbol constraint) {
+    private static MathExpressionSymbol getGFromContraint(NLPProblem nlp, MathCompareExpressionSymbol constraint) {
         MathExpressionSymbol left = constraint.getLeftExpression();
         MathExpressionSymbol right = constraint.getRightExpression();
         MathExpressionSymbol g = null;
@@ -222,5 +213,14 @@ public class OptimizationProblemClassification {
 
     protected static String getObjectiveFunctionAsCode(MathOptimizationExpressionSymbol symbol) {
         return ExecuteMethodGenerator.generateExecuteCode(symbol.getObjectiveExpression().getAssignedMathExpressionSymbol(), new ArrayList<>());
+    }
+
+    // methods
+    public MathOptimizationExpressionSymbol getSymbol() {
+        return symbol;
+    }
+
+    public Problem getProblemType() {
+        return problemType;
     }
 }

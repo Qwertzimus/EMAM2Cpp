@@ -18,25 +18,21 @@ import java.util.Vector;
 public class NLPProblem extends GeneralNLPProblem {
 
     /**
-     * number of constraints in function g
-     */
-    private int m;
-
-    /**
-     * function g: R^n -> R^m
-     */
-    private Vector<String> constraintFunctions = new Vector<>();
-
-    /**
      * Default value if no lower bound is set
      */
     public final static String LOWER_BOUND_INF = "-1E+19";
-
     /**
      * Default value if no upper bound is set
      */
     public final static String UPPER_BOUND_INF = "1E+19";
-
+    /**
+     * number of constraints in function g
+     */
+    private int m;
+    /**
+     * function g: R^n -> R^m
+     */
+    private Vector<String> constraintFunctions = new Vector<>();
     /**
      * lower bound of x
      */

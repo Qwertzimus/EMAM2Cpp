@@ -6,7 +6,10 @@ import de.monticore.lang.monticar.generator.cpp.optimizationSolver.problem.NLPPr
 import de.monticore.lang.monticar.generator.cpp.viewmodel.ViewModelBase;
 import de.se_rwth.commons.logging.Log;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Contains all necessary information needed to generate a freemarker template of IPOPT C++ code.
@@ -158,6 +161,20 @@ public class IpoptViewModel extends ViewModelBase {
 
     // getter setter methods
 
+    private static String replaceVariableInExpr(String expr, String var, String replacementVar) {
+        String result = expr;
+
+        String sepVar1 = "" + var + "";
+        String sepVar2 = "" + var + "[";
+
+        String sepRepVar1 = "" + replacementVar + "";
+        String sepRepVar2 = "" + replacementVar + "[";
+
+        result = result.replace(sepVar1, sepRepVar1);
+        result = result.replace(sepVar2, sepRepVar2);
+        return result;
+    }
+
     public String getNlpClassName() {
         return nlpClassName;
     }
@@ -266,6 +283,8 @@ public class IpoptViewModel extends ViewModelBase {
         return optimizationVariableType;
     }
 
+    // methods
+
     public void setOptimizationVariableType(String optimizationVariableType) {
         this.optimizationVariableType = optimizationVariableType;
         // also set active type
@@ -279,8 +298,6 @@ public class IpoptViewModel extends ViewModelBase {
             Log.error(String.format("Could not determine active variable type for type: \"%s\"", optimizationVariableType));
         }
     }
-
-    // methods
 
     /**
      * Calculates a starting point for variable x.
@@ -307,20 +324,6 @@ public class IpoptViewModel extends ViewModelBase {
                     setObjectiveVariableName(replacementVar);
             }
         }
-    }
-
-    private static String replaceVariableInExpr(String expr, String var, String replacementVar) {
-        String result = expr;
-
-        String sepVar1 = "" + var + "";
-        String sepVar2 = "" + var + "[";
-
-        String sepRepVar1 = "" + replacementVar + "";
-        String sepRepVar2 = "" + replacementVar + "[";
-
-        result = result.replace(sepVar1, sepRepVar1);
-        result = result.replace(sepVar2, sepRepVar2);
-        return result;
     }
 
     private void replaceVariable(String var, String replacementVar) {
