@@ -54,7 +54,11 @@ namespace
 
             // f(x)
             int i = 0;
+            <#if viewModel.optimizationProblemType.name() == "MINIMIZATION">
             fg[i] = ${viewModel.objectiveFunction};
+            <#else>
+            fg[i] = -1 * ( ${viewModel.objectiveFunction} );
+            </#if>
 
             // g_i(x)
             <#list viewModel.constraintFunctions as g>
@@ -181,11 +185,16 @@ bool ${viewModel.callIpoptName}::solveOptimizationProblemIpOpt(
         }
     }
     </#if>
+    // objective value
+    <#if viewModel.optimizationProblemType.name() == "MINIMIZATION">
     y = solution.obj_value;
+    <#else>
+    y = -1 * solution.obj_value;
+    </#if>
 
     // print short message
     std::cout<<std::endl<<std::endl<<"Solving status: "<<solution.status<<"!"<<std::endl;
-    std::cout<<"Primal value: "<<std::endl<<"x = "<<std::endl<<x<<std::endl;
-    std::cout<<"Objective value: "<<std::endl<<"y = "<<y<<std::endl;
+    std::cout<<"${viewModel.optimizationProblemType.name()?capitalize} variable value: "<<std::endl<<"x = "<<std::endl<<x<<std::endl;
+    std::cout<<"${viewModel.optimizationProblemType.name()?capitalize} objective value: "<<std::endl<<"y = "<<y<<std::endl;
     return ok;
 }

@@ -45,8 +45,19 @@ public class MathOptimizationSolverTest extends AbstractSymtabTest {
      * Simple quadratic problem min x^2-2x+1 s.t. x >= 0
      */
     @Test
-    public void testScalarOptimizationTest() throws IOException {
-        List<File> files = doGenerateOptimizationModel("scalarOptimizationTest");
+    public void testScalarMinimizationTest() throws IOException {
+        List<File> files = doGenerateOptimizationModel("scalarMinimizationTest");
+        // TODO: create reference solution
+        // String restPath = "testMath/optimizationSolver/";
+        // testFilesAreEqual(files, restPath);
+    }
+
+    /**
+     * Simple quadratic problem max x^2-2x+1 s.t. x >= 0
+     */
+    @Test
+    public void testScalarMaximizationTest() throws IOException {
+        List<File> files = doGenerateOptimizationModel("scalarMaximizationTest");
         // TODO: create reference solution
         // String restPath = "testMath/optimizationSolver/";
         // testFilesAreEqual(files, restPath);

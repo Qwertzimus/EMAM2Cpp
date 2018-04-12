@@ -1,5 +1,7 @@
 package de.monticore.lang.monticar.generator.cpp.optimizationSolver.problem;
 
+import de.monticore.lang.math.math._symboltable.MathOptimizationType;
+
 import java.util.Vector;
 
 /**
@@ -13,6 +15,11 @@ public abstract class Problem {
      * identification number for problem
      */
     private int id = this.hashCode();
+
+    /**
+     * defines whether we do minimization or maximization
+     */
+    private MathOptimizationType optimizationProblemType;
 
     // fields
     /**
@@ -104,5 +111,13 @@ public abstract class Problem {
 
     public void setOptimizationVariableDimensions(Vector<Integer> optimizationVariableDimensions) {
         this.optimizationVariableDimensions = optimizationVariableDimensions;
+    }
+
+    public MathOptimizationType getOptimizationProblemType() {
+        return optimizationProblemType;
+    }
+
+    public void setOptimizationProblemType(MathOptimizationType optimizationProblemType) {
+        this.optimizationProblemType = optimizationProblemType;
     }
 }

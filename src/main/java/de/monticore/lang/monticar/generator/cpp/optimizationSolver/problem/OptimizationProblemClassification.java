@@ -56,6 +56,7 @@ public class OptimizationProblemClassification {
     protected static NLPProblem getNLPFromSymbol(MathOptimizationExpressionSymbol symbol) {
         NLPProblem nlp = new NLPProblem();
         nlp.setId(symbol.getExpressionID());
+        nlp.setOptimizationProblemType(symbol.getOptimizationType());
         // assign all properties
         setNLPOptimizationVariableFromSymbol(nlp, symbol);
         setNLPObjectiveFunctionFromSymbol(nlp, symbol);

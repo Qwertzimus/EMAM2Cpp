@@ -1,5 +1,6 @@
 package de.monticore.lang.monticar.generator.cpp.optimizationSolver.solver.ipopt;
 
+import de.monticore.lang.math.math._symboltable.MathOptimizationType;
 import de.monticore.lang.monticar.generator.Variable;
 import de.monticore.lang.monticar.generator.cpp.BluePrintCPP;
 import de.monticore.lang.monticar.generator.cpp.optimizationSolver.problem.NLPProblem;
@@ -44,14 +45,11 @@ public class IpoptViewModel extends ViewModelBase {
     private static final String[] IPOPT_RESERVATED_VARS = {IPOPT_OPTIMIZATION_VAR, IPOPT_OBJECTIVE_VAR, IPOPT_DIM_VAR, IPOPT_CONSTRAINT_FUNCTION_VAR};
 
     /**
-     * Name of the generated ipopt problem class name
-     */
-    private String nlpClassName;
-
-    /**
      * Name of the generated ipopt execution class name
      */
     private String callIpoptName;
+
+    private MathOptimizationType optimizationProblemType;
 
     /**
      * Name of the optimization variable
@@ -141,6 +139,7 @@ public class IpoptViewModel extends ViewModelBase {
      * @param problem non linear optimization problem
      */
     public IpoptViewModel(NLPProblem problem) {
+        this.optimizationProblemType = problem.getOptimizationProblemType();
         this.numberVariables = problem.getN();
         this.numberConstraints = problem.getM();
         this.constraintFunctions = problem.getConstraintFunctions();
@@ -155,7 +154,6 @@ public class IpoptViewModel extends ViewModelBase {
         this.optimizationVariableDimensions = problem.getOptimizationVariableDimensions();
 
         this.callIpoptName = "CallIpopt" + problem.getId();
-        this.nlpClassName = "NLP" + problem.getId();
         this.initX = calculateInitialX();
     }
 
@@ -173,14 +171,6 @@ public class IpoptViewModel extends ViewModelBase {
         result = result.replace(sepVar1, sepRepVar1);
         result = result.replace(sepVar2, sepRepVar2);
         return result;
-    }
-
-    public String getNlpClassName() {
-        return nlpClassName;
-    }
-
-    public void setNlpClassName(String nlpClassName) {
-        this.nlpClassName = nlpClassName;
     }
 
     public String getCallIpoptName() {
@@ -390,5 +380,13 @@ public class IpoptViewModel extends ViewModelBase {
 
     public Vector<Integer> getOptimizationVariableDimensions() {
         return optimizationVariableDimensions;
+    }
+
+    public MathOptimizationType getOptimizationProblemType() {
+        return optimizationProblemType;
+    }
+
+    public void setOptimizationProblemType(MathOptimizationType optimizationProblemType) {
+        this.optimizationProblemType = optimizationProblemType;
     }
 }
