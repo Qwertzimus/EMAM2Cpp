@@ -73,7 +73,7 @@ public class IpoptSolverGeneratorImplementation extends NLPSolverGeneratorImplem
             if (knownVariables.length() >= 2) {
                 knownVariables = knownVariables.substring(0, knownVariables.length() - 2);
             }
-            result = String.format("solveOptimizationProblemIpOpt(%s, %s%s);\n", vm.getOptimizationVariableName(), vm.getObjectiveVariableName(), knownVariables);
+            result = String.format("%s::solveOptimizationProblemIpOpt(%s, %s%s);\n",vm.getCallIpoptName(), vm.getOptimizationVariableName(), vm.getObjectiveVariableName(), knownVariables);
             // generate templates by view model
             vm.resolveIpoptNameConflicts();
             generateIpoptTemplates(vm, auxillaryFiles);

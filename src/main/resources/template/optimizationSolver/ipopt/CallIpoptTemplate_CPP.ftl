@@ -69,7 +69,7 @@ namespace
 
 using namespace arma;
 
-bool solveOptimizationProblemIpOpt(
+bool ${viewModel.callIpoptName}::solveOptimizationProblemIpOpt(
     ${viewModel.optimizationVariableType} &x,
     double &y <#if 0 < viewModel.knownVariablesWithType?size>,</#if>
     <#list viewModel.knownVariablesWithType as arg>
