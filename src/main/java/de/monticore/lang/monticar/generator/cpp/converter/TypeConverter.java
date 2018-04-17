@@ -51,8 +51,6 @@ public class TypeConverter {
                 return "int";//use int for now add range check if bigger number is required
             }
             return "double";
-        } else if (mathValueType.getDimensions().size() == 1) {
-            return MathConverter.curBackend.getColumnVectorTypeName();
         } else if (mathValueType.getDimensions().size() == 2) {
             return MathConverter.curBackend.getMatrixTypeName();
         }
