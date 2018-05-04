@@ -1,6 +1,7 @@
 package de.monticore.lang.monticar.generator.cpp;
 
 import de.monticore.lang.embeddedmontiarc.embeddedmontiarc._symboltable.PortSymbol;
+import de.monticore.lang.math.math._symboltable.MathOptimizationConditionSymbol;
 import de.monticore.lang.math.math._symboltable.expression.*;
 import de.monticore.lang.math.math._symboltable.matrix.*;
 import de.monticore.lang.monticar.generator.MathCommand;
@@ -63,16 +64,20 @@ public class MathFunctionFixer {
             notHandled = false;
             //MathStringExpressions should be correct
         } else if (mathExpressionSymbol instanceof MathOptimizationExpressionSymbol) {
-            // TODO: fix optimization functions
             MathOptimizationExpressionSymbol optSymbol = (MathOptimizationExpressionSymbol) mathExpressionSymbol;
-
             ComponentConverter.currentBluePrint.getMathInformationRegister().addVariable(new Variable(optSymbol.getOptimizationVariable().getName(), Variable.VARIABLE));
-
             fixMathFunctions(optSymbol.getOptimizationVariable(), bluePrintCPP);
             fixMathFunctions(optSymbol.getObjectiveExpression(), bluePrintCPP);
-            for (MathExpressionSymbol sym: optSymbol.getSubjectToExpressions())
+            for (MathExpressionSymbol sym : optSymbol.getSubjectToExpressions())
                 fixMathFunctions(sym, bluePrintCPP);
-            Log.warn("Optimization not fully handled in MathFunctionFixer.fixMathFunctions yet");
+            notHandled = false;
+        } else if (mathExpressionSymbol instanceof MathOptimizationConditionSymbol) {
+            MathOptimizationConditionSymbol optCondition = (MathOptimizationConditionSymbol) mathExpressionSymbol;
+            if (optCondition.getLowerBound().isPresent())
+                fixMathFunctions(optCondition.getLowerBound().get(), bluePrintCPP);
+            if (optCondition.getUpperBound().isPresent())
+                fixMathFunctions(optCondition.getUpperBound().get(), bluePrintCPP);
+            fixMathFunctions(optCondition.getBoundedExpression(), bluePrintCPP);
             notHandled = false;
         }
         if (notHandled) {

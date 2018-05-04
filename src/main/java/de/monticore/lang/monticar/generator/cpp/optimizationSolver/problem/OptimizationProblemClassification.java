@@ -1,5 +1,6 @@
 package de.monticore.lang.monticar.generator.cpp.optimizationSolver.problem;
 
+import de.monticore.lang.math.math._symboltable.MathOptimizationConditionSymbol;
 import de.monticore.lang.math.math._symboltable.expression.*;
 import de.monticore.lang.monticar.generator.cpp.converter.ExecuteMethodGenerator;
 import de.monticore.lang.monticar.generator.cpp.converter.TypeConverter;
@@ -78,33 +79,13 @@ public class OptimizationProblemClassification {
         nlp.setObjectiveFunction(getObjectiveFunctionAsCode(symbol));
     }
 
-    protected static String[] getBoundsAndExpressionFromConstraint(NLPProblem nlp, MathCompareExpressionSymbol constraint, MathExpressionSymbol expr) {
+    protected static String[] getBoundsFromConstraint(NLPProblem nlp, MathOptimizationConditionSymbol constraint) {
         String lowerBound = LOWER_BOUND_INF;
         String upperBound = UPPER_BOUND_INF;
-
-        MathExpressionSymbol value = null;
-        String op = constraint.getCompareOperator();
-        if (constraint.getLeftExpression() == expr) {
-            value = constraint.getRightExpression();
-        } else if (constraint.getRightExpression() == expr) {
-            value = constraint.getLeftExpression();
-        }
-        if (op.contains("==")) {
-            lowerBound = ExecuteMethodGenerator.generateExecuteCode(value, new ArrayList<String>());
-            upperBound = ExecuteMethodGenerator.generateExecuteCode(value, new ArrayList<String>());
-        } else if (constraint.getRightExpression() == expr) {
-            if (op.contains("<")) {
-                lowerBound = ExecuteMethodGenerator.generateExecuteCode(value, new ArrayList<String>());
-            } else if (op.contains(">")) {
-                upperBound = ExecuteMethodGenerator.generateExecuteCode(value, new ArrayList<String>());
-            }
-        } else if (constraint.getLeftExpression() == expr) {
-            if (op.contains(">")) {
-                lowerBound = ExecuteMethodGenerator.generateExecuteCode(value, new ArrayList<String>());
-            } else if (op.contains("<")) {
-                upperBound = ExecuteMethodGenerator.generateExecuteCode(value, new ArrayList<String>());
-            }
-        }
+        if (constraint.getLowerBound().isPresent())
+            lowerBound = ExecuteMethodGenerator.generateExecuteCode(constraint.getLowerBound().get(), new ArrayList<String>());
+        if (constraint.getUpperBound().isPresent())
+            upperBound = ExecuteMethodGenerator.generateExecuteCode(constraint.getUpperBound().get(), new ArrayList<String>());
         return new String[]{lowerBound, upperBound};
     }
 
@@ -132,17 +113,6 @@ public class OptimizationProblemClassification {
         }
     }
 
-    private static MathExpressionSymbol getGFromContraint(NLPProblem nlp, MathCompareExpressionSymbol constraint) {
-        MathExpressionSymbol left = constraint.getLeftExpression();
-        MathExpressionSymbol right = constraint.getRightExpression();
-        MathExpressionSymbol g = null;
-        if (left.getTextualRepresentation().contains(nlp.getOptimizationVariableName()))
-            g = left;
-        else if (right.getTextualRepresentation().contains(nlp.getOptimizationVariableName()))
-            g = right;
-        return g;
-    }
-
     protected static void setNLPConstraintsFromSymbol(NLPProblem nlp, MathOptimizationExpressionSymbol symbol) {
         Vector<String> g = new Vector<>();
         Vector<String> gL = new Vector<>();
@@ -152,10 +122,10 @@ public class OptimizationProblemClassification {
 
         setBoundsOnXFromTypeDeclaration(symbol.getOptimizationVariable().getType(), xL, xU, nlp.getN());
 
-        for (MathCompareExpressionSymbol constraint : symbol.getSubjectToExpressions()) {
+        for (MathOptimizationConditionSymbol constraint : symbol.getSubjectToExpressions()) {
             // find function
-            MathExpressionSymbol expr = getGFromContraint(nlp, constraint);
-            String[] bounds = getBoundsAndExpressionFromConstraint(nlp, constraint, expr);
+            MathExpressionSymbol expr = constraint.getBoundedExpression();
+            String[] bounds = getBoundsFromConstraint(nlp, constraint);
             if (isConstraintOnOptVar(nlp, expr)) {
                 mergeBoundsInX(nlp, xL, xU, expr, bounds[0], bounds[1]);
             } else {
