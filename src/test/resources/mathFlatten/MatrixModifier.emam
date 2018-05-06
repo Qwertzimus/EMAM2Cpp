@@ -1,0 +1,26 @@
+package mathFlatten;
+
+component MatrixModifier{
+    ports in Q(-oo:oo)^{1000, 2} mat1,
+          in Q(-oo:oo)^{2, 1000} mat2,
+          in Q(-oo:oo)^{1000, 2} mat3,
+          in Q(-oo:oo)^{2, 10000} mat4,
+          in Q(-oo:oo)^{10000, 10000} mat5,
+          out Q(-oo:oo)^{1000, 10000} matOut;
+
+        instance Mul<1000, 2, 1000> mul1;
+        instance Mul<1000, 2, 10000> mul2;
+        instance Mul<1000, 1000, 10000> mul3;
+        instance Mul<1000, 10000, 10000> mul4;
+
+        connect mat1 -> mul1.factor1;
+        connect mat2 -> mul1.factor2;
+        connect mat3 -> mul2.factor1;
+        connect mat4 -> mul2.factor2;
+        connect mul1.product -> mul3.factor1;
+        connect mul2.product -> mul3.factor2;
+        connect mul3.product -> mul4.factor1;
+        connect mat5 -> mul4.factor2;
+        connect mul4.product -> matOut;
+
+}

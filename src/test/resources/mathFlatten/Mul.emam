@@ -1,0 +1,11 @@
+package mathFlatten;
+
+component Mul<N1 n, N1 m, N1 k>{
+    ports in Q(-oo:oo)^{n, m} factor1,
+          in Q(-oo:oo)^{m, k} factor2,
+          out Q(-oo:oo)^{n,k} product;
+
+    implementation Math{
+          product = factor1 * factor2;
+    }
+}
