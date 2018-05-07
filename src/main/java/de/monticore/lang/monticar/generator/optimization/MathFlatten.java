@@ -3,14 +3,17 @@ package de.monticore.lang.monticar.generator.optimization;
 import de.monticore.lang.embeddedmontiarc.embeddedmontiarc._symboltable.ComponentSymbol;
 import de.monticore.lang.embeddedmontiarc.embeddedmontiarc._symboltable.ConnectorSymbol;
 import de.monticore.lang.embeddedmontiarc.embeddedmontiarc._symboltable.ExpandedComponentInstanceSymbol;
+
 import de.monticore.lang.embeddedmontiarc.embeddedmontiarcmath._visitor.EmbeddedMontiArcMathVisitor;
-import de.monticore.lang.embeddedmontiarc.helper.SymbolPrinter;
+import de.monticore.lang.embeddedmontiarc.embeddedmontiarcmath.helper.SymbolPrinter;
+
 import de.monticore.lang.math.math._ast.*;
 import de.monticore.lang.math.math._symboltable.MathStatementsSymbol;
-import de.monticore.lang.math.math._symboltable.expression.MathAssignmentExpressionSymbol;
-import de.monticore.lang.math.math._symboltable.expression.MathExpressionSymbol;
+
+import de.monticore.lang.monticar.generator.helper.PortSymbolsPrinter;
 import de.monticore.lang.monticar.generator.order.ImplementExecutionOrder;
 import de.monticore.lang.monticar.helper.IndentPrinter;
+
 import de.monticore.lang.tagging._symboltable.TaggingResolver;
 
 import java.util.Collection;
@@ -50,7 +53,7 @@ public class MathFlatten implements EmbeddedMontiArcMathVisitor {
     private void handleComponent() {
         printer.print("component " + topSymbol.getName() + "{\n").indent();
 
-        SymbolPrinter.printPorts(topSymbol.getPorts(), printer);
+        PortSymbolsPrinter.printPorts(topSymbol.getPorts(), printer);
         printer.println();
         handleConnectors();
         handleBehaviours();

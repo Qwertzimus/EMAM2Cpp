@@ -1,7 +1,6 @@
 package de.monticore.lang.monticar.generator;
 
 
-import de.monticore.lang.embeddedmontiarc.embeddedmontiarc._symboltable.ComponentSymbol;
 import de.monticore.lang.embeddedmontiarc.embeddedmontiarc._symboltable.ExpandedComponentInstanceSymbol;
 import de.monticore.lang.monticar.generator.optimization.MathFlatten;
 import de.monticore.lang.tagging._symboltable.TaggingResolver;
