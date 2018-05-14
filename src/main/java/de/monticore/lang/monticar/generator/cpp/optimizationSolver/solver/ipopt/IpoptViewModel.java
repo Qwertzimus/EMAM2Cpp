@@ -371,7 +371,7 @@ public class IpoptViewModel extends ViewModelBase {
         for (Variable v : bluePrint.getMathInformationRegister().getVariables()) {
             String name = v.getNameTargetLanguageFormat();
             String type = v.getVariableType().getTypeNameTargetLanguage();
-            if ((!name.contentEquals(optimizationVariableName)) && (!name.contentEquals(objectiveVariableName))) {
+            if ((!name.contentEquals(optimizationVariableName)) && (!name.contentEquals(objectiveVariableName)) && (!v.isForLoopVariable())) {
                 knownVariables.add(name);
                 knownVariablesWithType.add(String.format("%s %s", type, name));
             }

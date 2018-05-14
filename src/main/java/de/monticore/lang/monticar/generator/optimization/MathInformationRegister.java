@@ -1,6 +1,8 @@
 package de.monticore.lang.monticar.generator.optimization;
 
 import de.monticore.lang.math.math._symboltable.expression.MathExpressionSymbol;
+import de.monticore.lang.math.math._symboltable.expression.MathNumberExpressionSymbol;
+import de.monticore.lang.math.math._symboltable.expression.MathValueExpressionSymbol;
 import de.monticore.lang.math.math._symboltable.expression.MathValueSymbol;
 import de.monticore.lang.math.math._symboltable.matrix.MathMatrixAccessOperatorSymbol;
 import de.monticore.lang.math.math._symboltable.matrix.MathMatrixAccessSymbol;
@@ -13,6 +15,7 @@ import de.se_rwth.commons.logging.Log;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * This class stores information of already encountered math information
@@ -177,5 +180,20 @@ public class MathInformationRegister {
             }
         }*/
         return v.getNameTargetLanguageFormat();
+    }
+
+    public Optional<Double> tryGetDoubleValue(MathExpressionSymbol symbol) {
+        Optional<Double> result = Optional.empty();
+        if (symbol.isValueExpression()) {
+            if (((MathValueExpressionSymbol) symbol).isNumberExpression()) {
+                // is number
+                MathNumberExpressionSymbol numberSymbol = (MathNumberExpressionSymbol) symbol;
+                result = Optional.of(numberSymbol.getValue().getRealNumber().doubleValue());
+            }
+            else {
+                // TODO resolve variable
+            }
+        }
+        return result;
     }
 }

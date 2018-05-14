@@ -92,6 +92,19 @@ public class MathOptimizationSolverTest extends AbstractSymtabTest {
     }
 
     /**
+     * test loops in conditions
+     */
+    @Test
+    public void testForLoopConditions() throws IOException {
+        List<File> files = doGenerateOptimizationModel("forLoopConditionsTest");
+        // TODO: create reference solution
+        // String restPath = "testMath/optimizationSolver/";
+        // testFilesAreEqual(files, restPath);
+    }
+
+
+
+    /**
      * Model predicive control
      * Kindematic bicyle model
      */

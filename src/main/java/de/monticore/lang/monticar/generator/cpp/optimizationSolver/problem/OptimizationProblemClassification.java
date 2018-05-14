@@ -2,12 +2,12 @@ package de.monticore.lang.monticar.generator.cpp.optimizationSolver.problem;
 
 import de.monticore.lang.math.math._symboltable.MathOptimizationConditionSymbol;
 import de.monticore.lang.math.math._symboltable.expression.*;
-import de.monticore.lang.monticar.generator.cpp.converter.ExecuteMethodGenerator;
-import de.monticore.lang.monticar.generator.cpp.converter.TypeConverter;
+import de.monticore.lang.monticar.generator.cpp.converter.*;
 import de.se_rwth.commons.logging.Log;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Vector;
 
 import static de.monticore.lang.monticar.generator.cpp.optimizationSolver.problem.NLPProblem.LOWER_BOUND_INF;
@@ -122,16 +122,14 @@ public class OptimizationProblemClassification {
 
         setBoundsOnXFromTypeDeclaration(symbol.getOptimizationVariable().getType(), xL, xU, nlp.getN());
 
-        for (MathOptimizationConditionSymbol constraint : symbol.getSubjectToExpressions()) {
+        for (MathExpressionSymbol constraint : symbol.getSubjectToExpressions()) {
             // find function
-            MathExpressionSymbol expr = constraint.getBoundedExpression();
-            String[] bounds = getBoundsFromConstraint(nlp, constraint);
-            if (isConstraintOnOptVar(nlp, expr)) {
-                mergeBoundsInX(nlp, xL, xU, expr, bounds[0], bounds[1]);
-            } else {
-                g.add(ExecuteMethodGenerator.generateExecuteCode(expr, new ArrayList<String>()));
-                gL.add(bounds[0]);
-                gU.add(bounds[1]);
+            if (constraint instanceof MathOptimizationConditionSymbol) {
+                MathOptimizationConditionSymbol singleConstraint = (MathOptimizationConditionSymbol) constraint;
+                addSingleConstraint(nlp, g, gL, gU, xL, xU, singleConstraint);
+            } else if (constraint instanceof MathForLoopExpressionSymbol) {
+                MathForLoopExpressionSymbol loopConstraint = (MathForLoopExpressionSymbol) constraint;
+                addLoopConstraints(nlp, g, gL, gU, xL, xU, loopConstraint);
             }
         }
         nlp.setM(g.size());
@@ -140,6 +138,67 @@ public class OptimizationProblemClassification {
         nlp.setgU(gU);
         nlp.setxL(xL);
         nlp.setxU(xU);
+    }
+
+    private static void addLoopConstraints(NLPProblem nlp, Vector<String> g, Vector<String> gL, Vector<String> gU, Vector<String> xL, Vector<String> xU, MathForLoopExpressionSymbol loopConstraint) {
+        Optional<MathExpressionSymbol> startExpr = ForLoopHeadConverter.getForLoopStart(loopConstraint.getForLoopHead());
+        Optional<MathExpressionSymbol> endExpr = ForLoopHeadConverter.getForLoopEnd(loopConstraint.getForLoopHead());
+        Optional<MathExpressionSymbol> stepExpr = ForLoopHeadConverter.getForLoopStep(loopConstraint.getForLoopHead());
+        if (startExpr.isPresent() && endExpr.isPresent()) {
+            Optional<Double> startValue = ComponentConverter.currentBluePrint.getMathInformationRegister().tryGetDoubleValue(startExpr.get());
+            Optional<Double> endValue = ComponentConverter.currentBluePrint.getMathInformationRegister().tryGetDoubleValue(endExpr.get());
+            if (startValue.isPresent() && endValue.isPresent()) {
+                double loopStart = startValue.get();
+                double loopEnd = endValue.get();
+                double loopStep = 1;
+                if (stepExpr.isPresent()) {
+                    Optional<Double> stepValue = ComponentConverter.currentBluePrint.getMathInformationRegister().tryGetDoubleValue(stepExpr.get());
+                    if (stepValue.isPresent())
+                        loopStep = stepValue.get();
+                    else
+                        errorMessageForLoopConstraint(loopConstraint);
+                }
+                if (MathConverter.curBackend.usesZeroBasedIndexing()) {
+                    loopStart--;
+                    loopEnd--;
+                }
+                for (double i = loopStart; i <= loopEnd; i += loopStep) {
+                    for (MathExpressionSymbol constraint : loopConstraint.getForLoopBody()) {
+                        if (constraint instanceof MathOptimizationConditionSymbol) {
+                            addSingleConstraint(nlp, g, gL, gU, xL, xU, (MathOptimizationConditionSymbol) constraint);
+                            if (!isConstraintOnOptVar(nlp, constraint)) {
+                                g.set(g.size() - 1, replaceLoopVariable(g.lastElement(), loopConstraint.getForLoopHead().getNameLoopVariable(), Double.toString(i)));
+                            }
+                        }
+                    }
+                }
+            } else {
+                errorMessageForLoopConstraint(loopConstraint);
+            }
+        } else {
+            errorMessageForLoopConstraint(loopConstraint);
+        }
+    }
+
+    private static String replaceLoopVariable(String expr, String loopVar, String replacement) {
+        expr = expr.replaceAll("[()+\\-\\*/\\^\\']", " $0 ");
+        return expr.replaceAll(" " + loopVar + " ", " " + replacement + " ");
+    }
+
+    private static void errorMessageForLoopConstraint(MathForLoopExpressionSymbol loopExpressionSymbol) {
+        Log.error(String.format("Cannot resolve value of \"%s\"", loopExpressionSymbol.getForLoopHead().getTextualRepresentation()), loopExpressionSymbol.getForLoopHead().getSourcePosition());
+    }
+
+    private static void addSingleConstraint(NLPProblem nlp, Vector<String> g, Vector<String> gL, Vector<String> gU, Vector<String> xL, Vector<String> xU, MathOptimizationConditionSymbol singleConstraint) {
+        MathExpressionSymbol expr = singleConstraint.getBoundedExpression();
+        String[] bounds = getBoundsFromConstraint(nlp, singleConstraint);
+        if (isConstraintOnOptVar(nlp, expr)) {
+            mergeBoundsInX(nlp, xL, xU, expr, bounds[0], bounds[1]);
+        } else {
+            g.add(ExecuteMethodGenerator.generateExecuteCode(expr, new ArrayList<String>()));
+            gL.add(bounds[0]);
+            gU.add(bounds[1]);
+        }
     }
 
     private static MathNumberExpressionSymbol getNumber(MathExpressionSymbol symbol) {
